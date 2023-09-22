@@ -2,13 +2,13 @@
 
 
 <p align="center">
-    <img src="/screens/1.png?raw=true" alt="" style="width:300px;">
-    <img src="/screens/2.png?raw=true" alt="" style="width:300px;">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/1.png" alt="" style="width:300px;">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/2.png" alt="" style="width:300px;">
 </p>
 
 <p align="center">
-    <img src="/screens/3.png?raw=true" alt="" style="width:300px;">
-    <img src="/screens/4.png?raw=true" alt="" style="width:300px;">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/3.png" alt="" style="width:300px;">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/4.png" alt="" style="width:300px;">
 </p>
 
 
