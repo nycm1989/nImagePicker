@@ -1,5 +1,5 @@
 name: n_image_picker
-description: A new Flutter plugin project.
+description: Neil's Image Picker.
 version: 0.0.1
 homepage:
 
@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.1.0
+  http_parser: ^4.0.2
   plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
