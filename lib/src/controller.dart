@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'dart:io' show File;
+import 'dart:html' as html;
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,21 @@ class NImagePickerController with ChangeNotifier{
   List<String>  _fileTypes  = const [ 'png', 'jpg', 'jpeg' ];
   String        _extension  = '';
   bool          _error      = false;
+  Map<String, String> _headers = {
+    "Access-Control-Allow-Origin"       : "*",
+    "Access-Control-Allow-Credentials"  : 'true',
+    "Access-Control-Allow-Headers"      : "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale,X-Requested-With, Content-Type, Accept, Access-Control-Request-Method",
+    'Access-Control-Allow-Methods'      : "GET, POST, PUT, DELETE, OPTIONS, HEAD",
+    "Allow"                             : "GET, POST, PUT, DELETE, OPTIONS, HEAD",
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    "crossOrigin"                       : "Anonymous",
+  };
+
+  set headers(Map<String, String> headers) {
+    _headers = headers;
+    notifyListeners();
+  }
 
   ///Image name for [MultipartFile], is the same key
   ///for posting like {"imageKey": image}
@@ -30,13 +48,14 @@ class NImagePickerController with ChangeNotifier{
     notifyListeners();
   }
 
-  String        get imageKey  =>  _imageKey;
-  PlatformFile? get file      =>  _file;
-  List<String>  get fileTypes =>  _fileTypes;
-  String        get path      =>  _file?.path   ??  '';
-  Uint8List     get bytes     =>  _file?.bytes  ??  Uint8List(0);
-  bool          get error     =>  _error;
-  Image         get image     =>  _file == null
+  Map<String, String> get headers   =>  _headers;
+  String              get imageKey  =>  _imageKey;
+  PlatformFile?       get file      =>  _file;
+  List<String>        get fileTypes =>  _fileTypes;
+  String              get path      =>  _file?.path   ??  '';
+  Uint8List           get bytes     =>  _file?.bytes  ??  Uint8List(0);
+  bool                get error     =>  _error;
+  Image               get image     =>  _file == null
   ? throw Exception()
   : Image.file(
     kIsWeb
@@ -45,16 +64,19 @@ class NImagePickerController with ChangeNotifier{
   );
 
 
-  Future<void> setFromFile(File file) async {
+  Future<void> setFromResponse(Response r, String n) async {
     try{
+      // html.Client
+      final dynamic i = kIsWeb
+      ? html.File( r.bodyBytes, _imageKey, headers)
+      : await File('${_imageKey}.${n.split('.').last}').writeAsBytes(r.bodyBytes);
 
       _file = PlatformFile(
         name  : _imageKey,
-        size  : await file.length(),
-        bytes : kIsWeb ? await file.readAsBytes() : null,
-        path  : kIsWeb ? null : file.path
+        size  : kIsWeb? i.size : await i.length(),
+        bytes : kIsWeb ? r.bodyBytes : null,
+        path  : kIsWeb ? null : i.path
       );
-
       _error = false;
       notifyListeners();
     } catch (e){

@@ -14,7 +14,6 @@
 
 
 ## With this widget, you can:
-
 - Select images
 - Load images on startup
 - Name the JSON key of the image
@@ -32,6 +31,7 @@ nImagePickerController.image -> Image // Image filetype
 nImagePickerController.imageKey -> String // key for json upload image
 nImagePickerController.multipartFile -> MultipartFile // File ready for upload
 nImagePickerController.path -> Path
+nImagePickerController.headers -> Map<String, String> // Map for headers, this need a backend open port for your domain
 ```
 
 1. Create a controller and add a listener

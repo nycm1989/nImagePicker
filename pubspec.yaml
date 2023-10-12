@@ -1,6 +1,6 @@
 name: n_image_picker
 description: Configurable and easy-to-use cross-platform image selector.
-version: 0.0.1+6
+version: 0.0.2
 
 homepage: https://github.com/nycm1989/nImagePicker
 repository: https://github.com/nycm1989/nImagePicker
@@ -27,25 +27,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # flutter_lints: ^2.0.0
 
 screenshots:
   - description: 'Loaded image screenshot'
     path: screens/2.png
 
-# https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms
-# flutter:
-#   plugin:
-#     # implements: n_image_picker
-#     platforms:
-#       android:
-#         pluginClass: NImagePicker
-#       ios:
-#         pluginClass: NImagePicker
-#       macos:
-#         pluginClass: NImagePicker
-#       web:
-#         pluginClass: NImagePicker
-#         fileName: n_image_picker.dart
-#       windows:
-#         pluginClass: NImagePickerApi
+# dart pub publish --dry-run

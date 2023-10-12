@@ -1,3 +1,8 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* First upload
+
+## 0.0.2
+* Fix https and http request
+* Added headers for controller
+* 

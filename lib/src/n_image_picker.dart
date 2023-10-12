@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -24,6 +23,7 @@ class NImagePicker extends StatefulWidget {
 
   const NImagePicker({
     required this.controller,
+    ///Only load image from https or http
     this.onLoadingImage = '',
     this.imageFit       = BoxFit.cover,
     this.margin         = EdgeInsets.zero,
@@ -54,12 +54,27 @@ class _NImagePickerState extends State<NImagePicker> {
   startLoading() async {
     if(widget.onLoadingImage != ''){
       try{
+        List<String> list = widget.onLoadingImage.split("://");
+        if (list.length <= 0) {
+          FormatException("there is not a valid URL");
+          widget.controller.error = false;
+        }
+        String type = list.first;
+        list = list.last.split("/");
+        String domain = list.first;
+        list.remove(domain);
+        String path = list.join("/");
+
         streamController = StreamController<bool>();
         setState(()=> streamController?.add(true));
 
-        await get(Uri.parse(widget.onLoadingImage)).then((image) async {
-          if(image.statusCode == 200){
-            widget.controller.setFromFile(await  File('image.${widget.onLoadingImage.split('.').last}').writeAsBytes(image.bodyBytes));
+        await get(
+          type == 'https'? Uri.https(domain, path) : Uri.http(domain, path),
+          // Uri.parse(widget.onLoadingImage),
+          headers: widget.controller.headers
+        ).then((response) async {
+          if(response.statusCode == 200){
+            widget.controller.setFromResponse(response, widget.onLoadingImage);
             widget.controller.error = false;
           } else{
             widget.controller.error = true;
