@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'dart:io' show File;
-import 'dart:html' as html;
+import 'dart:html' as html if(dart.library.html) '';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';

@@ -5,4 +5,6 @@
 ## 0.0.2
 * Fix https and http request
 * Added headers for controller
-* 
+
+## 0.0.2+1
+* Fix html import in another platforms
