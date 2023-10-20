@@ -1,7 +1,7 @@
-import 'dart:io';
 
-import 'dart:io' show File;
-import 'dart:html' as html if(dart.library.html) '';
+import 'io_file.dart' if (dart.library.web) 'web_file.dart';
+import 'dart:io' if (dart.library.web) 'dart:html';
+// import '' if (dart.library.html) 'package:n_image_picker/src/set_web.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -66,19 +66,19 @@ class NImagePickerController with ChangeNotifier{
 
   Future<void> setFromResponse(Response r, String n) async {
     try{
-      // html.Client
-      final dynamic i = kIsWeb
-      ? html.File( r.bodyBytes, _imageKey, headers)
-      : await File('${_imageKey}.${n.split('.').last}').writeAsBytes(r.bodyBytes);
-
-      _file = PlatformFile(
-        name  : _imageKey,
-        size  : kIsWeb? i.size : await i.length(),
-        bytes : kIsWeb ? r.bodyBytes : null,
-        path  : kIsWeb ? null : i.path
-      );
-      _error = false;
-      notifyListeners();
+      if(kIsWeb){
+        await setFile(r, n, _imageKey, headers).then((r) {
+          _file   = r.platformFile;
+          _error  = r.error;
+          notifyListeners();
+        });
+      } else {
+        await setFile(r, n, _imageKey, headers).then((r) {
+          _file   = r.platformFile;
+          _error  = r.error;
+          notifyListeners();
+        });
+      }
     } catch (e){
       debugPrint('n_image_piker e1: $e');
       _error = true;

@@ -8,3 +8,6 @@
 
 ## 0.0.2+1
 * Fix html import in another platforms
+
+## 0.0.2+2
+* Another fix between html and io
