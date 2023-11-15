@@ -25,6 +25,7 @@
 ```dart
 nImagePickerController.bytes -> Uint8List // Image in bytes list
 nImagePickerController.error -> bool // When onLoadingImage has a url
+nImagePickerController.hasImage -> bool
 nImagePickerController.file -> File
 nImagePickerController.fileTypes -> List<String> // List of upported formats
 nImagePickerController.image -> Image // Image filetype

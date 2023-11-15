@@ -14,3 +14,6 @@
 
 ## 0.0.2+3
 * hasImage indicator added
+
+## 0.0.3
+* multiple image differentiation added when have the same key or name
