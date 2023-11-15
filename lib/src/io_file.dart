@@ -8,7 +8,7 @@ import 'dart:io' show File;
 Future<ResponseModel> setFile(Response r, String n, String key, Map<String, dynamic> headers) async {
   try{
     final String filename = key + Random().nextInt(1000).toString() + DateTime.now().millisecondsSinceEpoch.toString();
-    // html.Client
+
     final dynamic i = await File('${filename}.${n.split('.').last}').writeAsBytes(r.bodyBytes);
 
     return ResponseModel(
@@ -28,3 +28,5 @@ Future<ResponseModel> setFile(Response r, String n, String key, Map<String, dyna
     );
   }
 }
+
+rm(PlatformFile file) => file.path != null ? File(file.path!).delete() : null;

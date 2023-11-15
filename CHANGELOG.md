@@ -17,3 +17,6 @@
 
 ## 0.0.3
 * multiple image differentiation added when have the same key or name
+
+## 0.0.4
+* [CRITICAL] remove temp file image on dispose for no web

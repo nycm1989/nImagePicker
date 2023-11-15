@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'controller.dart';
 
-
 class NImagePicker extends StatefulWidget {
   final NImagePickerController    controller;
   final Future<void> Function()?  onTap;
@@ -97,6 +96,7 @@ class _NImagePickerState extends State<NImagePicker> {
 
   @override
   void initState() {
+    // print(FilePicker.platform.getDirectoryPath());
     super.initState();
     widget.controller.addListener(()=> setState(() {}));
     startLoading();
@@ -111,6 +111,7 @@ class _NImagePickerState extends State<NImagePicker> {
   @override
   void dispose() {
     super.dispose();
+    widget.controller.removeImage(notify: false);
     streamController?.close();
   }
 
@@ -169,7 +170,7 @@ class _NImagePickerState extends State<NImagePicker> {
             )
           : InkWell(
             borderRadius: widget.borderRadius,
-            onTap: !widget.enable ? null : () => widget.controller.file == null ? widget.controller.pickImage() : widget.controller.removeImage(),
+            onTap: !widget.enable ? null : () => widget.controller.file == null ? widget.controller.pickImage() : widget.controller.removeImage(notify: true),
             child: !widget.enable
             ? const SizedBox.shrink()
             : widget.controller.file == null
