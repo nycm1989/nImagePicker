@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> {
     nImagePickerController.addListener(() => setState(() {}));
   }
 
+
   @override
   Widget build(BuildContext context) =>
 
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
           children: [
             NImagePicker(
               controller      : nImagePickerController,
-              // onLoadingImage  : 'https://w.wallhaven.cc/full/jx/wallhaven-jxd1x5.jpg',
+              onLoadingImage  : 'https://w.wallhaven.cc/full/jx/wallhaven-jxd1x5.jpg',
               bankgroundColor : Colors.blueGrey.withOpacity(0.5),
               height          : 250,
               width           : 250,

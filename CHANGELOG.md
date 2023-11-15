@@ -11,3 +11,6 @@
 
 ## 0.0.2+2
 * Another fix between html and io
+
+## 0.0.2+3
+* hasImage indicator added

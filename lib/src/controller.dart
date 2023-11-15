@@ -15,6 +15,7 @@ class NImagePickerController with ChangeNotifier{
   List<String>  _fileTypes  = const [ 'png', 'jpg', 'jpeg' ];
   String        _extension  = '';
   bool          _error      = false;
+  bool          _hasImage   = false;
   Map<String, String> _headers = {
     "Access-Control-Allow-Origin"       : "*",
     "Access-Control-Allow-Credentials"  : 'true',
@@ -55,6 +56,7 @@ class NImagePickerController with ChangeNotifier{
   String              get path      =>  _file?.path   ??  '';
   Uint8List           get bytes     =>  _file?.bytes  ??  Uint8List(0);
   bool                get error     =>  _error;
+  bool                get hasImage  =>  _hasImage;
   Image               get image     =>  _file == null
   ? throw Exception()
   : Image.file(
@@ -74,14 +76,16 @@ class NImagePickerController with ChangeNotifier{
         });
       } else {
         await setFile(r, n, _imageKey, headers).then((r) {
-          _file   = r.platformFile;
-          _error  = r.error;
+          _file     = r.platformFile;
+          _error    = r.error;
+          _hasImage = !r.error;
           notifyListeners();
         });
       }
     } catch (e){
       debugPrint('n_image_piker e1: $e');
-      _error = true;
+      _error    = true;
+      _hasImage = false;
       notifyListeners();
     }
   }
@@ -111,14 +115,16 @@ class NImagePickerController with ChangeNotifier{
     lockParentWindow  : true
   ).then((response) async {
     if (response != null) {
-      _file = response.files.single;
-      _extension = _file!.extension??'';
+      _file       = response.files.single;
+      _extension  = _file!.extension??'';
+      _hasImage   = true;
     }
     notifyListeners();
   });
 
   removeImage() {
-    _file = null;
+    _file     = null;
+    _hasImage = false;
     notifyListeners();
   }
 }
