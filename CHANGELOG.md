@@ -23,3 +23,6 @@
 
 ## 0.0.4+1
 * deleting fix
+
+## 0.0.4+2
+* temp loading image deleting

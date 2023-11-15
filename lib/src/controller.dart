@@ -11,11 +11,12 @@ import 'package:http_parser/http_parser.dart';
 
 class NImagePickerController with ChangeNotifier{
   PlatformFile? _file;
-  String        _imageKey  = "image";
-  List<String>  _fileTypes  = const [ 'png', 'jpg', 'jpeg' ];
-  String        _extension  = '';
-  bool          _error      = false;
-  bool          _hasImage   = false;
+  String        _imageKey      = "image";
+  List<String>  _fileTypes     = const [ 'png', 'jpg', 'jpeg' ];
+  String        _extension     = '';
+  bool          _error         = false;
+  bool          _hasImage      = false;
+  bool          _fromLoading   = false;
   Map<String, String> _headers = {
     "Access-Control-Allow-Origin"       : "*",
     "Access-Control-Allow-Credentials"  : 'true',
@@ -29,6 +30,11 @@ class NImagePickerController with ChangeNotifier{
 
   set headers(Map<String, String> headers) {
     _headers = headers;
+    notifyListeners();
+  }
+
+  set fromLoading(bool state){
+    _fromLoading = state;
     notifyListeners();
   }
 
@@ -49,15 +55,16 @@ class NImagePickerController with ChangeNotifier{
     notifyListeners();
   }
 
-  Map<String, String> get headers   =>  _headers;
-  String              get imageKey  =>  _imageKey;
-  PlatformFile?       get file      =>  _file;
-  List<String>        get fileTypes =>  _fileTypes;
-  String              get path      =>  _file?.path   ??  '';
-  Uint8List           get bytes     =>  _file?.bytes  ??  Uint8List(0);
-  bool                get error     =>  _error;
-  bool                get hasImage  =>  _hasImage;
-  Image               get image     =>  _file == null
+  Map<String, String> get headers     =>  _headers;
+  String              get imageKey    =>  _imageKey;
+  PlatformFile?       get file        =>  _file;
+  List<String>        get fileTypes   =>  _fileTypes;
+  String              get path        =>  _file?.path   ??  '';
+  Uint8List           get bytes       =>  _file?.bytes  ??  Uint8List(0);
+  bool                get error       =>  _error;
+  bool                get hasImage    =>  _hasImage;
+  bool                get fromLoading =>  _fromLoading;
+  Image               get image       =>  _file == null
   ? throw Exception()
   : Image.file(
     kIsWeb
@@ -123,7 +130,7 @@ class NImagePickerController with ChangeNotifier{
   });
 
   removeImage({required bool notify}) {
-    // if(!kIsWeb) if(_file != null) if(_file!.path != null) File(_file!.path!).delete();
+    if(!kIsWeb) if(_fromLoading) if(_file != null) if(_file!.path != null) File(_file!.path!).delete();
     _file     = null;
     _hasImage = false;
     if(notify) notifyListeners();

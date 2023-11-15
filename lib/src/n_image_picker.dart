@@ -57,6 +57,7 @@ class _NImagePickerState extends State<NImagePicker> {
         if (list.length <= 0) {
           FormatException("there is not a valid URL");
           widget.controller.error = false;
+          widget.controller.fromLoading = false;
         }
         String type = list.first;
         list = list.last.split("/");
@@ -74,8 +75,10 @@ class _NImagePickerState extends State<NImagePicker> {
         ).then((response) async {
           if(response.statusCode == 200){
             widget.controller.setFromResponse(response, widget.onLoadingImage);
+            widget.controller.fromLoading = true;
             widget.controller.error = false;
           } else{
+            widget.controller.fromLoading = false;
             widget.controller.error = true;
           }
           streamController?.close();
