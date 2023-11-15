@@ -20,3 +20,6 @@
 
 ## 0.0.4
 * [CRITICAL] remove temp file image on dispose for no web
+
+## 0.0.4+1
+* deleting fix

@@ -123,7 +123,7 @@ class NImagePickerController with ChangeNotifier{
   });
 
   removeImage({required bool notify}) {
-    if(!kIsWeb) if(_file != null) if(_file!.path != null) File(_file!.path!).delete();
+    // if(!kIsWeb) if(_file != null) if(_file!.path != null) File(_file!.path!).delete();
     _file     = null;
     _hasImage = false;
     if(notify) notifyListeners();
