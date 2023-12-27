@@ -1,3 +1,7 @@
+## 1.0.0
+* beta phase finished
+* remove dispose error
+
 ## 0.0.5
 * Set image from path added
 

@@ -72,9 +72,9 @@ class _NImagePickerState extends State<NImagePicker> {
           type == 'https'? Uri.https(domain, path) : Uri.http(domain, path),
           // Uri.parse(widget.onLoadingImage),
           headers: widget.controller.headers
-        ).then((response) async {
-          if(response.statusCode == 200){
-            widget.controller.setFromResponse(response, widget.onLoadingImage);
+        ).then((r) async {
+          if(r.statusCode == 200){
+            widget.controller.setFromResponse(response: r, url: widget.onLoadingImage);
             widget.controller.fromLoading = true;
             widget.controller.error = false;
           } else{
@@ -99,9 +99,7 @@ class _NImagePickerState extends State<NImagePicker> {
 
   @override
   void initState() {
-    // print(FilePicker.platform.getDirectoryPath());
     super.initState();
-    widget.controller.addListener(()=> setState(() {}));
     startLoading();
   }
 
@@ -114,7 +112,6 @@ class _NImagePickerState extends State<NImagePicker> {
   @override
   void dispose() {
     super.dispose();
-    widget.controller.removeImage(notify: false);
     streamController?.close();
   }
 
@@ -173,12 +170,26 @@ class _NImagePickerState extends State<NImagePicker> {
             )
           : InkWell(
             borderRadius: widget.borderRadius,
-            onTap: !widget.enable ? null : () => widget.controller.file == null ? widget.controller.pickImage() : widget.controller.removeImage(notify: true),
+            onTap: !widget.enable
+            ? null
+            : () => widget.controller.file == null
+              ? widget.controller.pickImage()
+              : widget.controller.removeImage(notify: true),
             child: !widget.enable
             ? const SizedBox.shrink()
             : widget.controller.file == null
-              ? widget.onSelectionWidget ?? const Icon(Icons.image_outlined, size: 40, color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 10)],)
-              : widget.onClearWidget ?? const Icon(Icons.close, size: 40, color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 10)],)
+              ? widget.onSelectionWidget ??
+                const Icon(
+                  Icons.image_outlined,
+                  size    : 40,
+                  color   : Colors.white,
+                  shadows : [Shadow(color: Colors.black, blurRadius: 10)]
+                )
+              : widget.onClearWidget ??
+                const Icon(
+                  Icons.close,
+                  size: 40,
+                  color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 10)],)
           )
           : widget.onLoadingWidget??
           const Center( child: CircularProgressIndicator(strokeWidth: 2) )

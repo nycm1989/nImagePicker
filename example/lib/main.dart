@@ -26,6 +26,11 @@ class _MyAppState extends State<MyApp> {
     nImagePickerController.addListener(() => setState(() {}));
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    nImagePickerController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) =>

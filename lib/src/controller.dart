@@ -73,16 +73,16 @@ class NImagePickerController with ChangeNotifier{
   );
 
 
-  Future<void> setFromResponse(Response r, String n) async {
+  Future<void> setFromResponse({required Response response, required String url}) async {
     try{
       if(kIsWeb){
-        await setFile(r, n, _imageKey, headers).then((r) {
+        await setFile(response, url, _imageKey, headers).then((r) {
           _file   = r.platformFile;
           _error  = r.error;
           notifyListeners();
         });
       } else {
-        await setFile(r, n, _imageKey, headers).then((r) {
+        await setFile(response, url, _imageKey, headers).then((r) {
           _file     = r.platformFile;
           _error    = r.error;
           _hasImage = !r.error;
@@ -98,7 +98,7 @@ class NImagePickerController with ChangeNotifier{
   }
 
   ///this only works in
-  Future<void> setFromPath(String path) async {
+  Future<void> setFromPath({required String path}) async {
     try{
       await setFileFromPath(path).then((r) {
         _file     = r.platformFile;

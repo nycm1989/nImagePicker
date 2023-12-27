@@ -35,6 +35,14 @@ nImagePickerController.path -> Path
 nImagePickerController.headers -> Map<String, String> // Map for headers, this need a backend open port for your domain
 ```
 
+## Controller metodhs
+```dart
+nImagePickerController.setFromResponse(response: Response, url: String) // Set the image file from http response and url
+nImagePickerController.setFromPath(path: String) // This dont work in web!
+nImagePickerController.pickImage() // Open the image dialog picker
+nImagePickerController.removeImage(notify: bool)
+```
+
 1. Create a controller and add a listener
 
 ```dart
@@ -44,6 +52,12 @@ NImagePickerController nImagePickerController = NImagePickerController();
 void initState() {
     super.initState();
     nImagePickerController.addListener(() => setState(() {}));
+}
+
+@override
+void dispose() {
+    super.dispose();
+    nImagePickerController.dispose();
 }
 ```
 
