@@ -97,6 +97,23 @@ class NImagePickerController with ChangeNotifier{
     }
   }
 
+  ///this only works in
+  Future<void> setFromPath(String path) async {
+    try{
+      await setFileFromPath(path).then((r) {
+        _file     = r.platformFile;
+        _error    = r.error;
+        _hasImage = !r.error;
+        notifyListeners();
+      });
+    } catch (e){
+      debugPrint('n_image_piker e1: $e');
+      _error    = true;
+      _hasImage = false;
+      notifyListeners();
+    }
+  }
+
   ///- this will be used for get a posting image
   ///- needs a key name for posting or key must be empty
   Future<MultipartFile> get multipartFile async {
