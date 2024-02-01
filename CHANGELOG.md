@@ -1,3 +1,6 @@
+## 1.1.1
+* Now use all memory images, dont save any files
+
 ## 1.1.0
 * Added Image view
 * Remove image icon changed in default fulled widget

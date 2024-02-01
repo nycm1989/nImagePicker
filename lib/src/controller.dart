@@ -78,37 +78,38 @@ class NImagePickerController with ChangeNotifier{
   bool                get fromLoading =>  _fromLoading;
   Image               get image       =>  _file == null
   ? throw Exception()
-  : Image.file(
-    kIsWeb
-    ? File.fromRawPath(_file!.bytes!)
-    : File(_file!.path!)
-  );
+  : Image.file( File.fromRawPath(_file!.bytes!) );
+
+  _reset(bool e){
+    _file         = null;
+    _bytes        = null;
+    _error        = e;
+    _hasImage     = false;
+    _fromLoading  = false;
+    notifyListeners();
+  }
 
   /// Set the image file from http response and url
   Future<void> setFromResponse({required Response response, required String url}) async {
     try{
-      if(kIsWeb){
-        await setFile(response, url, _imageKey, headers).then((r) {
-          _file   = r.platformFile;
-          _bytes  = r.platformFile.bytes;
-          _error  = r.error;
-          notifyListeners();
-        });
-      } else {
-        await setFile(response, url, _imageKey, headers).then((r) {
-          _file     = r.platformFile;
-          _bytes    = r.platformFile.bytes;
-          _error    = r.error;
-          _hasImage = !r.error;
-          notifyListeners();
-        });
-      }
+      kIsWeb
+      ? await setFile(response: response, key: _imageKey, headers: headers).then((r) {
+        _file     = r.platformFile;
+        _bytes    = r.platformFile.bytes;
+        _error    = r.error;
+        _hasImage = !r.error;
+        notifyListeners();
+      })
+      : await setFile(response: response).then((r) {
+        _file     = r.platformFile;
+        _bytes    = r.platformFile.bytes;
+        _error    = r.error;
+        _hasImage = !r.error;
+        notifyListeners();
+      });
     } catch (e){
       debugPrint('n_image_piker e1: $e');
-      _file     = null;
-      _bytes    = null;
-      _error    = true;
-      _hasImage = false;
+      _reset(true);
       notifyListeners();
     }
   }
@@ -128,10 +129,7 @@ class NImagePickerController with ChangeNotifier{
         });
       } catch (e){
         debugPrint('n_image_piker e1: $e');
-        _file     = null;
-        _bytes    = null;
-        _error    = true;
-        _hasImage = false;
+        _reset(true);
         notifyListeners();
       }
     }
@@ -161,12 +159,16 @@ class NImagePickerController with ChangeNotifier{
   Future<void> pickImage() async => await FilePicker.platform.pickFiles(
     type              : FileType.custom,
     allowedExtensions : _fileTypes,
-    lockParentWindow  : true
+    lockParentWindow  : true,
+    allowMultiple     : false,
+    withData          : true
   ).then((response) async {
-    if (response != null) {
+    if (response == null) {
+      _reset(true);
+    } else {
       _file       = response.files.single;
-      _bytes      = response.files.single.bytes;
-      _extension  = _file!.extension??'';
+      _bytes      = _file?.bytes;
+      _extension  = _file?.extension??'';
       _hasImage   = true;
     }
     notifyListeners();
@@ -174,10 +176,7 @@ class NImagePickerController with ChangeNotifier{
 
   removeImage({required bool notify}) {
     if(!kIsWeb) if(_fromLoading) if(_file != null) if(_file!.path != null) File(_file!.path!).delete();
-    _file     = null;
-    _bytes    = null;
-    _hasImage = false;
-    _error    = false;
+    _reset(false);
     if(notify) notifyListeners();
   }
 

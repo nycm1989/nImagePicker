@@ -5,17 +5,17 @@ import 'package:http/http.dart';
 import './response_model.dart';
 import 'dart:html' as html;
 
-Future<ResponseModel> setFile(Response r, String n, String key, Map<String, dynamic> headers) async {
+Future<ResponseModel> setFile({required final Response response, required final String key, required final Map<String, dynamic> headers}) async {
   try{
     final String filename = key + Random().nextInt(1000).toString()  + DateTime.now().millisecondsSinceEpoch.toString();
 
-    final dynamic i = html.File( r.bodyBytes, key, headers);
+    final dynamic i = html.File( response.bodyBytes, key, headers);
 
     return ResponseModel(
       platformFile: PlatformFile(
         name  : filename,
         size  : i.size,
-        bytes : r.bodyBytes,
+        bytes : response.bodyBytes,
         path  : null
       ),
       error: false

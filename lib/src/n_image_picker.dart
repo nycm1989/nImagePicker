@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'controller.dart';
@@ -61,7 +60,7 @@ class _NImagePickerState extends State<NImagePicker> {
 
   startLoading() async {
     if(widget.onLoadingImage != ''){
-      try{
+      try {
         List<String> list = widget.onLoadingImage.split("://");
         if (list.length <= 0) {
           FormatException("there is not a valid URL");
@@ -79,7 +78,6 @@ class _NImagePickerState extends State<NImagePicker> {
 
         await get(
           type == 'https'? Uri.https(domain, path) : Uri.http(domain, path),
-          // Uri.parse(widget.onLoadingImage),
           headers: widget.controller.headers
         ).then((r) async {
           if(r.statusCode == 200){
@@ -133,10 +131,9 @@ class _NImagePickerState extends State<NImagePicker> {
       Container(
         decoration    : BoxDecoration(
           color: widget.bankgroundColor,
-          image: widget.controller.file == null ? null : DecorationImage(image: kIsWeb
-            ? Image.memory(widget.controller.file!.bytes!).image
-            : widget.controller.image.image,
-            fit: widget.fit,
+          image: widget.controller.file == null ? null : DecorationImage(
+            image : Image.memory(widget.controller.file!.bytes!).image,
+            fit   : widget.fit,
             colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(widget.filterOpacity),
               BlendMode.darken

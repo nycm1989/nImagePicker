@@ -5,27 +5,17 @@ import 'package:http/http.dart';
 import './response_model.dart';
 import 'dart:io' show File;
 
-Future<ResponseModel> setFile(Response r, String n, String key, Map<String, dynamic> headers) async {
+Future<ResponseModel> setFile({required final Response response, final String? key, final Map<String, dynamic>? headers}) async {
   try{
-    final String filename = key + Random().nextInt(10000).toString() + DateTime.now().millisecondsSinceEpoch.toString();
-
-    return await File('${filename}.${n.split('.').last}').writeAsBytes(r.bodyBytes).then((v) =>
-      v.length().then((l)=>
-        v.readAsBytes().then((b)=>
-          ResponseModel(
-            platformFile:
-            PlatformFile(
-              name  : filename,
-              size  : l,
-              bytes : b,
-              path  : v.path
-            ),
-            error: false
-          )
-        )
-      )
+    return ResponseModel(
+      platformFile:
+      PlatformFile(
+        name  : Random().nextInt(10000).toString() + DateTime.now().millisecondsSinceEpoch.toString(),
+        size  : response.contentLength??0,
+        bytes : response.bodyBytes
+      ),
+      error: false
     );
-
   } catch (e){
     return ResponseModel(
       platformFile: PlatformFile(name: '', size: 0),
@@ -37,17 +27,19 @@ Future<ResponseModel> setFile(Response r, String n, String key, Map<String, dyna
 Future<ResponseModel> setFileFromPath(String p) async {
   try{
     final String filename = Random().nextInt(10000).toString() + DateTime.now().millisecondsSinceEpoch.toString();
-    final dynamic i = await File(p);
+    final dynamic file = File(p);
 
-    return ResponseModel(
-      platformFile:
-      PlatformFile(
-        name  : filename,
-        size  : await i.length(),
-        bytes : i.bytes,
-        path  : i.path
-      ),
-      error: false
+    return file.length().then((length)=>
+      ResponseModel(
+        platformFile:
+        PlatformFile(
+          name  : filename,
+          size  : length,
+          bytes : file.bytes,
+          path  : file.path
+        ),
+        error: false
+      )
     );
 
   } catch (e){
