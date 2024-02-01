@@ -20,27 +20,54 @@
 - Obtain the multipart file
 - Have error control when loading the image
 - Change the widgets displayed when loading the initial image, when selecting an image, when undoing the selection of an image, and when an error occurs.
+- Full preview
 
 ## Controller properties
 ```dart
-nImagePickerController.bytes -> Uint8List // Image in bytes list
-nImagePickerController.error -> bool // When onLoadingImage has a url
+/// Image in bytes list
+nImagePickerController.bytes -> Uint8List
+
+/// When onLoadingImage has a url
+nImagePickerController.error -> bool
+
+/// Show blur background or black transparency
+nImagePickerController.viewerBlur -> bool
+
+/// List of supported formats
+nImagePickerController.fileTypes -> List<String>
+
 nImagePickerController.hasImage -> bool
+nImagePickerController.hasNoImage -> bool
+nImagePickerController.image -> Image
 nImagePickerController.file -> File
-nImagePickerController.fileTypes -> List<String> // List of upported formats
-nImagePickerController.image -> Image // Image filetype
-nImagePickerController.imageKey -> String // key for json upload image
-nImagePickerController.multipartFile -> MultipartFile // File ready for upload
 nImagePickerController.path -> Path
-nImagePickerController.headers -> Map<String, String> // Map for headers, this need a backend open port for your domain
+
+/// Json key for posting [MultipartFile] image, example:
+/// - "key" : "server/path/image.png"
+/// it works in web and platforms
+nImagePickerController.imageKey -> String
+
+/// return an async image for uploading using [imageKey] example:
+/// - await controller.multipartFile.then((image) => image)
+nImagePickerController.multipartFile -> MultipartFile
+
+/// Map for headers, this need a backend open port for your domain
+nImagePickerController.headers -> Map<String, String>
 ```
 
 ## Controller metodhs
 ```dart
-nImagePickerController.setFromResponse(response: Response, url: String) // Set the image file from http response and url
-nImagePickerController.setFromPath(path: String) // This dont work in web!
-nImagePickerController.pickImage() // Open the image dialog picker
+/// Set the image file from http response and url
+nImagePickerController.setFromResponse(response: Response, url: String)
+
+/// This dont work in web!
+nImagePickerController.setFromPath(path: String)
+
+/// Open the image dialog picker
+nImagePickerController.pickImage()
+
 nImagePickerController.removeImage(notify: bool)
+nImagePickerController.showImageViewer(notify: bool)
 ```
 
 1. Create a controller and add a listener
@@ -57,6 +84,7 @@ void initState() {
 @override
 void dispose() {
     super.dispose();
+    nImagePickerController.removeListener((){});
     nImagePickerController.dispose();
 }
 ```
@@ -70,17 +98,23 @@ NImagePicker(
     bankgroundColor : Colors.blueGrey.withOpacity(0.5),
     height          : 250,
     width           : 250,
-    enable          : true,
+    readOnly        : false,
     filterOpacity   : 0.2,
     borderRadius    : BorderRadius.circular(50),
     fit             : BoxFit.cover,
     border          : Border.all(color: Colors.black, width: 4),
     shadow          : const BoxShadow(color: Colors.black, blurRadius: 10, blurStyle: BlurStyle.outer),
     margin          : const EdgeInsets.all(40),
+    viewerBlur      : true,
+    previewBlur     : true,
 ),
 
 ```
 
+3. If you want to post the image
+```dart
+MultipartFile? multipartFile;
+nImagePickerController.imageKey = "json_image_key",
 
-
-
+await nImagePickerController multipartFile.then((file) async => multipartFile = file);
+```

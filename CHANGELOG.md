@@ -1,3 +1,12 @@
+## 1.1.0
+* Added Image view
+* Remove image icon changed in default fulled widget
+* Add preview icon for default fulled widget
+* Added Blur for preview and image view
+* Fix get from bytes in platform
+* changed boolean enable to readOnly
+* Trown exception in only web methods
+
 ## 1.0.0
 * beta phase finished
 * remove dispose error

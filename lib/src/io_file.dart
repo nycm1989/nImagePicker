@@ -9,17 +9,21 @@ Future<ResponseModel> setFile(Response r, String n, String key, Map<String, dyna
   try{
     final String filename = key + Random().nextInt(10000).toString() + DateTime.now().millisecondsSinceEpoch.toString();
 
-    final dynamic i = await File('${filename}.${n.split('.').last}').writeAsBytes(r.bodyBytes);
-
-    return ResponseModel(
-      platformFile:
-      PlatformFile(
-        name  : filename,
-        size  : await i.length(),
-        bytes : null,
-        path  : i.path
-      ),
-      error: false
+    return await File('${filename}.${n.split('.').last}').writeAsBytes(r.bodyBytes).then((v) =>
+      v.length().then((l)=>
+        v.readAsBytes().then((b)=>
+          ResponseModel(
+            platformFile:
+            PlatformFile(
+              name  : filename,
+              size  : l,
+              bytes : b,
+              path  : v.path
+            ),
+            error: false
+          )
+        )
+      )
     );
 
   } catch (e){
@@ -40,7 +44,7 @@ Future<ResponseModel> setFileFromPath(String p) async {
       PlatformFile(
         name  : filename,
         size  : await i.length(),
-        bytes : null,
+        bytes : i.bytes,
         path  : i.path
       ),
       error: false

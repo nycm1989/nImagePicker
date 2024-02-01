@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     super.dispose();
+    nImagePickerController.removeListener((){});
     nImagePickerController.dispose();
   }
 
@@ -43,18 +44,22 @@ class _MyAppState extends State<MyApp> {
         Column(
           children: [
             NImagePicker(
-              controller      : nImagePickerController,
-              onLoadingImage  : 'https://w.wallhaven.cc/full/jx/wallhaven-jxd1x5.jpg',
-              bankgroundColor : Colors.blueGrey.withOpacity(0.5),
-              height          : 250,
-              width           : 250,
-              enable          : true,
-              filterOpacity   : 0.2,
-              borderRadius    : BorderRadius.circular(50),
-              fit             : BoxFit.cover,
-              border          : Border.all(color: Colors.black, width: 4),
-              shadow          : const BoxShadow(color: Colors.black, blurRadius: 10, blurStyle: BlurStyle.outer),
-              margin          : const EdgeInsets.all(40),
+              controller        : nImagePickerController,
+              onLoadingImage    : 'https://w.wallhaven.cc/full/jx/wallhaven-jxd1x5.jpg',
+              bankgroundColor   : Colors.blueGrey.withOpacity(0.5),
+              height            : 250,
+              width             : 250,
+              readOnly          : false,
+              filterOpacity     : 0.2,
+              borderRadius      : BorderRadius.circular(50),
+              fit               : BoxFit.cover,
+              border            : Border.all(color: Colors.black, width: 4),
+              shadow            : const BoxShadow(color: Colors.black, blurRadius: 10, blurStyle: BlurStyle.outer),
+              margin            : const EdgeInsets.all(40),
+              viewerBlur        : true,
+              viewerBlurSigma   : 10,
+              previewBlur       : true,
+              previewBlurSigma  : 4,
             ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -9,16 +10,20 @@ class NImagePicker extends StatefulWidget {
   final Future<void> Function()?  onTap;
   final String                    onLoadingImage;
   final BoxFit                    imageFit;
-  final double?                   width, height;
+  final double                    width, height;
   final double                    filterOpacity;
-  final Widget?                   onClearWidget, onErrorWidget, onSelectionWidget, onLoadingWidget;
+  final Widget?                   emptyWidget, filledWidget, onErrorWidget, onLoadingWidget;
   final EdgeInsetsGeometry        margin;
   final Color?                    bankgroundColor;
   final BorderRadius?             borderRadius;
   final Border?                   border;
   final BoxShadow?                shadow;
-  final bool                      enable;
+  final bool                      readOnly;
   final BoxFit                    fit;
+  final bool                      viewerBlur;
+  final double                    viewerBlurSigma;
+  final bool                      previewBlur;
+  final double                    previewBlurSigma;
 
   const NImagePicker({
     required this.controller,
@@ -26,7 +31,7 @@ class NImagePicker extends StatefulWidget {
     this.onLoadingImage = '',
     this.imageFit       = BoxFit.cover,
     this.margin         = EdgeInsets.zero,
-    this.enable         = true,
+    this.readOnly       = false,
     this.fit            = BoxFit.cover,
     this.filterOpacity  = 0.2,
     this.bankgroundColor,
@@ -34,12 +39,16 @@ class NImagePicker extends StatefulWidget {
     this.onTap,
     this.borderRadius,
     this.border,
-    this.width,
-    this.height,
-    this.onClearWidget,
+    this.width  = 100,
+    this.height = 100,
+    this.emptyWidget,
+    this.filledWidget,
     this.onErrorWidget,
-    this.onSelectionWidget,
     this.onLoadingWidget,
+    this.viewerBlur        = true,
+    this.viewerBlurSigma   = 5.0,
+    this.previewBlur       = false,
+    this.previewBlurSigma  = 5.0,
     super.key
   });
 
@@ -134,7 +143,7 @@ class _NImagePickerState extends State<NImagePicker> {
             ),
           ),
           borderRadius: widget.borderRadius,
-          border      : widget.border,
+          border      : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
           boxShadow   : widget.shadow == null ? null : [widget.shadow!]
         ),
         margin        : widget.margin,
@@ -142,57 +151,106 @@ class _NImagePickerState extends State<NImagePicker> {
         height        : widget.height,
         clipBehavior  : Clip.hardEdge,
         child         :
-        snapshot.connectionState == ConnectionState.none
-        ? widget.controller.error
-          ? widget.onErrorWidget??
-            const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding : EdgeInsets.only(bottom: 10),
-                  child   :
-                  Icon(
-                    Icons.error_outline,
-                    size    : 40,
-                    color   : Colors.white,
-                    shadows : [Shadow(color: Colors.black, blurRadius: 10)]
+        BackdropFilter(
+          filter  :
+          ImageFilter.blur(
+            sigmaX: widget.previewBlur ? widget.previewBlurSigma : 0,
+            sigmaY: widget.previewBlur ? widget.previewBlurSigma : 0
+          ),
+          child   :
+          snapshot.connectionState == ConnectionState.none
+          ? widget.controller.error
+            ? InkWell(
+              onTap        : widget.readOnly ? null : ()=> widget.controller.removeImage(notify: true),
+              borderRadius : widget.borderRadius,
+              child        : widget.onErrorWidget??
+              const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding : EdgeInsets.only(bottom: 10),
+                    child   :
+                    Icon(
+                      Icons.error_outline,
+                      size    : 40,
+                      color   : Colors.white,
+                      shadows : [Shadow(color: Colors.black, blurRadius: 10)]
+                    ),
                   ),
-                ),
-                Text(
-                  "SOMETHING GET WORNG",
-                  style:
-                  TextStyle(
+                  Text(
+                    "SOMETHING GET WORNG",
+                    style:
+                    TextStyle(
+                      color   : Colors.white,
+                      shadows : [Shadow(color: Colors.black, blurRadius: 10)]
+                    )
+                  )
+                ],
+              ),
+            )
+            : widget.controller.file == null
+              ? InkWell(
+                borderRadius : widget.borderRadius,
+                onTap        : widget.readOnly ? null : () => widget.controller.pickImage(),
+                child        : widget.emptyWidget ??
+                  const Icon(
+                    Icons.image_outlined,
+                    size    : 40,
                     color   : Colors.white,
                     shadows : [Shadow(color: Colors.black, blurRadius: 10)]
                   )
                 )
-              ],
-            )
-          : InkWell(
-            borderRadius: widget.borderRadius,
-            onTap: !widget.enable
-            ? null
-            : () => widget.controller.file == null
-              ? widget.controller.pickImage()
-              : widget.controller.removeImage(notify: true),
-            child: !widget.enable
-            ? const SizedBox.shrink()
-            : widget.controller.file == null
-              ? widget.onSelectionWidget ??
-                const Icon(
-                  Icons.image_outlined,
-                  size    : 40,
-                  color   : Colors.white,
-                  shadows : [Shadow(color: Colors.black, blurRadius: 10)]
-                )
-              : widget.onClearWidget ??
-                const Icon(
-                  Icons.close,
-                  size: 40,
-                  color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 10)],)
-          )
-          : widget.onLoadingWidget??
-          const Center( child: CircularProgressIndicator(strokeWidth: 2) )
+              : widget.filledWidget ?? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  InkWell(
+                    onTap: ()=> widget.controller.removeImage(notify: true),
+                    child:
+                    Container(
+                      width   : 40,
+                      height  : 40,
+                      color   : Colors.transparent,
+                      child   :
+                      const Icon(
+                        Icons.delete_outline,
+                        size    : 40,
+                        color   : Colors.white,
+                        shadows : [
+                          Shadow(color: Colors.black, blurRadius: 10),
+                          Shadow(color: Colors.black, blurRadius: 5 ),
+                          Shadow(color: Colors.grey,  blurRadius: 2 ),
+                        ]
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () =>
+                    widget.controller.showImageViewer(
+                      context,
+                      blur  : widget.viewerBlur,
+                      sigma : widget.previewBlurSigma
+                    ),
+                    child: Container(
+                      width   : 40,
+                      height  : 40,
+                      color   : Colors.transparent,
+                      child   :
+                      Icon(
+                        Icons.zoom_out_map_rounded,
+                        size    : 40,
+                        color   : widget.controller.file == null ? Colors.grey : Colors.white,
+                        shadows : [
+                          Shadow(color: Colors.black, blurRadius: 10),
+                          Shadow(color: Colors.black, blurRadius: 5 ),
+                          Shadow(color: Colors.grey,  blurRadius: 2 ),
+                        ]
+                      ),
+                    ),
+                  )
+                ],
+              )
+            : widget.onLoadingWidget ?? const Center( child: CircularProgressIndicator(strokeWidth: 2) ),
+        )
       )
     );
   }
