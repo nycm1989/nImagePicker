@@ -45,11 +45,11 @@ class _MyAppState extends State<MyApp> {
           children: [
             NImagePicker(
               controller        : nImagePickerController,
-              onLoadingImage    : 'https://w.wallhaven.cc/full/jx/wallhaven-jxd1x5.jpg',
+              onLoadingImage    : 'https://imagenes.20minutos.es/files/image_1920_1080/uploads/imagenes/2021/10/22/facebook.png',
               bankgroundColor   : Colors.blueGrey.withOpacity(0.5),
               height            : 250,
               width             : 250,
-              readOnly          : false,
+              // readOnly          : true,
               filterOpacity     : 0.2,
               borderRadius      : BorderRadius.circular(50),
               fit               : BoxFit.cover,

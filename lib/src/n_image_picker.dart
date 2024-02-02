@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'controller.dart';
 
 class NImagePicker extends StatefulWidget {
@@ -62,38 +61,35 @@ class _NImagePickerState extends State<NImagePicker> {
     if(widget.onLoadingImage != ''){
       try {
         List<String> list = widget.onLoadingImage.split("://");
+
         if (list.length <= 0) {
           FormatException("there is not a valid URL");
-          widget.controller.error = false;
+          widget.controller.error       = false;
           widget.controller.fromLoading = false;
         }
-        String type = list.first;
-        list = list.last.split("/");
-        String domain = list.first;
-        list.remove(domain);
-        String path = list.join("/");
 
         streamController = StreamController<bool>();
         setState(()=> streamController?.add(true));
 
-        await get(
-          type == 'https'? Uri.https(domain, path) : Uri.http(domain, path),
-          headers: widget.controller.headers
-        ).then((r) async {
-          if(r.statusCode == 200){
-            widget.controller.setFromResponse(response: r, url: widget.onLoadingImage);
+        await  widget.controller.setFromURL(
+          context,
+          url     : widget.onLoadingImage,
+          headers : widget.controller.headers
+        ).then((state) async {
+          if(state){
+            // widget.controller.setFromBytes(name: widget.onLoadingImage + Random().nextInt(10000).toString(), bytes: bytes);
+            // widget.controller.setFromResponse(response: r, url: widget.onLoadingImage);
             widget.controller.fromLoading = true;
-            widget.controller.error = false;
+            widget.controller.error       = false;
           } else{
             widget.controller.fromLoading = false;
-            widget.controller.error = true;
+            widget.controller.error       = true;
           }
           streamController?.close();
           streamController = null;
           setState(()=> widget.controller.error = false);
         });
       } catch (e) {
-        debugPrint('n_image_piker e2: $e');
         streamController?.close();
         streamController = null;
         setState(()=> widget.controller.error = true);
@@ -131,17 +127,20 @@ class _NImagePickerState extends State<NImagePicker> {
       Container(
         decoration    : BoxDecoration(
           color: widget.bankgroundColor,
-          image: widget.controller.file == null ? null : DecorationImage(
-            image : Image.memory(widget.controller.file!.bytes!).image,
-            fit   : widget.fit,
-            colorFilter: ColorFilter.mode(
+          borderRadius: widget.borderRadius,
+          border      : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
+          boxShadow   : widget.shadow == null ? null : [widget.shadow!],
+          image       : widget.controller.file == null
+          ? null
+          : DecorationImage(
+            image       : Image.memory(widget.controller.file!.bytes!).image,
+            fit         : widget.fit,
+            colorFilter :
+            ColorFilter.mode(
               Colors.black.withOpacity(widget.filterOpacity),
               BlendMode.darken
             ),
           ),
-          borderRadius: widget.borderRadius,
-          border      : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
-          boxShadow   : widget.shadow == null ? null : [widget.shadow!]
         ),
         margin        : widget.margin,
         width         : widget.width,
@@ -198,8 +197,11 @@ class _NImagePickerState extends State<NImagePicker> {
                   )
                 )
               : widget.filledWidget ?? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: widget.readOnly
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.spaceEvenly,
                 children: [
+                  if(!widget.readOnly)
                   InkWell(
                     onTap: ()=> widget.controller.removeImage(notify: true),
                     child:

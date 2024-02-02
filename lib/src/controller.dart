@@ -1,33 +1,26 @@
 
-import 'package:n_image_picker/src/image_viewer_dialog.dart';
-
-import 'io_file.dart' if (dart.library.web) 'web_file.dart';
-import 'dart:io' if (dart.library.web) 'dart:html';
-
+import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:n_image_picker/src/custom_file.dart';
+import 'package:n_image_picker/src/image_viewer_dialog.dart';
 
 class NImagePickerController with ChangeNotifier{
-  PlatformFile? _file;
-  Uint8List   ? _bytes;
-  String        _imageKey      = "image";
-  List<String>  _fileTypes     = const [ 'png', 'jpg', 'jpeg' ];
-  String        _extension     = '';
-  bool          _error         = false;
-  bool          _hasImage      = false;
-  bool          _fromLoading   = false;
+  PlatformFile ? _file;
+  Uint8List    ? _bytes;
+  String         _imageKey      = "image";
+  List<String>   _fileTypes     = const [ 'png', 'jpg', 'jpeg' ];
+  String         _extension     = '';
+  bool           _error         = false;
+  bool           _hasImage      = false;
+  bool           _fromLoading   = false;
   Map<String, String> _headers = {
-    "Access-Control-Allow-Origin"       : "*",
-    "Access-Control-Allow-Credentials"  : 'true',
-    "Access-Control-Allow-Headers"      : "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale,X-Requested-With, Content-Type, Accept, Access-Control-Request-Method",
-    'Access-Control-Allow-Methods'      : "GET, POST, PUT, DELETE, OPTIONS, HEAD",
-    "Allow"                             : "GET, POST, PUT, DELETE, OPTIONS, HEAD",
-    'Content-Type': 'application/json',
-    'Accept': '*/*',
-    "crossOrigin"                       : "Anonymous",
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type',
   };
 
   /// Map for headers, this need a backend open port for your domain
@@ -76,31 +69,92 @@ class NImagePickerController with ChangeNotifier{
   bool                get hasImage    =>  _hasImage;
   bool                get hasnoImage  =>  !_hasImage;
   bool                get fromLoading =>  _fromLoading;
-  Image               get image       =>  _file == null
-  ? throw Exception()
-  : Image.file( File.fromRawPath(_file!.bytes!) );
+  // Image               get image       =>  _file == null
+  // ? throw Exception()
+  // : Image.file( File.fromRawPath(_file!.bytes!) );
 
-  _reset(bool e){
+  _reset({required bool error}){
     _file         = null;
     _bytes        = null;
-    _error        = e;
+    _error        = error;
     _hasImage     = false;
     _fromLoading  = false;
     notifyListeners();
+  }
+
+  Future<bool>setFromURL(BuildContext context, {required String url, required Map<String, String> headers}) async {
+    // List<String> list = url.split("://");
+    // String type = list.first.toLowerCase();
+    // list = list.last.split("/");
+    // String domain = list.first;
+    // list.remove(domain);
+    // String path = list.join("/");
+    Uint8List? asd;
+
+    print('asd');
+
+    Image.network(url)
+    .image
+    .resolve( createLocalImageConfiguration(context) )
+    .addListener( ImageStreamListener((info, _) async => await info.image.toByteData().then((value) => asd = value?.buffer.asUint8List()) ) );
+
+    setFromBytes(
+      name  : url + Random().nextInt(10000).toString(),
+      bytes : asd
+    );
+
+    print(asd != null);
+
+    return asd != null;
+
+    // return await get(
+    //   type == 'https' ? Uri.https(domain, path) : Uri.http(domain, path),
+    //   headers: headers
+    // ).then((r) async {
+    //   if(r.statusCode == 200){
+    //     setFromBytes(
+    //       name  : url +  Random().nextInt(10000).toString(),
+    //       bytes : r.bodyBytes
+    //     );
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // });
+  }
+
+  setFromBytes({required final String name, required final Uint8List? bytes}){
+    try{
+      if(bytes != null){
+        _file = PlatformFile(
+          name  : name,
+          size  : bytes.length,
+          bytes : bytes,
+        );
+        _bytes    = bytes;
+        _error    = false;
+        _hasImage = false;
+        notifyListeners();
+      } else {
+        _reset(error: true);
+      }
+    } catch (e){
+      _reset(error: true);
+    }
   }
 
   /// Set the image file from http response and url
   Future<void> setFromResponse({required Response response, required String url}) async {
     try{
       kIsWeb
-      ? await setFile(response: response, key: _imageKey, headers: headers).then((r) {
+      ? await CustomFile().setFile(response: response, key: _imageKey, headers: headers).then((r) {
         _file     = r.platformFile;
         _bytes    = r.platformFile.bytes;
         _error    = r.error;
         _hasImage = !r.error;
         notifyListeners();
       })
-      : await setFile(response: response).then((r) {
+      : await CustomFile().setFile(response: response).then((r) {
         _file     = r.platformFile;
         _bytes    = r.platformFile.bytes;
         _error    = r.error;
@@ -109,7 +163,7 @@ class NImagePickerController with ChangeNotifier{
       });
     } catch (e){
       debugPrint('n_image_piker e1: $e');
-      _reset(true);
+      _reset(error: true);
       notifyListeners();
     }
   }
@@ -120,7 +174,7 @@ class NImagePickerController with ChangeNotifier{
       throw Exception('This dont work in web');
     } else {
       try{
-        await setFileFromPath(path).then((r) {
+        await CustomFile().setFileFromPath(path).then((r) {
           _file     = r.platformFile;
           _bytes    = _file?.bytes;
           _error    = r.error;
@@ -129,7 +183,7 @@ class NImagePickerController with ChangeNotifier{
         });
       } catch (e){
         debugPrint('n_image_piker e1: $e');
-        _reset(true);
+        _reset(error: true);
         notifyListeners();
       }
     }
@@ -164,7 +218,7 @@ class NImagePickerController with ChangeNotifier{
     withData          : true
   ).then((response) async {
     if (response == null) {
-      _reset(true);
+      _reset(error: true);
     } else {
       _file       = response.files.single;
       _bytes      = _file?.bytes;
@@ -175,8 +229,7 @@ class NImagePickerController with ChangeNotifier{
   });
 
   removeImage({required bool notify}) {
-    if(!kIsWeb) if(_fromLoading) if(_file != null) if(_file!.path != null) File(_file!.path!).delete();
-    _reset(false);
+    _reset(error: false);
     if(notify) notifyListeners();
   }
 
