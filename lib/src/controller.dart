@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +20,8 @@ class NImagePickerController with ChangeNotifier{
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST',
     'Access-Control-Allow-Headers': 'Origin, Content-Type',
+    "origin": "*",
+    "method": "GET",
   };
 
   /// Map for headers, this need a backend open port for your domain
@@ -82,45 +83,33 @@ class NImagePickerController with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool>setFromURL(BuildContext context, {required String url, required Map<String, String> headers}) async {
-    // List<String> list = url.split("://");
-    // String type = list.first.toLowerCase();
-    // list = list.last.split("/");
-    // String domain = list.first;
-    // list.remove(domain);
-    // String path = list.join("/");
-    Uint8List? asd;
+  Future<bool>setFromURL(BuildContext context, {required String url, required Map<String, String> headers}) async{
+    List<String> list = url.split("://");
+    String type = list.first.toLowerCase();
+    list = list.last.split("/");
+    String domain = list.first;
+    list.remove(domain);
+    String path = list.join("/");
 
-    print('asd');
-
-    Image.network(url)
-    .image
-    .resolve( createLocalImageConfiguration(context) )
-    .addListener( ImageStreamListener((info, _) async => await info.image.toByteData().then((value) => asd = value?.buffer.asUint8List()) ) );
-
-    setFromBytes(
-      name  : url + Random().nextInt(10000).toString(),
-      bytes : asd
-    );
-
-    print(asd != null);
-
-    return asd != null;
-
-    // return await get(
-    //   type == 'https' ? Uri.https(domain, path) : Uri.http(domain, path),
-    //   headers: headers
-    // ).then((r) async {
-    //   if(r.statusCode == 200){
-    //     setFromBytes(
-    //       name  : url +  Random().nextInt(10000).toString(),
-    //       bytes : r.bodyBytes
-    //     );
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // });
+    Request request = Request("GET",type == 'https' ? Uri.https(domain, path) : Uri.http(domain, path));
+    request.followRedirects = false;
+    return await request.send().then((value) async{
+      if(value.statusCode == 200){
+        try{
+          value.stream.toBytes().then((bytes)=> setFromBytes(
+            name  : url +  Random().nextInt(10000).toString(),
+            bytes : bytes
+          ));
+          return true;
+        } catch (e) {
+          _reset(error: true);
+          return false;
+        }
+      } else {
+        _reset(error: true);
+        return false;
+      }
+    });
   }
 
   setFromBytes({required final String name, required final Uint8List? bytes}){
@@ -139,6 +128,7 @@ class NImagePickerController with ChangeNotifier{
         _reset(error: true);
       }
     } catch (e){
+      print(e);
       _reset(error: true);
     }
   }

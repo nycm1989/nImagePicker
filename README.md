@@ -11,6 +11,9 @@
     <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/4.png" alt="" style="width:300px;">
 </p>
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/5.png" alt="" style="height:300px;">
+</p>
 
 
 ## With this widget, you can:
@@ -49,7 +52,7 @@ nImagePickerController.imageKey -> String
 
 /// return an async image for uploading using [imageKey] example:
 /// - await controller.multipartFile.then((image) => image)
-nImagePickerController.multipartFile -> MultipartFile
+await nImagePickerController.multipartFile -> Furute<MultipartFile>
 
 /// Map for headers, this need a backend open port for your domain
 nImagePickerController.headers -> Map<String, String>
@@ -62,6 +65,9 @@ nImagePickerController.setFromResponse(response: Response, url: String)
 
 /// This dont work in web!
 nImagePickerController.setFromPath(path: String)
+
+/// Get image from url, this works in all enviroment
+nImagePickerController.setFromURL(context, url: String, headers: Map<String, String>)
 
 /// Open the image dialog picker
 nImagePickerController.pickImage()
@@ -93,20 +99,23 @@ void dispose() {
 
 ```dart
 NImagePicker(
-    controller      : nImagePickerController,
-    onLoadingImage  : 'https://w.wallhaven.cc/full/jx/wallhaven-jxd1x5.jpg',
-    bankgroundColor : Colors.blueGrey.withOpacity(0.5),
-    height          : 250,
-    width           : 250,
-    readOnly        : false,
-    filterOpacity   : 0.2,
-    borderRadius    : BorderRadius.circular(50),
-    fit             : BoxFit.cover,
-    border          : Border.all(color: Colors.black, width: 4),
-    shadow          : const BoxShadow(color: Colors.black, blurRadius: 10, blurStyle: BlurStyle.outer),
-    margin          : const EdgeInsets.all(40),
-    viewerBlur      : true,
-    previewBlur     : true,
+    controller        : nImagePickerController,
+    // this is a protected server image, you must to provide a different header in web
+    onLoadingImage    : "https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg",
+    bankgroundColor   : Colors.blueGrey.withOpacity(0.5),
+    height            : 250,
+    width             : 250,
+    // readOnly          : true,
+    filterOpacity     : 0.2,
+    borderRadius      : BorderRadius.circular(50),
+    fit               : BoxFit.cover,
+    border            : Border.all(color: Colors.grey, width: 1),
+    shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
+    margin            : const EdgeInsets.all(40),
+    viewerBlur        : true,
+    viewerBlurSigma   : 10,
+    previewBlur       : true,
+    previewBlurSigma  : 1,
 ),
 
 ```

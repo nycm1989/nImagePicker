@@ -1,3 +1,8 @@
+## 1.2.0
+* update default widgets
+* new ios-web classes
+* setFromURL added
+
 ## 1.1.1
 * Now use all memory images, dont save any files
 

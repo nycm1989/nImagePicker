@@ -71,23 +71,23 @@ class _NImagePickerState extends State<NImagePicker> {
         streamController = StreamController<bool>();
         setState(()=> streamController?.add(true));
 
+        // Future.delayed(Duration(minutes: 30))
         await  widget.controller.setFromURL(
           context,
           url     : widget.onLoadingImage,
           headers : widget.controller.headers
         ).then((state) async {
-          if(state){
-            // widget.controller.setFromBytes(name: widget.onLoadingImage + Random().nextInt(10000).toString(), bytes: bytes);
-            // widget.controller.setFromResponse(response: r, url: widget.onLoadingImage);
-            widget.controller.fromLoading = true;
-            widget.controller.error       = false;
-          } else{
-            widget.controller.fromLoading = false;
-            widget.controller.error       = true;
-          }
           streamController?.close();
           streamController = null;
-          setState(()=> widget.controller.error = false);
+          setState((){
+            if(state){
+              widget.controller.fromLoading = true;
+              widget.controller.error       = false;
+            } else{
+              widget.controller.fromLoading = false;
+              widget.controller.error       = true;
+            }
+          });
         });
       } catch (e) {
         streamController?.close();
@@ -160,28 +160,10 @@ class _NImagePickerState extends State<NImagePicker> {
               onTap        : widget.readOnly ? null : ()=> widget.controller.removeImage(notify: true),
               borderRadius : widget.borderRadius,
               child        : widget.onErrorWidget??
-              const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding : EdgeInsets.only(bottom: 10),
-                    child   :
-                    Icon(
-                      Icons.error_outline,
-                      size    : 40,
-                      color   : Colors.white,
-                      shadows : [Shadow(color: Colors.black, blurRadius: 10)]
-                    ),
-                  ),
-                  Text(
-                    "SOMETHING GET WORNG",
-                    style:
-                    TextStyle(
-                      color   : Colors.white,
-                      shadows : [Shadow(color: Colors.black, blurRadius: 10)]
-                    )
-                  )
-                ],
+              Icon(
+                Icons.error_outline,
+                size    : 80,
+                color   : Colors.red,
               ),
             )
             : widget.controller.file == null
@@ -190,10 +172,10 @@ class _NImagePickerState extends State<NImagePicker> {
                 onTap        : widget.readOnly ? null : () => widget.controller.pickImage(),
                 child        : widget.emptyWidget ??
                   const Icon(
-                    Icons.image_outlined,
-                    size    : 40,
-                    color   : Colors.white,
-                    shadows : [Shadow(color: Colors.black, blurRadius: 10)]
+                    Icons.file_upload_outlined,
+                    size    : 80,
+                    color   : Colors.grey,
+                    // shadows : [Shadow(color: Colors.grey, blurRadius: 2)]
                   )
                 )
               : widget.filledWidget ?? Row(
@@ -248,7 +230,18 @@ class _NImagePickerState extends State<NImagePicker> {
                   )
                 ],
               )
-            : widget.onLoadingWidget ?? const Center( child: CircularProgressIndicator(strokeWidth: 2) ),
+            : widget.onLoadingWidget ?? const Center(
+              child:
+              SizedBox.square(
+                dimension : 60,
+                child     :
+                CircularProgressIndicator(
+                  strokeWidth : 2,
+                  color       : Colors.grey,
+                  strokeCap   : StrokeCap.round,
+                )
+              )
+            ),
         )
       )
     );
