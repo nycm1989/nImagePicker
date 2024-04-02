@@ -68,7 +68,7 @@ class NImagePickerController with ChangeNotifier{
   Uint8List?          get bytes       =>  _bytes;
   bool                get error       =>  _error;
   bool                get hasImage    =>  _hasImage;
-  bool                get hasnoImage  =>  !_hasImage;
+  bool                get hasNoImage  =>  !_hasImage;
   bool                get fromLoading =>  _fromLoading;
   // Image               get image       =>  _file == null
   // ? throw Exception()
@@ -83,7 +83,7 @@ class NImagePickerController with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool>setFromURL(BuildContext context, {required String url, required Map<String, String> headers}) async{
+  Future<bool>setFromURL(BuildContext context, {required String url, Map<String, String>? headers}) async {
     List<String> list = url.split("://");
     String type = list.first.toLowerCase();
     list = list.last.split("/");
@@ -91,15 +91,21 @@ class NImagePickerController with ChangeNotifier{
     list.remove(domain);
     String path = list.join("/");
 
-    Request request = Request("GET",type == 'https' ? Uri.https(domain, path) : Uri.http(domain, path));
+    Request request = Request(
+      "GET",
+      type.toLowerCase() == 'https'
+      ? Uri.https(domain, path, headers)
+      : Uri.http(domain, path, headers)
+    );
     request.followRedirects = false;
     return await request.send().then((value) async{
       if(value.statusCode == 200){
         try{
-          value.stream.toBytes().then((bytes)=> setFromBytes(
+          value.stream.toBytes().then((bytes) async => await setFromBytes(
             name  : url +  Random().nextInt(10000).toString(),
             bytes : bytes
           ));
+
           return true;
         } catch (e) {
           _reset(error: true);
@@ -112,7 +118,7 @@ class NImagePickerController with ChangeNotifier{
     });
   }
 
-  setFromBytes({required final String name, required final Uint8List? bytes}){
+  Future<void> setFromBytes({required final String name, required final Uint8List? bytes}) async {
     try{
       if(bytes != null){
         _file = PlatformFile(
@@ -122,7 +128,7 @@ class NImagePickerController with ChangeNotifier{
         );
         _bytes    = bytes;
         _error    = false;
-        _hasImage = false;
+        _hasImage = true;
         notifyListeners();
       } else {
         _reset(error: true);

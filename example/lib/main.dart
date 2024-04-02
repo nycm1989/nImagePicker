@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
             NImagePicker(
               controller        : nImagePickerController,
               // this is a protected server image, you must to provide a different header in web
-              onLoadingImage    : "https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg",
+              onLoadingImage    : "https://api.9780bitcoin.com/media/202403/images/company/PHOTO_93080414-8207-490c-ab40-1b4eac7a1076.png",
               bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
               height            : 250,
               width             : 250,
@@ -62,6 +62,20 @@ class _MyAppState extends State<MyApp> {
               previewBlur       : true,
               previewBlurSigma  : 1,
             ),
+            Container(
+              width   : 200,
+              height  : 30,
+              margin  : const EdgeInsets.all(20),
+              alignment: Alignment.center,
+              child   :
+              InkWell(
+                onTap: () async => await nImagePickerController.multipartFile.then((value) {
+                  debugPrint(value.length.toString());
+                  debugPrint(nImagePickerController.hasNoImage.toString());
+                }),
+                child: const Text("TEST", style: TextStyle(color: Colors.black)),
+              )
+            )
           ],
         ),
       ),

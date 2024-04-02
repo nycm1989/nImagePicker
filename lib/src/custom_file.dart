@@ -3,6 +3,7 @@ import './router_helper.dart' if (dart.library.html) './web_file.dart' if (dart.
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart';
 import 'package:n_image_picker/src/response_model.dart';
+import 'package:flutter/foundation.dart';
 
 
 abstract class CustomFile{
@@ -21,4 +22,6 @@ abstract class CustomFile{
   );
 
   rm(PlatformFile file) => null;
+
+  Future<PlatformFile> w(Uint8List? bytes) async => PlatformFile(name: '', size: 0);
 }

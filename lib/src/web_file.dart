@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart';
 import 'package:n_image_picker/src/custom_file.dart';
 import './response_model.dart';
+import 'package:flutter/foundation.dart';
 // import 'dart:js' as js;
 
 CustomFile getInstance() => WebFile();
@@ -15,7 +16,7 @@ class WebFile implements CustomFile{
     try{
       final String filename = key??'' + Random().nextInt(1000).toString()  + DateTime.now().millisecondsSinceEpoch.toString();
 
-      final dynamic i = html.File( response.bodyBytes, key??'', headers);
+      final html.File i = html.File( response.bodyBytes, key??'', headers);
 
       return ResponseModel(
         platformFile: PlatformFile(
@@ -43,4 +44,12 @@ class WebFile implements CustomFile{
 
   @override
   rm(PlatformFile file) => null;
+
+  @override
+  Future<PlatformFile> w(Uint8List? bytes) async =>
+  PlatformFile(
+    name  : DateTime.now().millisecondsSinceEpoch.toString(),
+    size  : bytes?.length??0,
+    bytes : bytes
+  );
 }

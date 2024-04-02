@@ -1,3 +1,6 @@
+## 1.2.1
+* verssion update
+
 ## 1.2.0
 * update default widgets
 * new ios-web classes
