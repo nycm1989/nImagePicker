@@ -1,3 +1,9 @@
+## 1.3.0
+* [CRITICAL] fix extension bug when load images
+* change .multipartFile to .image(key: 'key')
+* remove imageKey variable
+* path provider added
+
 ## 1.2.1
 * verssion update
 

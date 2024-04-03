@@ -3,14 +3,14 @@ import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart';
-import 'package:n_image_picker/src/custom_file.dart';
-import './response_model.dart';
 import 'package:flutter/foundation.dart';
+import 'package:n_image_picker/src/platform_tools.dart';
+import 'package:n_image_picker/src/response_model.dart';
 // import 'dart:js' as js;
 
-CustomFile getInstance() => WebFile();
+PlatformTools getInstance() => WebFile();
 
-class WebFile implements CustomFile{
+class WebFile implements PlatformTools{
   @override
   Future<ResponseModel> setFile({required final Response response, final String? key, final Map<String, dynamic>? headers}) async {
     try{
@@ -46,9 +46,13 @@ class WebFile implements CustomFile{
   rm(PlatformFile file) => null;
 
   @override
-  Future<PlatformFile> w(Uint8List? bytes) async =>
+  Future<PlatformFile> w({
+    required String     name,
+    required String     extension,
+    required Uint8List? bytes
+  }) async =>
   PlatformFile(
-    name  : DateTime.now().millisecondsSinceEpoch.toString(),
+    name  : DateTime.now().millisecondsSinceEpoch.toString() + name + "." + extension,
     size  : bytes?.length??0,
     bytes : bytes
   );

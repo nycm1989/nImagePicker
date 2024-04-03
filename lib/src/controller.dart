@@ -4,13 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:n_image_picker/src/custom_file.dart';
 import 'package:n_image_picker/src/image_viewer_dialog.dart';
+import 'package:n_image_picker/src/platform_tools.dart';
 
 class NImagePickerController with ChangeNotifier{
   PlatformFile ? _file;
   Uint8List    ? _bytes;
-  String         _imageKey      = "image";
   List<String>   _fileTypes     = const [ 'png', 'jpg', 'jpeg' ];
   String         _extension     = '';
   bool           _error         = false;
@@ -35,13 +34,6 @@ class NImagePickerController with ChangeNotifier{
     notifyListeners();
   }
 
-  /// json key for posting [MultipartFile] image, example:
-  /// - "key" : "server/path/image.png"
-  set imageKey(String name) {
-    _imageKey = name;
-    notifyListeners();
-  }
-
   /// List of supported formats
   set fileTypes(List<String> fl) {
     _fileTypes = fl;
@@ -55,10 +47,6 @@ class NImagePickerController with ChangeNotifier{
 
   /// Map for headers, this need a backend open port for your domain
   Map<String, String> get headers     =>  _headers;
-
-  /// json key for posting [MultipartFile] image, example:
-  /// - "key" : "server/path/image.png"
-  String              get imageKey    =>  _imageKey;
 
   /// List of supported formats
   List<String>        get fileTypes   =>  _fileTypes;
@@ -79,17 +67,24 @@ class NImagePickerController with ChangeNotifier{
     _bytes        = null;
     _error        = error;
     _hasImage     = false;
+    _extension    = '';
     _fromLoading  = false;
     notifyListeners();
   }
 
   Future<bool>setFromURL(BuildContext context, {required String url, Map<String, String>? headers}) async {
     List<String> list = url.split("://");
+    if (list.length <= 1) throw Exception("The URL is not valid");
+
     String type = list.first.toLowerCase();
     list = list.last.split("/");
     String domain = list.first;
     list.remove(domain);
     String path = list.join("/");
+
+    List<String> _n = list.last.split(".");
+    if (_n.length <= 1) throw Exception("URL dont have extension");
+    if (_n.length != 2) throw Exception("URL dont have a valid image");
 
     Request request = Request(
       "GET",
@@ -97,13 +92,15 @@ class NImagePickerController with ChangeNotifier{
       ? Uri.https(domain, path, headers)
       : Uri.http(domain, path, headers)
     );
+
     request.followRedirects = false;
     return await request.send().then((value) async{
       if(value.statusCode == 200){
         try{
-          value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name  : url +  Random().nextInt(10000).toString(),
-            bytes : bytes
+          await value.stream.toBytes().then((bytes) async => await setFromBytes(
+            name      : DateTime.now().millisecondsSinceEpoch.toString() + Random().nextInt(10000).toString() + '-' + _n.first,
+            bytes     : bytes,
+            extension : _n.last
           ));
 
           return true;
@@ -118,43 +115,41 @@ class NImagePickerController with ChangeNotifier{
     });
   }
 
-  Future<void> setFromBytes({required final String name, required final Uint8List? bytes}) async {
-    try{
-      if(bytes != null){
-        _file = PlatformFile(
-          name  : name,
-          size  : bytes.length,
-          bytes : bytes,
-        );
-        _bytes    = bytes;
-        _error    = false;
-        _hasImage = true;
-        notifyListeners();
-      } else {
-        _reset(error: true);
-      }
-    } catch (e){
-      print(e);
-      _reset(error: true);
-    }
+
+  Future<void> setFromBytes({required final String name, required final String extension, required final Uint8List? bytes}) async {
+    if(bytes == null) throw Exception("bytes cant be null");
+    await PlatformTools().w(name: name, extension: extension, bytes: bytes).then((_f) {
+      _file      = _f;
+      _bytes     = bytes;
+      _error     = false;
+      _hasImage  = true;
+      _extension = extension;
+      notifyListeners();
+    }).onError((error, stackTrace) => _reset(error: true));
   }
+
 
   /// Set the image file from http response and url
   Future<void> setFromResponse({required Response response, required String url}) async {
+    List<String> _e = url.split(".");
+    if (_e.length <= 1) throw Exception("url dont have extension");
+
     try{
       kIsWeb
-      ? await CustomFile().setFile(response: response, key: _imageKey, headers: headers).then((r) {
-        _file     = r.platformFile;
-        _bytes    = r.platformFile.bytes;
-        _error    = r.error;
-        _hasImage = !r.error;
+      ? await PlatformTools().setFile(response: response, headers: headers).then((r) {
+        _file       = r.platformFile;
+        _bytes      = r.platformFile.bytes;
+        _error      = r.error;
+        _hasImage   = !r.error;
+        _extension  = _e.last;
         notifyListeners();
       })
-      : await CustomFile().setFile(response: response).then((r) {
+      : await PlatformTools().setFile(response: response).then((r) {
         _file     = r.platformFile;
         _bytes    = r.platformFile.bytes;
         _error    = r.error;
         _hasImage = !r.error;
+        _extension  = _e.last;
         notifyListeners();
       });
     } catch (e){
@@ -164,13 +159,17 @@ class NImagePickerController with ChangeNotifier{
     }
   }
 
+
   /// This dont work in web!
   Future<void> setFromPath({required String path}) async {
+    List<String> _e = path.split(".");
+    if (_e.length <= 1) throw Exception("path dont have extension");
+
     if(kIsWeb){
       throw Exception('This dont work in web');
     } else {
       try{
-        await CustomFile().setFileFromPath(path).then((r) {
+        await PlatformTools().setFileFromPath(path).then((r) {
           _file     = r.platformFile;
           _bytes    = _file?.bytes;
           _error    = r.error;
@@ -185,25 +184,24 @@ class NImagePickerController with ChangeNotifier{
     }
   }
 
-  /// return an async image for uploading using [imageKey] example:
-  /// - await controller.multipartFile.then((image) => image)
-  /// it works in web and platforms
-  Future<MultipartFile> get multipartFile async {
-    return _file == null
-    ? throw Exception('There is no any image loaded')
-    : kIsWeb
-      ? MultipartFile.fromBytes(
-        _imageKey,
-        _file!.bytes!,
-        filename    : '$_imageKey.$_extension',
-        contentType : MediaType(_imageKey, _extension)
-      )
-      : await MultipartFile.fromPath(
-        _imageKey,
-        _file!.path!,
-        contentType: MediaType(_imageKey, _extension)
-      );
-  }
+  /// return an async [MultipartFile] for uploading using [key], example:
+  /// - {"key" : "image_path.png"}
+  Future<MultipartFile> image({String key = "image"}) async =>
+  _file == null
+  ? throw Exception('No image loaded')
+  : kIsWeb
+    ? MultipartFile.fromBytes(
+      key,
+      _file!.bytes!,
+      filename    : '$key.$_extension',
+      contentType : MediaType("image", _extension)
+    )
+    : await MultipartFile.fromPath(
+      key,
+      _file!.path!,
+      filename    : '$key.$_extension',
+      contentType : MediaType("image", _extension)
+    );
 
   /// Open the image dialog picker
   Future<void> pickImage() async => await FilePicker.platform.pickFiles(

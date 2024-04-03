@@ -45,14 +45,9 @@ nImagePickerController.image -> Image
 nImagePickerController.file -> File
 nImagePickerController.path -> Path
 
-/// Json key for posting [MultipartFile] image, example:
-/// - "key" : "server/path/image.png"
-/// it works in web and platforms
-nImagePickerController.imageKey -> String
-
-/// return an async image for uploading using [imageKey] example:
-/// - await controller.multipartFile.then((image) => image)
-await nImagePickerController.multipartFile -> Furute<MultipartFile>
+/// return an async [MultipartFile] for uploading using [key], example:
+/// - {"key" : "image_path.png"}
+await nImagePickerController.image(key: "key") -> Furute<MultipartFile>
 
 /// Map for headers, this need a backend open port for your domain
 nImagePickerController.headers -> Map<String, String>
@@ -118,12 +113,4 @@ NImagePicker(
     previewBlurSigma  : 1,
 ),
 
-```
-
-3. If you want to post the image
-```dart
-MultipartFile? multipartFile;
-nImagePickerController.imageKey = "json_image_key",
-
-await nImagePickerController multipartFile.then((file) async => multipartFile = file);
 ```
