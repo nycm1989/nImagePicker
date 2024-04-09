@@ -1,3 +1,7 @@
+## 1.4.0
+* controller is nulleable only needs onloading image and error widget now
+* if controller is null all controller metodhs dont works
+
 ## 1.3.0
 * [CRITICAL] fix extension bug when load images
 * change .multipartFile to .image(key: 'key')

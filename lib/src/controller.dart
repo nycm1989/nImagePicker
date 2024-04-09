@@ -74,7 +74,11 @@ class NImagePickerController with ChangeNotifier{
 
   Future<bool>setFromURL(BuildContext context, {required String url, Map<String, String>? headers}) async {
     List<String> list = url.split("://");
-    if (list.length <= 1) throw Exception("The URL is not valid");
+    if (list.length <= 1) {
+      error = true;
+      fromLoading = false;
+      throw Exception("The URL is not valid");
+    }
 
     String type = list.first.toLowerCase();
     list = list.last.split("/");

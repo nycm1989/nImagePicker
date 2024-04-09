@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         Column(
           children: [
             NImagePicker(
-              controller        : nImagePickerController,
+              // controller        : nImagePickerController,
               // this is a protected server image, you must to provide a different header in web
               onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
               bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),

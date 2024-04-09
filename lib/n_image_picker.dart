@@ -3,15 +3,16 @@ library n_image_picker_view;
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:n_image_picker/n_image_picker.dart';
 
 export '/src/controller.dart';
 
 class NImagePicker extends StatefulWidget {
-  final NImagePickerController    controller;
+  final NImagePickerController?   controller;
   final Future<void> Function()?  onTap;
-  final String                    onLoadingImage;
+  final String?                   onLoadingImage;
   final BoxFit                    imageFit;
   final double                    width, height;
   final double                    filterOpacity;
@@ -29,9 +30,9 @@ class NImagePicker extends StatefulWidget {
   final double                    previewBlurSigma;
 
   const NImagePicker({
-    required this.controller,
+    this.controller,
     ///Only load image from https or http
-    this.onLoadingImage = '',
+    this.onLoadingImage,
     this.imageFit       = BoxFit.cover,
     this.margin         = EdgeInsets.zero,
     this.readOnly       = false,
@@ -61,43 +62,61 @@ class NImagePicker extends StatefulWidget {
 
 class _NImagePickerState extends State<NImagePicker> {
   StreamController<bool>? streamController;
+  Uint8List? image;
+  bool error = false;
 
   startLoading() async {
-    if(widget.onLoadingImage != ''){
+    if(widget.onLoadingImage != null){
       try {
-        List<String> list = widget.onLoadingImage.split("://");
-
-        if (list.length <= 0) {
-          FormatException("there is not a valid URL");
-          widget.controller.error       = false;
-          widget.controller.fromLoading = false;
-        }
-
         streamController = StreamController<bool>();
         setState(()=> streamController?.add(true));
-
-        // Future.delayed(Duration(minutes: 30))
-        await  widget.controller.setFromURL(
-          context,
-          url     : widget.onLoadingImage,
-          headers : widget.controller.headers
-        ).then((state) async {
-          streamController?.close();
-          streamController = null;
-          setState((){
-            if(state){
-              widget.controller.fromLoading = true;
-              widget.controller.error       = false;
-            } else{
-              widget.controller.fromLoading = false;
-              widget.controller.error       = true;
-            }
+        if(widget.controller != null){
+          await  widget.controller!.setFromURL(
+            context,
+            url     : widget.onLoadingImage!,
+            headers : widget.controller!.headers
+          ).then((state) async {
+            streamController?.close();
+            streamController = null;
+            setState((){
+              if(state){
+                widget.controller!.fromLoading = true;
+                widget.controller!.error       = false;
+              } else{
+                widget.controller!.fromLoading = false;
+                widget.controller!.error       = true;
+              }
+            });
           });
-        });
+        } else {
+          NImagePickerController memoryController = NImagePickerController();
+          await memoryController.setFromURL(
+            context,
+            url     : widget.onLoadingImage!,
+            headers : memoryController.headers
+          ).then((state) async {
+            streamController?.close();
+            streamController = null;
+            setState((){
+              if(state){
+                try{
+                  image = memoryController.file!.bytes!;
+                  error = false;
+                } catch (e) {
+                  image = null;
+                  error = true;
+                }
+              } else{
+                image = null;
+                error = true;
+              }
+            });
+          });
+        }
       } catch (e) {
         streamController?.close();
         streamController = null;
-        setState(()=> widget.controller.error = true);
+        setState(()=> widget.controller?.error = true);
       }
     } else {
       streamController = null;
@@ -130,22 +149,36 @@ class _NImagePickerState extends State<NImagePicker> {
       stream  : streamController?.stream,
       builder : (context, snapshot) =>
       Container(
-        decoration    : BoxDecoration(
-          color: widget.bankgroundColor,
-          borderRadius: widget.borderRadius,
-          border      : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
-          boxShadow   : widget.shadow == null ? null : [widget.shadow!],
-          image       : widget.controller.file == null
-          ? null
-          : DecorationImage(
-            image       : Image.memory(widget.controller.file!.bytes!).image,
-            fit         : widget.fit,
-            colorFilter :
-            ColorFilter.mode(
-              Colors.black.withOpacity(widget.filterOpacity),
-              BlendMode.darken
+        decoration    :
+        BoxDecoration(
+          color        : widget.bankgroundColor??Colors.transparent,
+          borderRadius : widget.borderRadius,
+          border       : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
+          boxShadow    : widget.shadow == null ? null : [widget.shadow!],
+          image        : widget.controller == null
+          ? image == null
+            ? null
+            : DecorationImage(
+              image       : Image.memory(image!).image,
+              fit         : widget.fit,
+              colorFilter : widget.controller == null
+              ? null
+              : ColorFilter.mode(
+                Colors.black.withOpacity(widget.filterOpacity),
+                BlendMode.darken
+              ),
+            )
+          : widget.controller!.file == null
+            ? null
+            : DecorationImage(
+              image       : Image.memory(widget.controller!.file!.bytes!).image,
+              fit         : widget.fit,
+              colorFilter :
+              ColorFilter.mode(
+                Colors.black.withOpacity(widget.filterOpacity),
+                BlendMode.darken
+              ),
             ),
-          ),
         ),
         margin        : widget.margin,
         width         : widget.width,
@@ -160,9 +193,21 @@ class _NImagePickerState extends State<NImagePicker> {
           ),
           child   :
           snapshot.connectionState == ConnectionState.none
-          ? widget.controller.error
+          ? widget.controller == null
+            ? error
+              ? Container(
+                  decoration: BoxDecoration(borderRadius : widget.borderRadius),
+                  child        : widget.onErrorWidget??
+                  Icon(
+                    Icons.error_outline,
+                    size    : 80,
+                    color   : Colors.red,
+                  ),
+              )
+            : SizedBox.shrink()
+          : widget.controller!.error
             ? InkWell(
-              onTap        : widget.readOnly ? null : ()=> widget.controller.removeImage(notify: true),
+              onTap        : widget.readOnly ? null : ()=> widget.controller!.removeImage(notify: true),
               borderRadius : widget.borderRadius,
               child        : widget.onErrorWidget??
               Icon(
@@ -171,10 +216,10 @@ class _NImagePickerState extends State<NImagePicker> {
                 color   : Colors.red,
               ),
             )
-            : widget.controller.file == null
+            : widget.controller!.file == null
               ? InkWell(
                 borderRadius : widget.borderRadius,
-                onTap        : widget.readOnly ? null : () => widget.controller.pickImage(),
+                onTap        : widget.readOnly ? null : () => widget.controller!.pickImage(),
                 child        : widget.emptyWidget ??
                   const Icon(
                     Icons.file_upload_outlined,
@@ -190,7 +235,7 @@ class _NImagePickerState extends State<NImagePicker> {
                 children: [
                   if(!widget.readOnly)
                   InkWell(
-                    onTap: ()=> widget.controller.removeImage(notify: true),
+                    onTap: ()=> widget.controller!.removeImage(notify: true),
                     child:
                     Container(
                       width   : 40,
@@ -211,7 +256,7 @@ class _NImagePickerState extends State<NImagePicker> {
                   ),
                   InkWell(
                     onTap: () =>
-                    widget.controller.showImageViewer(
+                    widget.controller!.showImageViewer(
                       context,
                       blur  : widget.viewerBlur,
                       sigma : widget.previewBlurSigma
@@ -224,7 +269,7 @@ class _NImagePickerState extends State<NImagePicker> {
                       Icon(
                         Icons.zoom_out_map_rounded,
                         size    : 40,
-                        color   : widget.controller.file == null ? Colors.grey : Colors.white,
+                        color   : widget.controller!.file == null ? Colors.grey : Colors.white,
                         shadows : [
                           Shadow(color: Colors.black, blurRadius: 10),
                           Shadow(color: Colors.black, blurRadius: 5 ),
@@ -235,18 +280,18 @@ class _NImagePickerState extends State<NImagePicker> {
                   )
                 ],
               )
-            : widget.onLoadingWidget ?? const Center(
-              child:
-              SizedBox.square(
-                dimension : 60,
-                child     :
-                CircularProgressIndicator(
-                  strokeWidth : 2,
-                  color       : Colors.grey,
-                  strokeCap   : StrokeCap.round,
-                )
+          : widget.onLoadingWidget ?? const Center(
+            child:
+            SizedBox.square(
+              dimension : 60,
+              child     :
+              CircularProgressIndicator(
+                strokeWidth : 2,
+                color       : Colors.grey,
+                strokeCap   : StrokeCap.round,
               )
-            ),
+            )
+          ),
         )
       )
     );
