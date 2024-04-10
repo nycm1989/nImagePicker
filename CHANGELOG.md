@@ -1,3 +1,6 @@
+## 1.4.1
+* reload widget on didupdate
+
 ## 1.4.0
 * controller is nulleable only needs onloading image and error widget now
 * if controller is null all controller metodhs dont works

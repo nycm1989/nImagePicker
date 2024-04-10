@@ -142,6 +142,11 @@ class _NImagePickerState extends State<NImagePicker> {
     streamController?.close();
   }
 
+  @override
+  void didUpdateWidget(covariant NImagePicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    startLoading();
+  }
 
   @override
   Widget build(BuildContext context) {
