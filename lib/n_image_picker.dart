@@ -145,7 +145,11 @@ class _NImagePickerState extends State<NImagePicker> {
   @override
   void didUpdateWidget(covariant NImagePicker oldWidget) {
     super.didUpdateWidget(oldWidget);
-    startLoading();
+    if (widget.controller == null) {
+      if(widget.onLoadingImage != oldWidget.onLoadingImage) startLoading();
+    } else {
+      if(widget.controller != oldWidget.controller) startLoading();
+    }
   }
 
   @override

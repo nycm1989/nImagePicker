@@ -1,3 +1,6 @@
+## 1.4.2
+* reload widget on didupdate - logic updated
+
 ## 1.4.1
 * reload widget on didupdate
 
