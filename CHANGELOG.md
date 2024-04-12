@@ -1,3 +1,6 @@
+## 2.1.1
+* change onLoadingImage for image in ImageViewer
+
 ## 2.1.0
 * New expanded constructor
 * Suport for hero animations

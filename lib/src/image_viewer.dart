@@ -7,7 +7,7 @@ import 'image_body.dart';
 class ImageViewer extends ImageBody{
   ImageViewer({
     super.onTap,
-    super.onLoadingImage,
+    required String image,
     super.width,
     super.height,
     super.onErrorWidget,
@@ -24,14 +24,15 @@ class ImageViewer extends ImageBody{
     super.tag,
     super.duration,
   }) : super (
-    readOnly      : true,
-    filterOpacity : 0,
-    viewerBlur    : false
+    onLoadingImage : image,
+    readOnly       : true,
+    filterOpacity  : 0,
+    viewerBlur     : false
   );
 
   factory ImageViewer.square({
     Future<void> Function() ? onTap,
-    String                  ? onLoadingImage,
+    required String           image,
     double                  ? dimension,
     Widget                  ? emptyWidget,
     Widget                  ? filledWidget,
@@ -48,7 +49,7 @@ class ImageViewer extends ImageBody{
     Duration                ? duration,
   }) => ImageViewer(
     onTap             : onTap,
-    onLoadingImage    : onLoadingImage,
+    image             : image,
     width             : dimension,
     height            : dimension,
     onErrorWidget     : onErrorWidget,
@@ -67,7 +68,7 @@ class ImageViewer extends ImageBody{
 
   factory ImageViewer.circle({
     Future<void> Function() ? onTap,
-    String                  ? onLoadingImage,
+    required String           image,
     double                  ? dimension,
     Widget                  ? emptyWidget,
     Widget                  ? filledWidget,
@@ -83,7 +84,7 @@ class ImageViewer extends ImageBody{
     Duration                ? duration,
   }) => ImageViewer(
     onTap             : onTap,
-    onLoadingImage    : onLoadingImage,
+    image             : image,
     width             : dimension,
     height            : dimension,
     onErrorWidget     : onErrorWidget,
@@ -101,7 +102,7 @@ class ImageViewer extends ImageBody{
 
   factory ImageViewer.expand({
     Future<void> Function() ? onTap,
-    String                  ? onLoadingImage,
+    required String           image,
     Widget                  ? emptyWidget,
     Widget                  ? filledWidget,
     Widget                  ? onErrorWidget,
@@ -117,7 +118,7 @@ class ImageViewer extends ImageBody{
     Duration                ? duration,
   }) => ImageViewer(
     onTap             : onTap,
-    onLoadingImage    : onLoadingImage,
+    image             : image,
     width             : double.infinity,
     height            : double.infinity,
     onErrorWidget     : onErrorWidget,

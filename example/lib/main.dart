@@ -123,24 +123,24 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ImageViewer(
-                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
-                  width             : 200,
-                  height            : 100,
+                  image   : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
+                  width   : 200,
+                  height  : 100,
                 ),
                 ImageViewer.square(
-                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
-                  dimension         : 200,
+                  image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  dimension : 200,
                 ),
                 ImageViewer.circle(
-                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
-                  dimension         : 200,
+                  image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  dimension : 200,
                 ),
                 SizedBox(
                   width  : 100,
                   height : 200,
                   child  :
                   ImageViewer.expand(
-                    onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                    image: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
                   ),
                 )
               ],
