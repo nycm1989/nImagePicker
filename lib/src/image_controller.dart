@@ -7,7 +7,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:n_image_picker/src/image_viewer_dialog.dart';
 import 'package:n_image_picker/src/platform_tools.dart';
 
-class NImagePickerController with ChangeNotifier{
+class ImageController with ChangeNotifier{
   PlatformFile ? _file;
   Uint8List    ? _bytes;
   List<String>   _fileTypes     = const [ 'png', 'jpg', 'jpeg' ];
@@ -216,7 +216,7 @@ class NImagePickerController with ChangeNotifier{
     withData          : true
   ).then((response) async {
     if (response == null) {
-      _reset(error: true);
+      _reset(error: false);
     } else {
       _file       = response.files.single;
       _bytes      = _file?.bytes;

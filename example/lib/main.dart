@@ -13,13 +13,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  NImagePickerController nImagePickerController = NImagePickerController();
+  ImageController imageController = ImageController();
 
   @override
   void initState() {
     super.initState();
 
-    nImagePickerController
+    imageController
     ..fileTypes = const [ 'png', 'jpg', 'jpeg' ]
     ..addListener(() => setState(() {}));
   }
@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     super.dispose();
-    nImagePickerController
+    imageController
     ..removeListener((){})
     ..dispose();
   }
@@ -41,39 +41,76 @@ class _MyAppState extends State<MyApp> {
       home  : Scaffold(
         body:
         Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            NImagePicker(
-              // controller        : nImagePickerController,
-              // this is a protected server image, you must to provide a different header in web
-              onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
-              bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
-              height            : 250,
-              width             : 250,
-              // readOnly          : true,
-              filterOpacity     : 0.2,
-              borderRadius      : BorderRadius.circular(50),
-              fit               : BoxFit.cover,
-              border            : Border.all(color: Colors.grey, width: 1),
-              shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-              margin            : const EdgeInsets.all(40),
-              viewerBlur        : true,
-              viewerBlurSigma   : 10,
-              previewBlur       : true,
-              previewBlurSigma  : 1,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ImagePicker(
+                  controller        : imageController,
+                  bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                  height            : 250,
+                  width             : 250,
+                  filterOpacity     : 0.2,
+                  borderRadius      : BorderRadius.circular(50),
+                  fit               : BoxFit.cover,
+                  border            : Border.all(color: Colors.grey, width: 1),
+                  shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
+                  margin            : const EdgeInsets.all(40),
+                  viewerBlur        : true,
+                  viewerBlurSigma   : 10,
+                  previewBlur       : true,
+                  previewBlurSigma  : 1,
+                ),
+                ImagePicker.circle(
+                  controller        : imageController,
+                  bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                  dimension         : 250,
+                  filterOpacity     : 0.2,
+                  fit               : BoxFit.cover,
+                  border            : Border.all(color: Colors.grey, width: 1),
+                  shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
+                  margin            : const EdgeInsets.all(40),
+                  viewerBlur        : true,
+                  viewerBlurSigma   : 10,
+                  previewBlur       : true,
+                  previewBlurSigma  : 1,
+                ),
+                ImagePicker.square(
+                  controller        : imageController,
+                  bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                  dimension         : 250,
+                  filterOpacity     : 0.2,
+                  borderRadius      : BorderRadius.circular(50),
+                  fit               : BoxFit.cover,
+                  border            : Border.all(color: Colors.grey, width: 1),
+                  shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
+                  margin            : const EdgeInsets.all(40),
+                  viewerBlur        : true,
+                  viewerBlurSigma   : 10,
+                  previewBlur       : true,
+                  previewBlurSigma  : 1,
+                ),
+              ],
             ),
-            Container(
-              width   : 200,
-              height  : 30,
-              margin  : const EdgeInsets.all(20),
-              alignment: Alignment.center,
-              child   :
-              InkWell(
-                onTap: () async => await nImagePickerController.image(key: "json_image_key_name").then((value) {
-                  debugPrint(value.filename);
-                }),
-                child: const Text("TEST", style: TextStyle(color: Colors.black)),
-              )
-            )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ImageViewer(
+                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  width             : 250,
+                  height            : 100,
+                ),
+                ImageViewer.square(
+                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  dimension         : 250,
+                ),
+                ImageViewer.circle(
+                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  dimension         : 250,
+                ),
+              ],
+            ),
           ],
         ),
       ),

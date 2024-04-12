@@ -1,3 +1,10 @@
+## 2.0.0
+* NImagePickerController renamed to ImageController
+* NImagePicker renamed to ImagePicker
+* New ImageViewer class for non controller management
+* New custom sontructors .squeare and .circle for ImagePicker and ImageViewer
+* Fix error when filepicker has cancelled
+
 ## 1.4.2
 * reload widget on didupdate - logic updated
 
