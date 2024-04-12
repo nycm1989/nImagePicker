@@ -1,3 +1,8 @@
+## 2.1.0
+* New expanded constructor
+* Suport for hero animations
+* Change main Container for Animated Container
+
 ## 2.0.2
 * Handle error on loading image
 

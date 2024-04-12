@@ -136,6 +136,10 @@ ImagePicker.square(
     controller: imageController
 )
 
+ImagePicker.expand(
+    controller: imageController
+)
+
 ImageViewer(
     onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
 )
@@ -145,6 +149,9 @@ ImageViewer.square(
 )
 
 ImageViewer.circle(
+    onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+)
+ImageViewer.expand(
     onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
 )
 ```

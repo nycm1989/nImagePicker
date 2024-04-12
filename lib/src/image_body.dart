@@ -1,6 +1,7 @@
 library n_image_picker_view;
 
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -30,6 +31,8 @@ class ImageBody extends StatefulWidget {
   final bool                    ? previewBlur;
   final double                  ? previewBlurSigma;
   final BoxShape                ? shape;
+  final Object                  ? tag;
+  final Duration                ? duration;
 
   //only for viewer
   final Map<String, String>     ? headers;
@@ -59,6 +62,8 @@ class ImageBody extends StatefulWidget {
     this.previewBlurSigma   = 5.0,
     this.shape              = BoxShape.rectangle,
     this.headers,
+    this.tag,
+    this.duration,
     super.key
   });
 
@@ -169,10 +174,11 @@ class __ImageState extends State<ImageBody> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-      stream  : streamController?.stream,
-      builder : (context, snapshot) =>
-      Container(
+    return Hero(
+      tag   : widget.tag??Random().nextInt(100000),
+      child :
+      AnimatedContainer(
+        duration      : widget.duration??Duration(milliseconds: 250),
         margin        : widget.margin,
         width         : widget.width,
         height        : widget.height,
@@ -210,130 +216,135 @@ class __ImageState extends State<ImageBody> {
             ),
         ),
         child         :
-        BackdropFilter(
-          filter  :
-          ImageFilter.blur(
-            sigmaX: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0,
-            sigmaY: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0
-          ),
-          child   :
-          snapshot.connectionState == ConnectionState.none
-          ? widget.controller == null
-            ? error
-              ? Container(
-                  decoration: BoxDecoration(borderRadius : widget.borderRadius),
+        StreamBuilder<bool>(
+          stream  : streamController?.stream,
+          builder : (context, snapshot) =>
+          BackdropFilter(
+            filter  :
+            ImageFilter.blur(
+              sigmaX: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0,
+              sigmaY: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0
+            ),
+            child   :
+            snapshot.connectionState == ConnectionState.none
+            ? widget.controller == null
+              ? error
+                ? Container(
+                    decoration: BoxDecoration(borderRadius : widget.borderRadius),
+                    child        : widget.onErrorWidget??
+                    Icon(
+                      Icons.error_outline,
+                      size    : 80,
+                      color   : Colors.red,
+                    ),
+                )
+              : SizedBox.shrink()
+            : widget.controller!.error
+              ? GestureDetector(
+                onTap        : (widget.readOnly??false) ? null : ()=> widget.controller!.removeImage(notify: true),
+                child:
+                MouseRegion(
+                  cursor  : SystemMouseCursors.click,
                   child        : widget.onErrorWidget??
                   Icon(
                     Icons.error_outline,
                     size    : 80,
                     color   : Colors.red,
                   ),
-              )
-            : SizedBox.shrink()
-          : widget.controller!.error
-            ? GestureDetector(
-              onTap        : (widget.readOnly??false) ? null : ()=> widget.controller!.removeImage(notify: true),
-              child:
-              MouseRegion(
-                cursor  : SystemMouseCursors.click,
-                child        : widget.onErrorWidget??
-                Icon(
-                  Icons.error_outline,
-                  size    : 80,
-                  color   : Colors.red,
                 ),
-              ),
-            )
-            : widget.controller!.file == null
-              ? GestureDetector(
-                onTap : (widget.readOnly??false) ? null : () => widget.controller!.pickImage(),
-                child :
-                MouseRegion(
-                  cursor  : SystemMouseCursors.click,
-                  child        : widget.emptyWidget ??
-                    const Icon(
-                      Icons.file_upload_outlined,
-                      size    : 80,
-                      color   : Colors.grey,
-                      // shadows : [Shadow(color: Colors.grey, blurRadius: 2)]
-                    )
-                  ),
               )
-              : widget.filledWidget ?? Row(
-                mainAxisAlignment: (widget.readOnly??false)
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.spaceEvenly,
-                children: [
-                  if(!(widget.readOnly??false))
-                  GestureDetector(
-                    onTap: ()=> widget.controller!.removeImage(notify: true),
-                    child:
-                    MouseRegion(
-                      cursor  : SystemMouseCursors.click,
+              : widget.controller!.file == null
+                ? GestureDetector(
+                  onTap : (widget.readOnly??false) ? null : () => widget.controller!.pickImage(),
+                  child :
+                  MouseRegion(
+                    cursor  : SystemMouseCursors.click,
+                    child        : widget.emptyWidget ??
+                      const Icon(
+                        Icons.file_upload_outlined,
+                        size    : 80,
+                        color   : Colors.grey,
+                        // shadows : [Shadow(color: Colors.grey, blurRadius: 2)]
+                      )
+                    ),
+                )
+                : widget.filledWidget ?? Row(
+                  mainAxisAlignment: (widget.readOnly??false)
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if(!(widget.readOnly??false))
+                    GestureDetector(
+                      onTap: ()=> widget.controller!.removeImage(notify: true),
                       child:
-                      Container(
-                        width   : 40,
-                        height  : 40,
-                        color   : Colors.transparent,
-                        child   :
-                        const Icon(
-                          Icons.delete_outline,
-                          size    : 40,
-                          color   : Colors.white,
-                          shadows : [
-                            Shadow(color: Colors.black, blurRadius: 10),
-                            Shadow(color: Colors.black, blurRadius: 5 ),
-                            Shadow(color: Colors.grey,  blurRadius: 2 ),
-                          ]
+                      MouseRegion(
+                        cursor  : SystemMouseCursors.click,
+                        child:
+                        Container(
+                          width   : 40,
+                          height  : 40,
+                          color   : Colors.transparent,
+                          child   :
+                          const Icon(
+                            Icons.delete_outline,
+                            size    : 40,
+                            color   : Colors.white,
+                            shadows : [
+                              Shadow(color: Colors.black, blurRadius: 10),
+                              Shadow(color: Colors.black, blurRadius: 5 ),
+                              Shadow(color: Colors.grey,  blurRadius: 2 ),
+                            ]
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                    widget.controller!.showImageViewer(
-                      context,
-                      blur  : widget.viewerBlur??false,
-                      sigma : widget.previewBlurSigma??0
-                    ),
-                    child:
-                    MouseRegion(
-                      cursor  : SystemMouseCursors.click,
-                      child   :
-                      Container(
-                        width   : 40,
-                        height  : 40,
-                        color   : Colors.transparent,
+                    GestureDetector(
+                      onTap: () =>
+                      widget.controller!.showImageViewer(
+                        context,
+                        tag   : widget.tag,
+                        blur  : widget.viewerBlur??false,
+                        sigma : widget.previewBlurSigma??0
+                      ),
+                      child:
+                      MouseRegion(
+                        cursor  : SystemMouseCursors.click,
                         child   :
-                        Icon(
-                          Icons.zoom_out_map_rounded,
-                          size    : 40,
-                          color   : widget.controller!.file == null ? Colors.grey : Colors.white,
-                          shadows : [
-                            Shadow(color: Colors.black, blurRadius: 10),
-                            Shadow(color: Colors.black, blurRadius: 5 ),
-                            Shadow(color: Colors.grey,  blurRadius: 2 ),
-                          ]
+                        Container(
+                          width   : 40,
+                          height  : 40,
+                          color   : Colors.transparent,
+                          child   :
+                          Icon(
+                            Icons.zoom_out_map_rounded,
+                            size    : 40,
+                            color   : widget.controller!.file == null ? Colors.grey : Colors.white,
+                            shadows : [
+                              Shadow(color: Colors.black, blurRadius: 10),
+                              Shadow(color: Colors.black, blurRadius: 5 ),
+                              Shadow(color: Colors.grey,  blurRadius: 2 ),
+                            ]
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                )
+            : widget.onLoadingWidget ?? const Center(
+              child:
+              SizedBox.square(
+                dimension : 60,
+                child     :
+                CircularProgressIndicator(
+                  strokeWidth : 2,
+                  color       : Colors.grey,
+                  strokeCap   : StrokeCap.round,
+                )
               )
-          : widget.onLoadingWidget ?? const Center(
-            child:
-            SizedBox.square(
-              dimension : 60,
-              child     :
-              CircularProgressIndicator(
-                strokeWidth : 2,
-                color       : Colors.grey,
-                strokeCap   : StrokeCap.round,
-              )
-            )
-          ),
+            ),
+          )
         )
-      )
+      ),
     );
   }
 }

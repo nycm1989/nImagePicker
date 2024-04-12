@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-
 Future<void> imageViewerDialog( BuildContext context, {
   required bool      blur,
   required Uint8List bytes,
-  required double    sigma
+  required double    sigma,
+  required Object?   tag
 }) async =>
 Navigator.of(context).push(
   PageRouteBuilder(
@@ -17,20 +17,22 @@ Navigator.of(context).push(
     _BodyimageWebViewerDialog(
       bytes : bytes,
       blur  : blur,
-      sigma : sigma
+      sigma : sigma,
+      tag   : tag,
     )
   )
 );
-
 
 class _BodyimageWebViewerDialog extends StatefulWidget {
   final Uint8List bytes;
   final bool      blur;
   final double    sigma;
+  final Object?   tag;
   const _BodyimageWebViewerDialog({
     required this.bytes,
     required this.blur,
-    required this.sigma
+    required this.sigma,
+    this.tag,
   });
 
   @override
@@ -55,9 +57,21 @@ class __BodyimageWebViewerDialogState extends State<_BodyimageWebViewerDialog> {
         child:
         Stack(
           children: [
-            Padding(
-              padding : const EdgeInsets.all(20),
-              child   : Image.memory(widget.bytes)
+            SizedBox.expand(
+              child:
+              Hero(
+                tag   : widget.tag??DateTime.now().microsecondsSinceEpoch,
+                child :
+                Container(
+                  margin : const EdgeInsets.all(20),
+                  decoration    :
+                  BoxDecoration(
+                    image : DecorationImage(
+                      image : Image.memory(widget.bytes).image,
+                    )
+                  )
+                )
+              ),
             ),
             Positioned(
               right : 25,

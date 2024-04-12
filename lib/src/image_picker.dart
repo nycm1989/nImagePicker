@@ -29,6 +29,8 @@ class ImagePicker extends ImageBody{
     super.previewBlur,
     super.previewBlurSigma,
     super.shape,
+    super.tag,
+    super.duration,
     super.key
   });
 
@@ -53,6 +55,8 @@ class ImagePicker extends ImageBody{
     double                  ? viewerBlurSigma,
     bool                    ? previewBlur,
     double                  ? previewBlurSigma,
+    Duration                ? duration,
+    Object                  ? tag,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -76,6 +80,8 @@ class ImagePicker extends ImageBody{
     previewBlur       : previewBlur,
     previewBlurSigma  : previewBlurSigma,
     shape             : BoxShape.rectangle,
+    tag               : tag,
+    duration          : duration??Duration(milliseconds: 250),
   );
 
   factory ImagePicker.circle({
@@ -98,6 +104,8 @@ class ImagePicker extends ImageBody{
     double                  ? viewerBlurSigma,
     bool                    ? previewBlur,
     double                  ? previewBlurSigma,
+    Object                  ? tag,
+    Duration                ? duration,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -120,5 +128,56 @@ class ImagePicker extends ImageBody{
     previewBlur       : previewBlur,
     previewBlurSigma  : previewBlurSigma,
     shape             : BoxShape.circle,
+    tag               : tag,
+    duration          : duration??Duration(milliseconds: 250),
+  );
+
+  factory ImagePicker.expand({
+    required ImageController  controller,
+    Future<void> Function() ? onTap,
+    String                  ? onLoadingImage,
+    double                  ? filterOpacity,
+    Widget                  ? emptyWidget,
+    Widget                  ? filledWidget,
+    Widget                  ? onErrorWidget,
+    Widget                  ? onLoadingWidget,
+    EdgeInsetsGeometry      ? margin,
+    Color                   ? bankgroundColor,
+    BorderRadius            ? borderRadius,
+    Border                  ? border,
+    BoxShadow               ? shadow,
+    bool                    ? readOnly,
+    BoxFit                  ? fit,
+    bool                    ? viewerBlur,
+    double                  ? viewerBlurSigma,
+    bool                    ? previewBlur,
+    double                  ? previewBlurSigma,
+    Object                  ? tag,
+    Duration                ? duration,
+  }) => ImagePicker(
+    controller        : controller,
+    onTap             : onTap,
+    onLoadingImage    : onLoadingImage,
+    width             : double.infinity,
+    height            : double.infinity,
+    filterOpacity     : filterOpacity,
+    emptyWidget       : emptyWidget,
+    filledWidget      : filledWidget,
+    onErrorWidget     : onErrorWidget,
+    onLoadingWidget   : onLoadingWidget,
+    margin            : margin,
+    bankgroundColor   : bankgroundColor,
+    borderRadius      : borderRadius,
+    border            : border,
+    shadow            : shadow,
+    readOnly          : readOnly,
+    fit               : fit??BoxFit.cover,
+    viewerBlur        : viewerBlur,
+    viewerBlurSigma   : viewerBlurSigma,
+    previewBlur       : previewBlur,
+    previewBlurSigma  : previewBlurSigma,
+    shape             : BoxShape.rectangle,
+    tag               : tag,
+    duration          : duration??Duration(milliseconds: 250),
   );
 }

@@ -20,7 +20,9 @@ class ImageViewer extends ImageBody{
     super.fit,
     super.shape,
     super.headers,
-    super.key
+    super.key,
+    super.tag,
+    super.duration,
   }) : super (
     readOnly      : true,
     filterOpacity : 0,
@@ -42,6 +44,8 @@ class ImageViewer extends ImageBody{
     BoxShadow               ? shadow,
     BoxFit                  ? fit,
     Map<String, String>     ? headers,
+    Object                  ? tag,
+    Duration                ? duration,
   }) => ImageViewer(
     onTap             : onTap,
     onLoadingImage    : onLoadingImage,
@@ -57,6 +61,8 @@ class ImageViewer extends ImageBody{
     fit               : fit??BoxFit.cover,
     shape             : BoxShape.rectangle,
     headers           : headers,
+    tag               : tag,
+    duration          : duration??Duration(milliseconds: 250),
   );
 
   factory ImageViewer.circle({
@@ -73,6 +79,8 @@ class ImageViewer extends ImageBody{
     BoxShadow               ? shadow,
     BoxFit                  ? fit,
     Map<String, String>     ? headers,
+    Object                  ? tag,
+    Duration                ? duration,
   }) => ImageViewer(
     onTap             : onTap,
     onLoadingImage    : onLoadingImage,
@@ -87,5 +95,42 @@ class ImageViewer extends ImageBody{
     fit               : fit??BoxFit.cover,
     shape             : BoxShape.circle,
     headers           : headers,
+    tag               : tag,
+    duration          : duration??Duration(milliseconds: 250),
+  );
+
+  factory ImageViewer.expand({
+    Future<void> Function() ? onTap,
+    String                  ? onLoadingImage,
+    Widget                  ? emptyWidget,
+    Widget                  ? filledWidget,
+    Widget                  ? onErrorWidget,
+    Widget                  ? onLoadingWidget,
+    EdgeInsetsGeometry      ? margin,
+    Color                   ? bankgroundColor,
+    BorderRadius            ? borderRadius,
+    Border                  ? border,
+    BoxShadow               ? shadow,
+    BoxFit                  ? fit,
+    Map<String, String>     ? headers,
+    Object                  ? tag,
+    Duration                ? duration,
+  }) => ImageViewer(
+    onTap             : onTap,
+    onLoadingImage    : onLoadingImage,
+    width             : double.infinity,
+    height            : double.infinity,
+    onErrorWidget     : onErrorWidget,
+    onLoadingWidget   : onLoadingWidget,
+    margin            : margin,
+    bankgroundColor   : bankgroundColor,
+    borderRadius      : borderRadius,
+    border            : border,
+    shadow            : shadow,
+    fit               : fit??BoxFit.cover,
+    shape             : BoxShape.rectangle,
+    headers           : headers,
+    tag               : tag,
+    duration          : duration??Duration(milliseconds: 250),
   );
 }

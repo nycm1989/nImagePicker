@@ -13,23 +13,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ImageController imageController = ImageController();
+  List<ImageController> imageControllers = [
+    ImageController(),
+    ImageController(),
+    ImageController(),
+    ImageController(),
+  ];
 
   @override
   void initState() {
     super.initState();
-
-    imageController
-    ..fileTypes = const [ 'png', 'jpg', 'jpeg' ]
-    ..addListener(() => setState(() {}));
+    for(ImageController controller in imageControllers){
+      controller.addListener(() => setState(() {}));
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    imageController
-    ..removeListener((){})
-    ..dispose();
+    for(ImageController controller in imageControllers){
+      controller
+      ..removeListener((){})
+      ..dispose();
+    }
   }
 
   @override
@@ -47,51 +53,70 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ImagePicker(
-                  controller        : imageController,
+                  controller        : imageControllers[0],
                   onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
                   bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
-                  height            : 250,
-                  width             : 250,
+                  height            : 200,
+                  width             : 200,
                   filterOpacity     : 0.2,
                   borderRadius      : BorderRadius.circular(50),
                   fit               : BoxFit.cover,
                   border            : Border.all(color: Colors.grey, width: 1),
                   shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                  margin            : const EdgeInsets.all(40),
                   viewerBlur        : true,
                   viewerBlurSigma   : 10,
                   previewBlur       : true,
                   previewBlurSigma  : 1,
                 ),
                 ImagePicker.circle(
-                  controller        : imageController,
+                  tag               : "TAGFORTESTING01",
+                  controller        : imageControllers[1],
+                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
                   bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
-                  dimension         : 250,
+                  dimension         : 200,
                   filterOpacity     : 0.2,
                   fit               : BoxFit.cover,
                   border            : Border.all(color: Colors.grey, width: 1),
                   shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                  margin            : const EdgeInsets.all(40),
                   viewerBlur        : true,
                   viewerBlurSigma   : 10,
                   previewBlur       : true,
                   previewBlurSigma  : 1,
                 ),
                 ImagePicker.square(
-                  controller        : imageController,
+                  controller        : imageControllers[2],
                   bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
-                  dimension         : 250,
+                  dimension         : 200,
                   filterOpacity     : 0.2,
                   borderRadius      : BorderRadius.circular(50),
                   fit               : BoxFit.cover,
                   border            : Border.all(color: Colors.grey, width: 1),
                   shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                  margin            : const EdgeInsets.all(40),
                   viewerBlur        : true,
                   viewerBlurSigma   : 10,
                   previewBlur       : true,
                   previewBlurSigma  : 1,
                 ),
+                SizedBox(
+                  width  : 100,
+                  height : 200,
+                  child  :
+                  ImagePicker.expand(
+                    tag               : "TAGFORTESTING02",
+                    controller        : imageControllers[3],
+                    bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                    onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                    filterOpacity     : 0.2,
+                    borderRadius      : BorderRadius.circular(50),
+                    fit               : BoxFit.cover,
+                    border            : Border.all(color: Colors.grey, width: 1),
+                    shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
+                    viewerBlur        : true,
+                    viewerBlurSigma   : 10,
+                    previewBlur       : true,
+                    previewBlurSigma  : 1,
+                  ),
+                )
               ],
             ),
             Row(
@@ -99,17 +124,25 @@ class _MyAppState extends State<MyApp> {
               children: [
                 ImageViewer(
                   onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
-                  width             : 250,
+                  width             : 200,
                   height            : 100,
                 ),
                 ImageViewer.square(
                   onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
-                  dimension         : 250,
+                  dimension         : 200,
                 ),
                 ImageViewer.circle(
                   onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
-                  dimension         : 250,
+                  dimension         : 200,
                 ),
+                SizedBox(
+                  width  : 100,
+                  height : 200,
+                  child  :
+                  ImageViewer.expand(
+                    onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  ),
+                )
               ],
             ),
           ],
