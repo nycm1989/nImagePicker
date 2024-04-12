@@ -1,3 +1,6 @@
+## 2.0.1
+* Small empty crash fixes
+
 ## 2.0.0
 * NImagePickerController renamed to ImageController
 * NImagePicker renamed to ImagePicker

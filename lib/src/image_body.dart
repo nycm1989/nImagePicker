@@ -205,8 +205,8 @@ class __ImageState extends State<ImageBody> {
         BackdropFilter(
           filter  :
           ImageFilter.blur(
-            sigmaX: widget.previewBlur! ? widget.previewBlurSigma! : 0,
-            sigmaY: widget.previewBlur! ? widget.previewBlurSigma! : 0
+            sigmaX: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0,
+            sigmaY: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0
           ),
           child   :
           snapshot.connectionState == ConnectionState.none
@@ -285,8 +285,8 @@ class __ImageState extends State<ImageBody> {
                     onTap: () =>
                     widget.controller!.showImageViewer(
                       context,
-                      blur  : widget.viewerBlur!,
-                      sigma : widget.previewBlurSigma!
+                      blur  : widget.viewerBlur??false,
+                      sigma : widget.previewBlurSigma??0
                     ),
                     child:
                     MouseRegion(
