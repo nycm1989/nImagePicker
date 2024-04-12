@@ -1,3 +1,6 @@
+## 2.0.2
+* Handle error on loading image
+
 ## 2.0.1
 * Small empty crash fixes
 

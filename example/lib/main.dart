@@ -48,6 +48,7 @@ class _MyAppState extends State<MyApp> {
               children: [
                 ImagePicker(
                   controller        : imageController,
+                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
                   bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
                   height            : 250,
                   width             : 250,
@@ -97,7 +98,7 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ImageViewer(
-                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
                   width             : 250,
                   height            : 100,
                 ),

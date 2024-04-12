@@ -118,12 +118,20 @@ class __ImageState extends State<ImageBody> {
                 error = true;
               }
             });
+          }).onError((error, stackTrace) {
+            streamController?.close();
+            streamController = null;
+            try{
+              setState(()=> widget.controller?.error = true);
+            } catch(e){}
           });
         }
       } catch (e) {
         streamController?.close();
         streamController = null;
-        widget.controller?.error = true;
+        try{
+          setState(()=> widget.controller?.error = true);
+        } catch(e){}
       }
     } else {
       streamController = null;
