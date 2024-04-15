@@ -1,3 +1,7 @@
+## 2.1.3
+* Error control for non controller loading
+* Controller nulleable problem fixed
+
 ## 2.1.2
 * Nulleable fixes
 

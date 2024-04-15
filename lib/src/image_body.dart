@@ -77,6 +77,7 @@ class __ImageState extends State<ImageBody> {
   bool error = false;
 
   startLoading() async {
+    if(streamController != null) streamController == null;
     if(widget.onLoadingImage != null){
       try {
         streamController = StreamController<bool>();
@@ -98,6 +99,11 @@ class __ImageState extends State<ImageBody> {
                 widget.controller!.error       = true;
               }
             });
+          }).onError((error, stackTrace) {
+            streamController?.close();
+            streamController = null;
+            widget.controller!.fromLoading = false;
+            widget.controller!.error       = true;
           });
         } else {
           ImageController memoryController = ImageController();
@@ -199,7 +205,7 @@ class __ImageState extends State<ImageBody> {
               colorFilter : widget.controller == null
               ? null
               : ColorFilter.mode(
-                Colors.black.withOpacity(widget.filterOpacity??1),
+                Colors.black.withOpacity(widget.filterOpacity??0),
                 BlendMode.darken
               ),
             )
@@ -210,7 +216,7 @@ class __ImageState extends State<ImageBody> {
               fit         : widget.fit,
               colorFilter :
               ColorFilter.mode(
-                Colors.black.withOpacity(widget.filterOpacity??1),
+                Colors.black.withOpacity(widget.filterOpacity??0),
                 BlendMode.darken
               ),
             ),
