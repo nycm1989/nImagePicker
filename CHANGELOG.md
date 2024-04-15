@@ -1,5 +1,8 @@
+## 2.1.2
+* Nulleable fixes
+
 ## 2.1.1
-* change onLoadingImage for image in ImageViewer
+* Change onLoadingImage for image in ImageViewer
 
 ## 2.1.0
 * New expanded constructor

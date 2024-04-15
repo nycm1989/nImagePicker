@@ -185,7 +185,7 @@ class __ImageState extends State<ImageBody> {
         clipBehavior  : Clip.hardEdge,
         decoration    :
         BoxDecoration(
-          shape        : widget.shape!,
+          shape        : widget.shape??BoxShape.rectangle,
           color        : widget.bankgroundColor??Colors.transparent,
           borderRadius : widget.borderRadius,
           border       : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
@@ -199,7 +199,7 @@ class __ImageState extends State<ImageBody> {
               colorFilter : widget.controller == null
               ? null
               : ColorFilter.mode(
-                Colors.black.withOpacity(widget.filterOpacity!),
+                Colors.black.withOpacity(widget.filterOpacity??1),
                 BlendMode.darken
               ),
             )
@@ -210,7 +210,7 @@ class __ImageState extends State<ImageBody> {
               fit         : widget.fit,
               colorFilter :
               ColorFilter.mode(
-                Colors.black.withOpacity(widget.filterOpacity!),
+                Colors.black.withOpacity(widget.filterOpacity??1),
                 BlendMode.darken
               ),
             ),
@@ -222,8 +222,8 @@ class __ImageState extends State<ImageBody> {
           BackdropFilter(
             filter  :
             ImageFilter.blur(
-              sigmaX: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0,
-              sigmaY: (widget.previewBlur??false) ? widget.previewBlurSigma! : 0
+              sigmaX: (widget.previewBlur??false) ? widget.previewBlurSigma??0 : 0,
+              sigmaY: (widget.previewBlur??false) ? widget.previewBlurSigma??0 : 0
             ),
             child   :
             snapshot.connectionState == ConnectionState.none
@@ -300,7 +300,7 @@ class __ImageState extends State<ImageBody> {
                     ),
                     GestureDetector(
                       onTap: () =>
-                      widget.controller!.showImageViewer(
+                      widget.controller?.showImageViewer(
                         context,
                         tag   : widget.tag,
                         blur  : widget.viewerBlur??false,
@@ -318,7 +318,7 @@ class __ImageState extends State<ImageBody> {
                           Icon(
                             Icons.zoom_out_map_rounded,
                             size    : 40,
-                            color   : widget.controller!.file == null ? Colors.grey : Colors.white,
+                            color   : widget.controller?.file == null ? Colors.grey : Colors.white,
                             shadows : [
                               Shadow(color: Colors.black, blurRadius: 10),
                               Shadow(color: Colors.black, blurRadius: 5 ),

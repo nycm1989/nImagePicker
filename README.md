@@ -58,7 +58,7 @@ imageController.headers -> Map<String, String>
 /// Set the image file from http response and url
 imageController.setFromResponse(response: Response, url: String)
 
-/// This dont work in web!
+/// This don't work in web!
 imageController.setFromPath(path: String)
 
 /// Get image from url, this works in all enviroment
@@ -121,37 +121,41 @@ void dispose() {
 }
 ```
 
-### 2. Use multiple options for seeing and picking images
+### 2. Use multiple options to view and select images
 
 ```dart
 ImagePicker(
-    controller: imageController
+    controller  : imageController
 )
 
 ImagePicker.circle(
-    controller: imageController
+    controller  : imageController,
+    dimension   : 200
 )
 
 ImagePicker.square(
-    controller: imageController
+    controller  : imageController,
+    dimension   : 200
 )
 
 ImagePicker.expand(
-    controller: imageController
+    controller  : imageController,
 )
 
 ImageViewer(
-    onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
 )
 
 ImageViewer.square(
-    onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+    dimension : 200
 )
 
 ImageViewer.circle(
-    onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+    dimension : 200
 )
 ImageViewer.expand(
-    onLoadingImage: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
 )
 ```
