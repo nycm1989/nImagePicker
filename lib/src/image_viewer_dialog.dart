@@ -49,58 +49,56 @@ class __BodyimageWebViewerDialogState extends State<_BodyimageWebViewerDialog> {
   Widget build(BuildContext context) =>
   SafeArea(
     child:
-    Material(
-      color: widget.blur? Colors.transparent : Colors.black.withOpacity(0.3),
-      child:
-      BackdropFilter(
-        filter  :
-        ImageFilter.blur(
-          sigmaX: widget.blur ? widget.sigma : 0,
-          sigmaY: widget.blur ? widget.sigma : 0
-        ),
-        child   :
-        Center(
+    LayoutBuilder(
+      builder: (context, size) {
+        return Material(
+          color: widget.blur? Colors.transparent : Colors.black.withOpacity(0.3),
           child:
-          IntrinsicWidth(
-            child:
-            IntrinsicHeight(
+          BackdropFilter(
+            filter  :
+            ImageFilter.blur(
+              sigmaX: widget.blur ? widget.sigma : 0,
+              sigmaY: widget.blur ? widget.sigma : 0
+            ),
+            child   :
+            Center(
               child:
-              Stack(
-                children: [
-                  Hero(
-                    tag   : widget.tag??DateTime.now().microsecondsSinceEpoch,
-                    child :
-                    Container(
-                      margin        : const EdgeInsets.all(20),
-                      alignment     : Alignment.center,
-                      child:
-                      Container(
-                        clipBehavior  : Clip.hardEdge,
-                        decoration    :
-                        BoxDecoration(
-                          borderRadius  : BorderRadius.circular(20),
-                          border        : Border.all(width: 1, color: Theme.of(context).dividerColor),
-                        ),
-                        child:
-                        Image.memory(
-                          widget.bytes,
-                          isAntiAlias: true,
-                          filterQuality : FilterQuality.high,
-                          fit           : BoxFit.contain,
-                        ),
-                      ),
-                    )
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: GestureDetector(
+              OverflowBox(
+                minWidth: 0.0,
+                minHeight: 0.0,
+                maxWidth: double.infinity,
+                maxHeight: double.infinity,
+                child:
+                Stack(
+                  alignment: AlignmentDirectional.topEnd,
+                  children: [
+                     Hero(
+                       tag   : widget.tag??DateTime.now().microsecondsSinceEpoch,
+                       child :
+                       Container(
+                         clipBehavior  : Clip.hardEdge,
+                         constraints   : BoxConstraints.loose(Size(size.maxWidth - 40, size.maxHeight - 40)),
+                         decoration    :
+                         BoxDecoration(
+                           borderRadius  : BorderRadius.circular(20),
+                           border        : Border.all(width: 1, color: Theme.of(context).dividerColor, strokeAlign: BorderSide.strokeAlignOutside),
+                         ),
+                         child:
+                         Image.memory(
+                           widget.bytes,
+                           filterQuality : FilterQuality.high,
+                           fit           : BoxFit.cover,
+                         ),
+                       )
+                     ),
+                    GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
                       child:
                       Container(
-                        width: 30,
-                        height: 30,
+                        width       : 30,
+                        height      : 30,
                         padding     : const EdgeInsets.all(5) ,
-                        margin      : const EdgeInsets.all(30) ,
+                        margin      : const EdgeInsets.all(10) ,
                         decoration  :
                         BoxDecoration(
                           borderRadius  : BorderRadius.circular(30),
@@ -118,13 +116,13 @@ class __BodyimageWebViewerDialogState extends State<_BodyimageWebViewerDialog> {
                         )
                       )
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ),
-        )
-      )
+            )
+          )
+        );
+      }
     ),
   );
 }

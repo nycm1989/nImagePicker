@@ -1,3 +1,6 @@
+## 2.2.1
+* ImageViewer improvements for small images
+
 ## 2.2.0
 * ImageViewer improvements
 
