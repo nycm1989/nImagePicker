@@ -234,6 +234,7 @@ class ImageController with ChangeNotifier{
   showImageViewer(BuildContext context, {
     required bool blur,
     required double sigma,
+    Color? closeColor,
     Object? tag,
   }) => _bytes == null
   ? throw Exception('There is no any image loaded')
@@ -242,6 +243,7 @@ class ImageController with ChangeNotifier{
     tag   : tag??Random().nextInt(100000),
     bytes : _bytes ?? Uint8List(0),
     blur  : blur,
-    sigma : sigma
+    sigma : sigma,
+    closeColor: closeColor
   );
 }

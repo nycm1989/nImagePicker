@@ -33,6 +33,7 @@ class ImageBody extends StatefulWidget {
   final BoxShape                ? shape;
   final Object                  ? tag;
   final Duration                ? duration;
+  final Color                   ? closeColor;
 
   //only for viewer
   final Map<String, String>     ? headers;
@@ -64,6 +65,7 @@ class ImageBody extends StatefulWidget {
     this.headers,
     this.tag,
     this.duration,
+    this.closeColor,
     super.key
   });
 
@@ -310,7 +312,8 @@ class __ImageState extends State<ImageBody> {
                         context,
                         tag   : widget.tag,
                         blur  : widget.viewerBlur??false,
-                        sigma : widget.previewBlurSigma??0
+                        sigma : widget.previewBlurSigma??0,
+                        closeColor: widget.closeColor
                       ),
                       child:
                       MouseRegion(

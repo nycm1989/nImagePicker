@@ -1,3 +1,6 @@
+## 2.2.0
+* ImageViewer improvements
+
 ## 2.1.3
 * Error control for non controller loading
 * Controller nulleable problem fixed

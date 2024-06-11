@@ -82,6 +82,7 @@ class _MyAppState extends State<MyApp> {
                   viewerBlurSigma   : 10,
                   previewBlur       : true,
                   previewBlurSigma  : 1,
+                  closeColor        : Colors.grey
                 ),
                 ImagePicker.square(
                   controller        : imageControllers[2],

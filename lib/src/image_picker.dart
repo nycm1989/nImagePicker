@@ -31,6 +31,7 @@ class ImagePicker extends ImageBody{
     super.shape,
     super.tag,
     super.duration,
+    super.closeColor,
     super.key
   });
 
@@ -56,6 +57,7 @@ class ImagePicker extends ImageBody{
     bool                    ? previewBlur,
     double                  ? previewBlurSigma,
     Duration                ? duration,
+    Color                   ? closeColor,
     Object                  ? tag,
   }) => ImagePicker(
     controller        : controller,
@@ -82,6 +84,7 @@ class ImagePicker extends ImageBody{
     shape             : BoxShape.rectangle,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
+    closeColor        : closeColor,
   );
 
   factory ImagePicker.circle({
@@ -106,6 +109,7 @@ class ImagePicker extends ImageBody{
     double                  ? previewBlurSigma,
     Object                  ? tag,
     Duration                ? duration,
+    Color                   ? closeColor,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -130,6 +134,7 @@ class ImagePicker extends ImageBody{
     shape             : BoxShape.circle,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
+    closeColor        : closeColor
   );
 
   factory ImagePicker.expand({
@@ -154,6 +159,7 @@ class ImagePicker extends ImageBody{
     double                  ? previewBlurSigma,
     Object                  ? tag,
     Duration                ? duration,
+    Color                   ? closeColor,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -179,5 +185,6 @@ class ImagePicker extends ImageBody{
     shape             : BoxShape.rectangle,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
+    closeColor        : closeColor
   );
 }
