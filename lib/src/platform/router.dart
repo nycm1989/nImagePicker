@@ -1,3 +1,3 @@
-import 'package:n_image_picker/src/platform_tools.dart';
+import 'package:n_image_picker/src/platform/tools.dart';
 
 PlatformTools getInstance() => throw UnsupportedError('Unsupported Platform');

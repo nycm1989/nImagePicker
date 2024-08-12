@@ -32,7 +32,8 @@ class ImagePicker extends ImageBody{
     super.tag,
     super.duration,
     super.closeColor,
-    super.key
+    super.maxSize,
+    super.key,
   });
 
   factory ImagePicker.square({
@@ -59,6 +60,7 @@ class ImagePicker extends ImageBody{
     Duration                ? duration,
     Color                   ? closeColor,
     Object                  ? tag,
+    int                     ? maxSize,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -85,6 +87,7 @@ class ImagePicker extends ImageBody{
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
     closeColor        : closeColor,
+    maxSize           : maxSize,
   );
 
   factory ImagePicker.circle({
@@ -110,6 +113,7 @@ class ImagePicker extends ImageBody{
     Object                  ? tag,
     Duration                ? duration,
     Color                   ? closeColor,
+    int                     ? maxSize,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -134,7 +138,8 @@ class ImagePicker extends ImageBody{
     shape             : BoxShape.circle,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
-    closeColor        : closeColor
+    closeColor        : closeColor,
+    maxSize           : maxSize,
   );
 
   factory ImagePicker.expand({
@@ -160,6 +165,7 @@ class ImagePicker extends ImageBody{
     Object                  ? tag,
     Duration                ? duration,
     Color                   ? closeColor,
+    int                     ? maxSize,
   }) => ImagePicker(
     controller        : controller,
     onTap             : onTap,
@@ -185,6 +191,7 @@ class ImagePicker extends ImageBody{
     shape             : BoxShape.rectangle,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
-    closeColor        : closeColor
+    closeColor        : closeColor,
+    maxSize           : maxSize,
   );
 }

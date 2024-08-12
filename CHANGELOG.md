@@ -1,3 +1,7 @@
+## 2.3.0
+* Platform separated
+* [New] image resizing by maxSize
+
 ## 2.2.1
 * ImageViewer improvements for small images
 
@@ -15,7 +19,7 @@
 * Change onLoadingImage for image in ImageViewer
 
 ## 2.1.0
-* New expanded constructor
+* [New] Expanded constructor
 * Suport for hero animations
 * Change main Container for Animated Container
 
@@ -28,8 +32,8 @@
 ## 2.0.0
 * NImagePickerController renamed to ImageController
 * NImagePicker renamed to ImagePicker
-* New ImageViewer class for non controller management
-* New custom sontructors .squeare and .circle for ImagePicker and ImageViewer
+* [New] ImageViewer class for non controller management
+* [New] Custom sontructors .squeare and .circle for ImagePicker and ImageViewer
 * Fix error when filepicker has cancelled
 
 ## 1.4.2
@@ -53,7 +57,7 @@
 
 ## 1.2.0
 * update default widgets
-* new ios-web classes
+* [New] ios-web classes
 * setFromURL added
 
 ## 1.1.1
@@ -62,7 +66,7 @@
 ## 1.1.0
 * Added Image view
 * Remove image icon changed in default fulled widget
-* Add preview icon for default fulled widget
+* [New] Preview icon for default fulled widget
 * Added Blur for preview and image view
 * Fix get from bytes in platform
 * changed boolean enable to readOnly

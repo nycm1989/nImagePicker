@@ -65,7 +65,7 @@ imageController.setFromPath(path: String)
 imageController.setFromURL(context, url: String, headers: Map<String, String>)
 
 /// Open the image dialog picker
-imageController.pickImage()
+imageController.pickImage(maxSize: int)
 
 imageController.removeImage(notify: bool)
 imageController.showImageViewer(notify: bool)
@@ -98,6 +98,7 @@ ImagePicker(
     borderRadius        : BorderRadius? null,
     headers             : Map<String, String>? null,
     dimension           : Double?? null
+    maxSize             : int??null //resize image
 )
 ```
 

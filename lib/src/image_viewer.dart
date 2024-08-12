@@ -23,6 +23,7 @@ class ImageViewer extends ImageBody{
     super.key,
     super.tag,
     super.duration,
+    super.maxSize,
   }) : super (
     onLoadingImage : image,
     readOnly       : true,
@@ -47,6 +48,7 @@ class ImageViewer extends ImageBody{
     Map<String, String>     ? headers,
     Object                  ? tag,
     Duration                ? duration,
+    int                     ? maxSize,
   }) => ImageViewer(
     onTap             : onTap,
     image             : image,
@@ -64,6 +66,7 @@ class ImageViewer extends ImageBody{
     headers           : headers,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
+    maxSize           : maxSize,
   );
 
   factory ImageViewer.circle({
@@ -82,6 +85,7 @@ class ImageViewer extends ImageBody{
     Map<String, String>     ? headers,
     Object                  ? tag,
     Duration                ? duration,
+    int                     ? maxSize,
   }) => ImageViewer(
     onTap             : onTap,
     image             : image,
@@ -98,6 +102,7 @@ class ImageViewer extends ImageBody{
     headers           : headers,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
+    maxSize           : maxSize,
   );
 
   factory ImageViewer.expand({
@@ -116,6 +121,7 @@ class ImageViewer extends ImageBody{
     Map<String, String>     ? headers,
     Object                  ? tag,
     Duration                ? duration,
+    int                     ? maxSize,
   }) => ImageViewer(
     onTap             : onTap,
     image             : image,
@@ -133,5 +139,6 @@ class ImageViewer extends ImageBody{
     headers           : headers,
     tag               : tag,
     duration          : duration??Duration(milliseconds: 250),
+    maxSize           : maxSize,
   );
 }

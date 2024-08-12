@@ -5,16 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:n_image_picker/src/image_viewer_dialog.dart';
-import 'package:n_image_picker/src/platform_tools.dart';
+import 'package:n_image_picker/src/platform/tools.dart';
 
 class ImageController with ChangeNotifier{
   PlatformFile ? _file;
   Uint8List    ? _bytes;
-  List<String>   _fileTypes     = const [ 'png', 'jpg', 'jpeg' ];
+  Size           _size          = Size(0, 0);
+  double         _weight        = 0;
+  List<String>   _fileTypes     = const [ 'png', 'jpg', 'jpeg', 'bmp' ];
   String         _extension     = '';
   bool           _error         = false;
   bool           _hasImage      = false;
   bool           _fromLoading   = false;
+
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST',
@@ -58,6 +61,8 @@ class ImageController with ChangeNotifier{
   bool                get hasImage    =>  _hasImage;
   bool                get hasNoImage  =>  !_hasImage;
   bool                get fromLoading =>  _fromLoading;
+  Size                get size        =>  _size;
+  double              get weight      =>  _weight;
   // Image               get image       =>  _file == null
   // ? throw Exception()
   // : Image.file( File.fromRawPath(_file!.bytes!) );
@@ -69,10 +74,12 @@ class ImageController with ChangeNotifier{
     _hasImage     = false;
     _extension    = '';
     _fromLoading  = false;
+    _size         = Size(0, 0);
+    _weight       = 0;
     notifyListeners();
   }
 
-  Future<bool>setFromURL(BuildContext context, {required String url, Map<String, String>? headers}) async {
+  Future<bool>setFromURL(BuildContext context, {required String url, Map<String, String>? headers, int? maxSize}) async {
     List<String> list = url.split("://");
     if (list.length <= 1) {
       error = true;
@@ -104,7 +111,8 @@ class ImageController with ChangeNotifier{
           await value.stream.toBytes().then((bytes) async => await setFromBytes(
             name      : DateTime.now().millisecondsSinceEpoch.toString() + Random().nextInt(10000).toString() + '-' + _n.first,
             bytes     : bytes,
-            extension : _n.last
+            extension : _n.last,
+            maxSize   : maxSize,
           ));
 
           return true;
@@ -120,11 +128,11 @@ class ImageController with ChangeNotifier{
   }
 
 
-  Future<void> setFromBytes({required final String name, required final String extension, required final Uint8List? bytes}) async {
+  Future<void> setFromBytes({required final String name, required final String extension, required final Uint8List? bytes, int? maxSize}) async {
     if(bytes == null) throw Exception("bytes cant be null");
-    await PlatformTools().w(name: name, extension: extension, bytes: bytes).then((_f) {
+    await PlatformTools().write(name: name, extension: extension, bytes: bytes, maxSize: maxSize).then((_f) {
       _file      = _f;
-      _bytes     = bytes;
+      _bytes     = _f.bytes;
       _error     = false;
       _hasImage  = true;
       _extension = extension;
@@ -134,13 +142,13 @@ class ImageController with ChangeNotifier{
 
 
   /// Set the image file from http response and url
-  Future<void> setFromResponse({required Response response, required String url}) async {
+  Future<void> setFromResponse({required Response response, required String url, int? maxSize}) async {
     List<String> _e = url.split(".");
     if (_e.length <= 1) throw Exception("url dont have extension");
 
     try{
       kIsWeb
-      ? await PlatformTools().setFile(response: response, headers: headers).then((r) {
+      ? await PlatformTools().setFile(response: response, headers: headers, maxSize: maxSize, extension: _e.last).then((r) {
         _file       = r.platformFile;
         _bytes      = r.platformFile.bytes;
         _error      = r.error;
@@ -148,7 +156,7 @@ class ImageController with ChangeNotifier{
         _extension  = _e.last;
         notifyListeners();
       })
-      : await PlatformTools().setFile(response: response).then((r) {
+      : await PlatformTools().setFile(response: response, maxSize: maxSize, extension: _e.last).then((r) {
         _file     = r.platformFile;
         _bytes    = r.platformFile.bytes;
         _error    = r.error;
@@ -165,7 +173,7 @@ class ImageController with ChangeNotifier{
 
 
   /// This dont work in web!
-  Future<void> setFromPath({required String path}) async {
+  Future<void> setFromPath({required String path, int? maxSize}) async {
     List<String> _e = path.split(".");
     if (_e.length <= 1) throw Exception("path dont have extension");
 
@@ -173,9 +181,9 @@ class ImageController with ChangeNotifier{
       throw Exception('This dont work in web');
     } else {
       try{
-        await PlatformTools().setFileFromPath(path).then((r) {
+        await PlatformTools().setFileFromPath(path: path, maxSize: maxSize).then((r) {
           _file     = r.platformFile;
-          _bytes    = _file?.bytes;
+          _bytes    = r.platformFile.bytes;
           _error    = r.error;
           _hasImage = !r.error;
           notifyListeners();
@@ -208,7 +216,7 @@ class ImageController with ChangeNotifier{
     );
 
   /// Open the image dialog picker
-  Future<void> pickImage() async => await FilePicker.platform.pickFiles(
+  Future<void> pickImage({int? maxSize}) async => await FilePicker.platform.pickFiles(
     type              : FileType.custom,
     allowedExtensions : _fileTypes,
     lockParentWindow  : true,
@@ -218,10 +226,13 @@ class ImageController with ChangeNotifier{
     if (response == null) {
       _reset(error: false);
     } else {
-      _file       = response.files.single;
-      _bytes      = _file?.bytes;
-      _extension  = _file?.extension??'';
-      _hasImage   = true;
+      final f = response.files.single;
+      setFromBytes(
+        name      : f.name,
+        extension : f.extension??'',
+        bytes     : f.bytes,
+        maxSize   : maxSize,
+      );
     }
     notifyListeners();
   });

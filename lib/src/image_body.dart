@@ -34,6 +34,7 @@ class ImageBody extends StatefulWidget {
   final Object                  ? tag;
   final Duration                ? duration;
   final Color                   ? closeColor;
+  final int                     ? maxSize;
 
   //only for viewer
   final Map<String, String>     ? headers;
@@ -66,6 +67,7 @@ class ImageBody extends StatefulWidget {
     this.tag,
     this.duration,
     this.closeColor,
+    this.maxSize,
     super.key
   });
 
@@ -88,7 +90,8 @@ class __ImageState extends State<ImageBody> {
           await  widget.controller!.setFromURL(
             context,
             url     : widget.onLoadingImage!,
-            headers : widget.controller!.headers
+            headers : widget.controller!.headers,
+            maxSize : widget.maxSize,
           ).then((state) async {
             streamController?.close();
             streamController = null;
@@ -113,7 +116,8 @@ class __ImageState extends State<ImageBody> {
           await memoryController.setFromURL(
             context,
             url     : widget.onLoadingImage!,
-            headers : memoryController.headers
+            headers : memoryController.headers,
+            maxSize : widget.maxSize,
           ).then((state) async {
             streamController?.close();
             streamController = null;
@@ -263,7 +267,7 @@ class __ImageState extends State<ImageBody> {
               )
               : widget.controller!.file == null
                 ? GestureDetector(
-                  onTap : (widget.readOnly??false) ? null : () => widget.controller!.pickImage(),
+                  onTap : (widget.readOnly??false) ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize),
                   child :
                   MouseRegion(
                     cursor  : SystemMouseCursors.click,
