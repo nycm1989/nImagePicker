@@ -4,7 +4,7 @@ import 'package:image/image.dart' as img;
 enum _AcceptedFormats{ bmp, cur, jpg, png, pvr, tga, tiff }
 
 class Helpers{
-  bool canResize({required String extension}){
+  bool canResize({required final String extension}){
     final _format = extension.toLowerCase();
     return _AcceptedFormats.values.map((e) => e.name).toList().contains(_format);
   }

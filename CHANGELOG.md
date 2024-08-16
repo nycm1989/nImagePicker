@@ -1,3 +1,7 @@
+## 2.3.1
+* Change dart:html to web package
+* Now required width & height
+
 ## 2.3.0
 * Platform separated
 * [New] image resizing by maxSize

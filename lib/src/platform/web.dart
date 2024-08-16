@@ -1,4 +1,6 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
+
+import 'package:web/web.dart' as web;
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
@@ -18,13 +20,18 @@ class WebFile implements PlatformTools{
     required final Response response,
     final String? key,
     final Map<String, dynamic>? headers,
-    required int? maxSize,
-    required String? extension,
+    required final int? maxSize,
+    required final String? extension,
   }) async {
     try{
       final String filename = key??'' + Random().nextInt(1000).toString()  + DateTime.now().millisecondsSinceEpoch.toString();
+      final jsArray = JSArray<JSAny>();
 
-      final html.File i = html.File( response.bodyBytes, key??'', headers);
+      for(var byte in response.bodyBytes){
+        jsArray.add(byte.toJS);
+      }
+
+      final web.File i = web.File(jsArray, key??'');
 
       return ResponseModel(
         platformFile: PlatformFile(
@@ -58,10 +65,10 @@ class WebFile implements PlatformTools{
 
   @override
   Future<PlatformFile> write({
-    required String     name,
-    required String     extension,
-    required Uint8List? bytes,
-    required int?       maxSize
+    required final String     name,
+    required final String     extension,
+    required final Uint8List? bytes,
+    required final int?       maxSize
   }) async =>
   PlatformFile(
     name  : DateTime.now().millisecondsSinceEpoch.toString() + name + "." + extension,
@@ -70,5 +77,5 @@ class WebFile implements PlatformTools{
   );
 
   @override
-  Size getSize({required Uint8List? bytes}) => Size(0, 0);
+  Size getSize({required final Uint8List? bytes}) => Size(0, 0);
 }

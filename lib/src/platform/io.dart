@@ -20,9 +20,9 @@ class IoFile implements PlatformTools{
     required final Response response,
     final String? key,
     final Map<String, dynamic>? headers,
-    required int? maxSize,
+    required final int? maxSize,
     ///[format] only works if [maxSize] is not null
-    required String? extension,
+    required final String? extension,
   }) async {
     try{
       return ResponseModel(
@@ -44,8 +44,8 @@ class IoFile implements PlatformTools{
 
   @override
   Future<ResponseModel> setFileFromPath({
-    required String path,
-    required int? maxSize
+    required final String path,
+    required final int? maxSize
   }) async {
     try{
       final String filename = Random().nextInt(10000).toString() + DateTime.now().millisecondsSinceEpoch.toString();
@@ -75,15 +75,15 @@ class IoFile implements PlatformTools{
   }
 
   @override
-  remove(PlatformFile file) => file.path != null ? io.File(file.path!).delete() : null;
+  remove(final PlatformFile file) => file.path != null ? io.File(file.path!).delete() : null;
 
   @override
   Future<PlatformFile> write({
-    required String     name,
-    required String     extension,
-    required Uint8List? bytes,
+    required final String     name,
+    required final String     extension,
+    required final Uint8List? bytes,
     ///[format] only works if [maxSize] is not null
-    required int?       maxSize,
+    required final int?       maxSize,
   }) async {
     if(bytes == null){
       Exception("bytes cant be null");
@@ -107,5 +107,5 @@ class IoFile implements PlatformTools{
   }
 
   @override
-  Size getSize({required Uint8List? bytes}) => Size(0, 0);
+  Size getSize({required final Uint8List? bytes}) => Size(0, 0);
 }

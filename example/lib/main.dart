@@ -38,13 +38,17 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  // static const String image = 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg';
+  static const String image = 'http://192.168.4.233:8000/media/202408/IMAGES/IMAGE_f0676afb-808f-4cf4-b26a-2a483e531623.jpg';
+
   @override
   Widget build(BuildContext context) =>
 
     MaterialApp(
       debugShowCheckedModeBanner: true,
       title : 'Pin Board Example',
-      home  : Scaffold(
+      home  :
+      Scaffold(
         body:
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -54,10 +58,10 @@ class _MyAppState extends State<MyApp> {
               children: [
                 ImagePicker(
                   controller        : imageControllers[0],
-                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
-                  bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
-                  height            : 200,
                   width             : 200,
+                  height            : 150,
+                  onLoadingImage    : image,
+                  bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
                   filterOpacity     : 0.2,
                   borderRadius      : BorderRadius.circular(50),
                   fit               : BoxFit.cover,
@@ -71,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                 ImagePicker.circle(
                   tag               : "TAGFORTESTING01",
                   controller        : imageControllers[1],
-                  onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  onLoadingImage    : image,
                   bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
                   dimension         : 200,
                   filterOpacity     : 0.2,
@@ -107,7 +111,7 @@ class _MyAppState extends State<MyApp> {
                     tag               : "TAGFORTESTING02",
                     controller        : imageControllers[3],
                     bankgroundColor   : const Color(0xFFededed).withOpacity(0.8),
-                    onLoadingImage    : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                    onLoadingImage    : image,
                     filterOpacity     : 0.2,
                     borderRadius      : BorderRadius.circular(50),
                     fit               : BoxFit.cover,
@@ -125,16 +129,16 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ImageViewer(
-                  image   : 'https://w.wallhaven.cc/full/49/wallhsaven-49d5y8.jpg',
+                  image   : image,
                   width   : 200,
                   height  : 100,
                 ),
                 ImageViewer.square(
-                  image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  image     : image,
                   dimension : 200,
                 ),
                 ImageViewer.circle(
-                  image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                  image     : image,
                   dimension : 200,
                 ),
                 SizedBox(
@@ -142,7 +146,7 @@ class _MyAppState extends State<MyApp> {
                   height : 200,
                   child  :
                   ImageViewer.expand(
-                    image: 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+                    image: image,
                   ),
                 )
               ],
