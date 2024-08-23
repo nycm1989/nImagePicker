@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import './router.dart' if (dart.library.html) './web.dart' if (dart.library.io) './io.dart';
 
 import 'package:file_picker/file_picker.dart';
@@ -14,7 +12,7 @@ abstract class PlatformTools{
   Future<ResponseModel> setFile({
     required final Response response,
     final Map<String, dynamic>? headers,
-    required int? maxSize,
+    required final int? maxSize,
     ///[format] only works if [maxSize] is not null
     required final String? extension
   }) async =>
@@ -40,6 +38,4 @@ abstract class PlatformTools{
     required final Uint8List? bytes,
     required final int?       maxSize,
   }) async => PlatformFile(name: '', size: 0);
-
-  Size getSize({required final Uint8List? bytes}) => Size(0, 0);
 }

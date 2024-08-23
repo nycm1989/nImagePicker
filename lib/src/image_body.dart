@@ -35,8 +35,6 @@ class ImageBody extends StatefulWidget {
   final Duration                ? duration;
   final Color                   ? closeColor;
   final int                     ? maxSize;
-
-  //only for viewer
   final Map<String, String>     ? headers;
 
   const ImageBody({

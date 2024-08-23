@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:n_image_picker/src/platform/helpers.dart';
 import 'package:n_image_picker/src/platform/tools.dart';
@@ -105,7 +104,4 @@ class IoFile implements PlatformTools{
       });
     }
   }
-
-  @override
-  Size getSize({required final Uint8List? bytes}) => Size(0, 0);
 }

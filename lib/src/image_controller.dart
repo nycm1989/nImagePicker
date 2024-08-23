@@ -79,7 +79,11 @@ class ImageController with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool>setFromURL(BuildContext context, {required String url, Map<String, String>? headers, int? maxSize}) async {
+  Future<bool>setFromURL(BuildContext context, {
+    required final String url,
+    final Map<String, String>? headers,
+    final int? maxSize
+  }) async {
     List<String> list = url.split("://");
     if (list.length <= 1) {
       error = true;
@@ -128,9 +132,19 @@ class ImageController with ChangeNotifier{
   }
 
 
-  Future<void> setFromBytes({required final String name, required final String extension, required final Uint8List? bytes, int? maxSize}) async {
+  Future<void> setFromBytes({
+    required final String name,
+    required final String extension,
+    required final Uint8List? bytes,
+    final int? maxSize
+  }) async {
     if(bytes == null) throw Exception("bytes cant be null");
-    await PlatformTools().write(name: name, extension: extension, bytes: bytes, maxSize: maxSize).then((_f) {
+    await PlatformTools().write(
+      name      : name,
+      extension : extension,
+      bytes     : bytes,
+      maxSize   : maxSize
+    ).then((_f) {
       _file      = _f;
       _bytes     = _f.bytes;
       _error     = false;
@@ -142,13 +156,22 @@ class ImageController with ChangeNotifier{
 
 
   /// Set the image file from http response and url
-  Future<void> setFromResponse({required Response response, required String url, int? maxSize}) async {
+  Future<void> setFromResponse({
+    required final Response response,
+    required final String url,
+    final int? maxSize
+  }) async {
     List<String> _e = url.split(".");
     if (_e.length <= 1) throw Exception("url dont have extension");
 
     try{
       kIsWeb
-      ? await PlatformTools().setFile(response: response, headers: headers, maxSize: maxSize, extension: _e.last).then((r) {
+      ? await PlatformTools().setFile(
+        response  : response,
+        headers   : headers,
+        maxSize   : maxSize,
+        extension : _e.last
+      ).then((r) {
         _file       = r.platformFile;
         _bytes      = r.platformFile.bytes;
         _error      = r.error;
@@ -156,7 +179,11 @@ class ImageController with ChangeNotifier{
         _extension  = _e.last;
         notifyListeners();
       })
-      : await PlatformTools().setFile(response: response, maxSize: maxSize, extension: _e.last).then((r) {
+      : await PlatformTools().setFile(
+        response  : response,
+        maxSize   : maxSize,
+        extension : _e.last
+      ).then((r) {
         _file     = r.platformFile;
         _bytes    = r.platformFile.bytes;
         _error    = r.error;
@@ -173,7 +200,10 @@ class ImageController with ChangeNotifier{
 
 
   /// This dont work in web!
-  Future<void> setFromPath({required String path, int? maxSize}) async {
+  Future<void> setFromPath({
+    required final String path,
+    final int? maxSize
+  }) async {
     List<String> _e = path.split(".");
     if (_e.length <= 1) throw Exception("path dont have extension");
 
@@ -181,11 +211,15 @@ class ImageController with ChangeNotifier{
       throw Exception('This dont work in web');
     } else {
       try{
-        await PlatformTools().setFileFromPath(path: path, maxSize: maxSize).then((r) {
-          _file     = r.platformFile;
-          _bytes    = r.platformFile.bytes;
-          _error    = r.error;
-          _hasImage = !r.error;
+        await PlatformTools().setFileFromPath(
+          path    : path,
+          maxSize : maxSize
+        ).then((r) {
+          _file       = r.platformFile;
+          _bytes      = r.platformFile.bytes;
+          _error      = r.error;
+          _hasImage   = !r.error;
+          _extension  = _e.last;
           notifyListeners();
         });
       } catch (e){
@@ -198,7 +232,7 @@ class ImageController with ChangeNotifier{
 
   /// return an async [MultipartFile] for uploading using [key], example:
   /// - {"key" : "image_path.png"}
-  Future<MultipartFile> image({String key = "image"}) async =>
+  Future<MultipartFile> image({final String key = "image"}) async =>
   _file == null
   ? throw Exception('No image loaded')
   : kIsWeb
@@ -216,7 +250,8 @@ class ImageController with ChangeNotifier{
     );
 
   /// Open the image dialog picker
-  Future<void> pickImage({int? maxSize}) async => await FilePicker.platform.pickFiles(
+  Future<void> pickImage({final int? maxSize}) async =>
+  await FilePicker.platform.pickFiles(
     type              : FileType.custom,
     allowedExtensions : _fileTypes,
     lockParentWindow  : true,
@@ -237,16 +272,16 @@ class ImageController with ChangeNotifier{
     notifyListeners();
   });
 
-  removeImage({required bool notify}) {
+  removeImage({required final bool notify}) {
     _reset(error: false);
     if(notify) notifyListeners();
   }
 
   showImageViewer(BuildContext context, {
-    required bool blur,
-    required double sigma,
-    Color? closeColor,
-    Object? tag,
+    required final bool blur,
+    required final double sigma,
+    final Color? closeColor,
+    final Object? tag,
   }) => _bytes == null
   ? throw Exception('There is no any image loaded')
   : imageViewerDialog(

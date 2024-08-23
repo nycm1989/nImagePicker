@@ -98,6 +98,8 @@ ImagePicker(
     borderRadius        : BorderRadius? null,
     headers             : Map<String, String>? null,
     dimension           : Double?? null
+
+    /// Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
     maxSize             : int??null //resize image
 )
 ```
@@ -127,6 +129,8 @@ void dispose() {
 ```dart
 ImagePicker(
     controller  : imageController
+    width       : 250,
+    height      : 250,
 )
 
 ImagePicker.circle(
@@ -143,8 +147,16 @@ ImagePicker.expand(
     controller  : imageController,
 )
 
+//! If the image server has CORS security on the web and your code doesn't include
+//! the headers accepted by the server, it will return an error. It's important to
+//! note that CORS security includes a registry of accepted IPs in the backend,
+//! if your project is not on the list, even if it has the correct headers, the
+//! image will not be displayed.
+
 ImageViewer(
     image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    width       : 250,
+    height      : 250,
 )
 
 ImageViewer.square(
@@ -157,6 +169,6 @@ ImageViewer.circle(
     dimension : 200
 )
 ImageViewer.expand(
-    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
 )
 ```

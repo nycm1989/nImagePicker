@@ -1,5 +1,8 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:n_image_picker/n_image_picker.dart';
+import 'package:web/web.dart' as web;
 
 void main() {
   runApp(const MyApp());
@@ -151,6 +154,36 @@ class _MyAppState extends State<MyApp> {
                 )
               ],
             ),
+            GestureDetector(
+              onTap: () async {
+                final jsArray = JSArray<JSAny>();
+
+                await Future(() {
+                  for (var byte in imageControllers[0].file!.bytes!) {
+                    jsArray.add(byte.jsify());
+                  }
+                }).then((_) {
+                  final blob = web.Blob(jsArray, web.BlobPropertyBag(type: imageControllers[0].file!.extension!));
+
+                  print(blob.size);
+                  final url = web.URL.createObjectURL(blob);
+
+                  final anchor = web.document.createElement('a')
+                  ..setAttribute("href", url)
+                  ..setAttribute("download", "00000001.png");
+
+                  web.document.body?.append(anchor);
+                  anchor.dispatchEvent(web.MouseEvent('click'));
+                  web.document.body?.removeChild(anchor);
+                  web.URL.revokeObjectURL(url);
+                });
+              },
+              child:
+              const Padding(
+                padding : EdgeInsets.all(30),
+                child   : Text("test"),
+              ),
+            )
           ],
         ),
       ),
