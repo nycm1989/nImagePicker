@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,16 +8,16 @@ import 'package:http_parser/http_parser.dart';
 import 'package:n_image_picker/src/image_viewer_dialog.dart';
 import 'package:n_image_picker/src/platform/tools.dart';
 
-class ImageController with ChangeNotifier{
-  PlatformFile ? _file;
-  Uint8List    ? _bytes;
-  Size           _size          = Size(0, 0);
-  double         _weight        = 0;
-  List<String>   _fileTypes     = const [ 'png', 'jpg', 'jpeg', 'bmp' ];
-  String         _extension     = '';
-  bool           _error         = false;
-  bool           _hasImage      = false;
-  bool           _fromLoading   = false;
+class ImageController with ChangeNotifier {
+  PlatformFile? _file;
+  Uint8List?    _bytes;
+  Size          _size         = Size(0, 0);
+  double        _weight       = 0;
+  List<String>  _fileTypes    = const ['png', 'jpg', 'jpeg', 'bmp'];
+  String        _extension    = '';
+  bool          _error        = false;
+  bool          _hasImage     = false;
+  bool          _fromLoading  = false;
 
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
@@ -32,7 +33,7 @@ class ImageController with ChangeNotifier{
     notifyListeners();
   }
 
-  set fromLoading(bool state){
+  set fromLoading(bool state) {
     _fromLoading = state;
     notifyListeners();
   }
@@ -49,25 +50,25 @@ class ImageController with ChangeNotifier{
   }
 
   /// Map for headers, this need a backend open port for your domain
-  Map<String, String> get headers     =>  _headers;
+  Map<String, String> get headers => _headers;
 
   /// List of supported formats
-  List<String>        get fileTypes   =>  _fileTypes;
+  List<String> get fileTypes => _fileTypes;
 
-  PlatformFile?       get file        =>  _file;
-  String              get path        =>  _file?.path ??  '';
-  Uint8List?          get bytes       =>  _bytes;
-  bool                get error       =>  _error;
-  bool                get hasImage    =>  _hasImage;
-  bool                get hasNoImage  =>  !_hasImage;
-  bool                get fromLoading =>  _fromLoading;
-  Size                get size        =>  _size;
-  double              get weight      =>  _weight;
+  PlatformFile? get file        => _file;
+  String        get path        => _file?.path ?? '';
+  Uint8List?    get bytes       => _bytes;
+  bool          get error       => _error;
+  bool          get hasImage    => _hasImage;
+  bool          get hasNoImage  => !_hasImage;
+  bool          get fromLoading => _fromLoading;
+  Size          get size        => _size;
+  double        get weight      => _weight;
   // Image               get image       =>  _file == null
   // ? throw Exception()
   // : Image.file( File.fromRawPath(_file!.bytes!) );
 
-  _reset({required bool error}){
+  _reset({required bool error}) {
     _file         = null;
     _bytes        = null;
     _error        = error;
@@ -79,43 +80,32 @@ class ImageController with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool>setFromURL(BuildContext context, {
+  Future<bool> setFromURL(final BuildContext context, {
     required final String url,
     final Map<String, String>? headers,
     final int? maxSize
   }) async {
-    List<String> list = url.split("://");
-    if (list.length <= 1) {
+    final RegExp urlPattern = RegExp( r'^https?:\/\/[^\s/$.?#].[^\s]*$', caseSensitive: false );
+
+    // Validate URL format
+    if (!urlPattern.hasMatch(url)) {
       error = true;
       fromLoading = false;
       throw Exception("The URL is not valid");
     }
 
-    String type = list.first.toLowerCase();
-    list = list.last.split("/");
-    String domain = list.first;
-    list.remove(domain);
-    String path = list.join("/");
+    Request request = Request("GET", Uri.parse(url))..followRedirects = false;
 
-    List<String> _n = list.last.split(".");
-    if (_n.length <= 1) throw Exception("URL dont have extension");
-    if (_n.length != 2) throw Exception("URL dont have a valid image");
+    // Add headers if provided
+    if (headers != null) request.headers.addAll(headers);
 
-    Request request = Request(
-      "GET",
-      type.toLowerCase() == 'https'
-      ? Uri.https(domain, path, headers)
-      : Uri.http(domain, path, headers)
-    );
-
-    request.followRedirects = false;
-    return await request.send().then((value) async{
-      if(value.statusCode == 200){
-        try{
+    return await request.send().then((value) async {
+      if (value.statusCode == 200) {
+        try {
           await value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name      : DateTime.now().millisecondsSinceEpoch.toString() + Random().nextInt(10000).toString() + '-' + _n.first,
+            name      : '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${url.split('/').last.split('.').first}',
             bytes     : bytes,
-            extension : _n.last,
+            extension : url.split('.').last.split('?').first,
             maxSize   : maxSize,
           ));
 
@@ -131,29 +121,27 @@ class ImageController with ChangeNotifier{
     });
   }
 
-
   Future<void> setFromBytes({
     required final String name,
     required final String extension,
     required final Uint8List? bytes,
     final int? maxSize
   }) async {
-    if(bytes == null) throw Exception("bytes cant be null");
+    if (bytes == null) throw Exception("bytes cant be null");
     await PlatformTools().write(
       name      : name,
       extension : extension,
       bytes     : bytes,
       maxSize   : maxSize
     ).then((_f) {
-      _file      = _f;
-      _bytes     = _f.bytes;
-      _error     = false;
-      _hasImage  = true;
-      _extension = extension;
+      _file       = _f;
+      _bytes      = _f.bytes;
+      _error      = false;
+      _hasImage   = true;
+      _extension  = extension;
       notifyListeners();
     }).onError((error, stackTrace) => _reset(error: true));
   }
-
 
   /// Set the image file from http response and url
   Future<void> setFromResponse({
@@ -164,7 +152,7 @@ class ImageController with ChangeNotifier{
     List<String> _e = url.split(".");
     if (_e.length <= 1) throw Exception("url dont have extension");
 
-    try{
+    try {
       kIsWeb
       ? await PlatformTools().setFile(
         response  : response,
@@ -172,32 +160,31 @@ class ImageController with ChangeNotifier{
         maxSize   : maxSize,
         extension : _e.last
       ).then((r) {
-        _file       = r.platformFile;
-        _bytes      = r.platformFile.bytes;
-        _error      = r.error;
-        _hasImage   = !r.error;
-        _extension  = _e.last;
-        notifyListeners();
-      })
+          _file       = r.platformFile;
+          _bytes      = r.platformFile.bytes;
+          _error      = r.error;
+          _hasImage   = !r.error;
+          _extension  = _e.last;
+          notifyListeners();
+        })
       : await PlatformTools().setFile(
         response  : response,
         maxSize   : maxSize,
-        extension : _e.last
+        extension: _e.last
       ).then((r) {
-        _file     = r.platformFile;
-        _bytes    = r.platformFile.bytes;
-        _error    = r.error;
-        _hasImage = !r.error;
-        _extension  = _e.last;
-        notifyListeners();
-      });
-    } catch (e){
+          _file       = r.platformFile;
+          _bytes      = r.platformFile.bytes;
+          _error      = r.error;
+          _hasImage   = !r.error;
+          _extension  = _e.last;
+          notifyListeners();
+        });
+    } catch (e) {
       debugPrint('n_image_piker e1: $e');
       _reset(error: true);
       notifyListeners();
     }
   }
-
 
   /// This dont work in web!
   Future<void> setFromPath({
@@ -207,22 +194,21 @@ class ImageController with ChangeNotifier{
     List<String> _e = path.split(".");
     if (_e.length <= 1) throw Exception("path dont have extension");
 
-    if(kIsWeb){
+    if (kIsWeb) {
       throw Exception('This dont work in web');
     } else {
-      try{
+      try {
         await PlatformTools().setFileFromPath(
           path    : path,
           maxSize : maxSize
         ).then((r) {
-          _file       = r.platformFile;
-          _bytes      = r.platformFile.bytes;
-          _error      = r.error;
-          _hasImage   = !r.error;
-          _extension  = _e.last;
+          _file     = r.platformFile;
+          _bytes    = r.platformFile.bytes;
+          _error    = r.error;
+          _hasImage = !r.error;
           notifyListeners();
         });
-      } catch (e){
+      } catch (e) {
         debugPrint('n_image_piker e1: $e');
         _reset(error: true);
         notifyListeners();
@@ -232,8 +218,7 @@ class ImageController with ChangeNotifier{
 
   /// return an async [MultipartFile] for uploading using [key], example:
   /// - {"key" : "image_path.png"}
-  Future<MultipartFile> image({final String key = "image"}) async =>
-  _file == null
+  Future<MultipartFile> image({String key = "image"}) async => _file == null
   ? throw Exception('No image loaded')
   : kIsWeb
     ? MultipartFile.fromBytes(
@@ -250,8 +235,7 @@ class ImageController with ChangeNotifier{
     );
 
   /// Open the image dialog picker
-  Future<void> pickImage({final int? maxSize}) async =>
-  await FilePicker.platform.pickFiles(
+  Future<void> pickImage({final int? maxSize}) async => await FilePicker.platform.pickFiles(
     type              : FileType.custom,
     allowedExtensions : _fileTypes,
     lockParentWindow  : true,
@@ -263,10 +247,10 @@ class ImageController with ChangeNotifier{
     } else {
       final f = response.files.single;
       setFromBytes(
-        name      : f.name,
-        extension : f.extension??'',
-        bytes     : f.bytes,
-        maxSize   : maxSize,
+        name: f.name,
+        extension: f.extension ?? '',
+        bytes: f.bytes,
+        maxSize: maxSize,
       );
     }
     notifyListeners();
@@ -274,22 +258,23 @@ class ImageController with ChangeNotifier{
 
   removeImage({required final bool notify}) {
     _reset(error: false);
-    if(notify) notifyListeners();
+    if (notify) notifyListeners();
   }
 
-  showImageViewer(BuildContext context, {
+  showImageViewer(
+    final BuildContext context, {
     required final bool blur,
     required final double sigma,
     final Color? closeColor,
     final Object? tag,
-  }) => _bytes == null
+  }) =>
+  _bytes == null
   ? throw Exception('There is no any image loaded')
-  : imageViewerDialog(
-    context,
-    tag   : tag??Random().nextInt(100000),
-    bytes : _bytes ?? Uint8List(0),
-    blur  : blur,
-    sigma : sigma,
-    closeColor: closeColor
-  );
+  : imageViewerDialog(context,
+      tag        : tag    ?? Random().nextInt(100000),
+      bytes      : _bytes ?? Uint8List(0),
+      blur       : blur,
+      sigma      : sigma,
+      closeColor : closeColor
+    );
 }

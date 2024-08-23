@@ -1,13 +1,19 @@
+## 2.3.2
+* All variables are final now (performance)
+* Fix setFromURL method. [Moinkhan780](https://github.com/moinkhan780)
+* Fixed typo mistakes in the code. [Moinkhan780](https://github.com/moinkhan780)
+* Optimized and updated the example code for better clarity and functionality. [Moinkhan780](https://github.com/moinkhan780)
+
 ## 2.3.1
-* Change dart:html to web package
-* Now required width & height
+* Change dart:html to web package.
+* Now required width & height.
 
 ## 2.3.0
-* Platform separated
-* [New] image resizing by maxSize
+* Platform separated.
+* [New] image resizing by maxSize.
 
 ## 2.2.1
-* ImageViewer improvements for small images
+* ImageViewer improvements for small images.
 
 ## 2.2.0
 * ImageViewer improvements

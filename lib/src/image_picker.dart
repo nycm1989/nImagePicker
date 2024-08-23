@@ -1,11 +1,13 @@
 library n_image_picker_view;
 
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'image_controller.dart';
-import 'image_body.dart';
 
-class ImagePicker extends ImageBody{
+import 'package:flutter/material.dart';
+
+import 'image_body.dart';
+import 'image_controller.dart';
+
+class ImagePicker extends ImageBody {
   ImagePicker({
     required super.controller,
     required super.width,
@@ -18,7 +20,7 @@ class ImagePicker extends ImageBody{
     super.onErrorWidget,
     super.onLoadingWidget,
     super.margin,
-    super.bankgroundColor,
+    super.backgroundColor,
     super.borderRadius,
     super.border,
     super.shadow,
@@ -48,7 +50,7 @@ class ImagePicker extends ImageBody{
     final Widget                  ? onErrorWidget,
     final Widget                  ? onLoadingWidget,
     final EdgeInsetsGeometry      ? margin,
-    final Color                   ? bankgroundColor,
+    final Color                   ? backgroundColor,
     final BorderRadius            ? borderRadius,
     final Border                  ? border,
     final BoxShadow               ? shadow,
@@ -62,35 +64,34 @@ class ImagePicker extends ImageBody{
     final Color                   ? closeColor,
     final Object                  ? tag,
     final int                     ? maxSize,
-    final Map<String, String>     ? headers,
-  }) => ImagePicker(
+  }) =>
+  ImagePicker(
     controller        : controller,
     onTap             : onTap,
     onLoadingImage    : onLoadingImage,
-    width             : dimension??250,
-    height            : dimension??250,
-    filterOpacity     : filterOpacity??0.2,
+    width             : dimension     ?? 250,
+    height            : dimension     ?? 250,
+    filterOpacity     : filterOpacity ?? 0.2,
     emptyWidget       : emptyWidget,
     filledWidget      : filledWidget,
     onErrorWidget     : onErrorWidget,
     onLoadingWidget   : onLoadingWidget,
     margin            : margin,
-    bankgroundColor   : bankgroundColor,
+    backgroundColor   : backgroundColor,
     borderRadius      : borderRadius,
     border            : border,
     shadow            : shadow,
     readOnly          : readOnly,
-    fit               : fit??BoxFit.cover,
+    fit               : fit ?? BoxFit.cover,
     viewerBlur        : viewerBlur,
     viewerBlurSigma   : viewerBlurSigma,
     previewBlur       : previewBlur,
     previewBlurSigma  : previewBlurSigma,
     shape             : BoxShape.rectangle,
     tag               : tag,
-    duration          : duration??Duration(milliseconds: 250),
+    duration          : duration ?? Duration(milliseconds: 250),
     closeColor        : closeColor,
     maxSize           : maxSize,
-    headers           : headers
   );
 
   factory ImagePicker.circle({
@@ -104,7 +105,7 @@ class ImagePicker extends ImageBody{
     final Widget                  ? onErrorWidget,
     final Widget                  ? onLoadingWidget,
     final EdgeInsetsGeometry      ? margin,
-    final Color                   ? bankgroundColor,
+    final Color                   ? backgroundColor,
     final Border                  ? border,
     final BoxShadow               ? shadow,
     final bool                    ? readOnly,
@@ -117,34 +118,33 @@ class ImagePicker extends ImageBody{
     final Duration                ? duration,
     final Color                   ? closeColor,
     final int                     ? maxSize,
-    final Map<String, String>     ? headers,
-  }) => ImagePicker(
+  }) =>
+  ImagePicker(
     controller        : controller,
     onTap             : onTap,
     onLoadingImage    : onLoadingImage,
-    width             : dimension??250,
-    height            : dimension??250,
-    filterOpacity     : filterOpacity??0.2,
+    width             : dimension ?? 250,
+    height            : dimension ?? 250,
+    filterOpacity     : filterOpacity ?? 0.2,
     emptyWidget       : emptyWidget,
     filledWidget      : filledWidget,
     onErrorWidget     : onErrorWidget,
     onLoadingWidget   : onLoadingWidget,
     margin            : margin,
-    bankgroundColor   : bankgroundColor,
+    backgroundColor   : backgroundColor,
     border            : border,
     shadow            : shadow,
     readOnly          : readOnly,
-    fit               : fit??BoxFit.cover,
+    fit               : fit ?? BoxFit.cover,
     viewerBlur        : viewerBlur,
     viewerBlurSigma   : viewerBlurSigma,
     previewBlur       : previewBlur,
     previewBlurSigma  : previewBlurSigma,
     shape             : BoxShape.circle,
     tag               : tag,
-    duration          : duration??Duration(milliseconds: 250),
+    duration          : duration ?? Duration(milliseconds: 250),
     closeColor        : closeColor,
     maxSize           : maxSize,
-    headers           : headers
   );
 
   factory ImagePicker.expand({
@@ -157,7 +157,7 @@ class ImagePicker extends ImageBody{
     final Widget                  ? onErrorWidget,
     final Widget                  ? onLoadingWidget,
     final EdgeInsetsGeometry      ? margin,
-    final Color                   ? bankgroundColor,
+    final Color                   ? backgroundColor,
     final BorderRadius            ? borderRadius,
     final Border                  ? border,
     final BoxShadow               ? shadow,
@@ -171,34 +171,33 @@ class ImagePicker extends ImageBody{
     final Duration                ? duration,
     final Color                   ? closeColor,
     final int                     ? maxSize,
-    final Map<String, String>     ? headers,
-  }) => ImagePicker(
+  }) =>
+  ImagePicker(
     controller        : controller,
     onTap             : onTap,
     onLoadingImage    : onLoadingImage,
     width             : double.infinity,
     height            : double.infinity,
-    filterOpacity     : filterOpacity??0.2,
+    filterOpacity     : filterOpacity ?? 0.2,
     emptyWidget       : emptyWidget,
     filledWidget      : filledWidget,
     onErrorWidget     : onErrorWidget,
     onLoadingWidget   : onLoadingWidget,
     margin            : margin,
-    bankgroundColor   : bankgroundColor,
+    backgroundColor   : backgroundColor,
     borderRadius      : borderRadius,
     border            : border,
     shadow            : shadow,
     readOnly          : readOnly,
-    fit               : fit??BoxFit.cover,
+    fit               : fit ?? BoxFit.cover,
     viewerBlur        : viewerBlur,
     viewerBlurSigma   : viewerBlurSigma,
     previewBlur       : previewBlur,
     previewBlurSigma  : previewBlurSigma,
     shape             : BoxShape.rectangle,
     tag               : tag,
-    duration          : duration??Duration(milliseconds: 250),
+    duration          : duration ?? Duration(milliseconds: 250),
     closeColor        : closeColor,
     maxSize           : maxSize,
-    headers           : headers
   );
 }

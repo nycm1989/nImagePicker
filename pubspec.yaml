@@ -1,6 +1,6 @@
 name: n_image_picker
 description: Configurable and easy-to-use cross-platform image selector.
-version: 2.3.1
+version: 2.3.2
 
 homepage: https://github.com/nycm1989/nImagePicker
 repository: https://github.com/nycm1989/nImagePicker
@@ -34,5 +34,11 @@ dev_dependencies:
 screenshots:
   - description: 'Loaded image screenshot'
     path: screens/2.png
+
+acknowledgements:
+  - Special thanks to [Moinkhan780](https://github.com/moinkhan780) for his contributions to version 2.3.3:
+    - Fix setFromURL method.
+    - Fixed typo mistakes in the code.
+    - Optimized and updated the example code for better clarity and functionality.
 
 # dart pub publish --dry-run

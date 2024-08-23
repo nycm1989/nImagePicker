@@ -1,19 +1,18 @@
 library n_image_picker_view;
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'image_body.dart';
 
-class ImageViewer extends ImageBody{
+class ImageViewer extends ImageBody {
   ImageViewer({
     super.onTap,
-    required String image,
+    required final String image,
     super.width,
     super.height,
     super.onErrorWidget,
     super.onLoadingWidget,
     super.margin,
-    super.bankgroundColor,
+    super.backgroundColor,
     super.borderRadius,
     super.border,
     super.shadow,
@@ -24,23 +23,24 @@ class ImageViewer extends ImageBody{
     super.tag,
     super.duration,
     super.maxSize,
-  }) : super (
-    onLoadingImage : image,
-    readOnly       : true,
-    filterOpacity  : 0,
-    viewerBlur     : false
+  }) :
+  super(
+    onLoadingImage: image,
+    readOnly      : true,
+    filterOpacity : 0,
+    viewerBlur    : false,
   );
 
   factory ImageViewer.square({
     final Future<void> Function() ? onTap,
-    required final String           image,
+    required final  String           image,
     final double                  ? dimension,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
     final Widget                  ? onErrorWidget,
     final Widget                  ? onLoadingWidget,
     final EdgeInsetsGeometry      ? margin,
-    final Color                   ? bankgroundColor,
+    final Color                   ? backgroundColor,
     final BorderRadius            ? borderRadius,
     final Border                  ? border,
     final BoxShadow               ? shadow,
@@ -49,24 +49,25 @@ class ImageViewer extends ImageBody{
     final Object                  ? tag,
     final Duration                ? duration,
     final int                     ? maxSize,
-  }) => ImageViewer(
-    onTap             : onTap,
-    image             : image,
-    width             : dimension,
-    height            : dimension,
-    onErrorWidget     : onErrorWidget,
-    onLoadingWidget   : onLoadingWidget,
-    margin            : margin,
-    bankgroundColor   : bankgroundColor,
-    borderRadius      : borderRadius,
-    border            : border,
-    shadow            : shadow,
-    fit               : fit??BoxFit.cover,
-    shape             : BoxShape.rectangle,
-    headers           : headers,
-    tag               : tag,
-    duration          : duration??Duration(milliseconds: 250),
-    maxSize           : maxSize,
+  }) =>
+  ImageViewer(
+    onTap           : onTap,
+    image           : image,
+    width           : dimension,
+    height          : dimension,
+    onErrorWidget   : onErrorWidget,
+    onLoadingWidget : onLoadingWidget,
+    margin          : margin,
+    backgroundColor : backgroundColor,
+    borderRadius    : borderRadius,
+    border          : border,
+    shadow          : shadow,
+    fit             : fit ?? BoxFit.cover,
+    shape           : BoxShape.rectangle,
+    headers         : headers,
+    tag             : tag,
+    duration        : duration ?? Duration(milliseconds: 250),
+    maxSize         : maxSize,
   );
 
   factory ImageViewer.circle({
@@ -78,7 +79,7 @@ class ImageViewer extends ImageBody{
     final Widget                  ? onErrorWidget,
     final Widget                  ? onLoadingWidget,
     final EdgeInsetsGeometry      ? margin,
-    final Color                   ? bankgroundColor,
+    final Color                   ? backgroundColor,
     final Border                  ? border,
     final BoxShadow               ? shadow,
     final BoxFit                  ? fit,
@@ -86,23 +87,24 @@ class ImageViewer extends ImageBody{
     final Object                  ? tag,
     final Duration                ? duration,
     final int                     ? maxSize,
-  }) => ImageViewer(
-    onTap             : onTap,
-    image             : image,
-    width             : dimension,
-    height            : dimension,
-    onErrorWidget     : onErrorWidget,
-    onLoadingWidget   : onLoadingWidget,
-    margin            : margin,
-    bankgroundColor   : bankgroundColor,
-    border            : border,
-    shadow            : shadow,
-    fit               : fit??BoxFit.cover,
-    shape             : BoxShape.circle,
-    headers           : headers,
-    tag               : tag,
-    duration          : duration??Duration(milliseconds: 250),
-    maxSize           : maxSize,
+  }) =>
+  ImageViewer(
+    onTap           : onTap,
+    image           : image,
+    width           : dimension,
+    height          : dimension,
+    onErrorWidget   : onErrorWidget,
+    onLoadingWidget : onLoadingWidget,
+    margin          : margin,
+    backgroundColor : backgroundColor,
+    border          : border,
+    shadow          : shadow,
+    fit             : fit ?? BoxFit.cover,
+    shape           : BoxShape.circle,
+    headers         : headers,
+    tag             : tag,
+    duration        : duration ?? Duration(milliseconds: 250),
+    maxSize         : maxSize,
   );
 
   factory ImageViewer.expand({
@@ -113,7 +115,7 @@ class ImageViewer extends ImageBody{
     final Widget                  ? onErrorWidget,
     final Widget                  ? onLoadingWidget,
     final EdgeInsetsGeometry      ? margin,
-    final Color                   ? bankgroundColor,
+    final Color                   ? backgroundColor,
     final BorderRadius            ? borderRadius,
     final Border                  ? border,
     final BoxShadow               ? shadow,
@@ -122,23 +124,24 @@ class ImageViewer extends ImageBody{
     final Object                  ? tag,
     final Duration                ? duration,
     final int                     ? maxSize,
-  }) => ImageViewer(
-    onTap             : onTap,
-    image             : image,
-    width             : double.infinity,
-    height            : double.infinity,
-    onErrorWidget     : onErrorWidget,
-    onLoadingWidget   : onLoadingWidget,
-    margin            : margin,
-    bankgroundColor   : bankgroundColor,
-    borderRadius      : borderRadius,
-    border            : border,
-    shadow            : shadow,
-    fit               : fit??BoxFit.cover,
-    shape             : BoxShape.rectangle,
-    headers           : headers,
-    tag               : tag,
-    duration          : duration??Duration(milliseconds: 250),
-    maxSize           : maxSize,
+  }) =>
+  ImageViewer(
+    onTap           : onTap,
+    image           : image,
+    width           : double.infinity,
+    height          : double.infinity,
+    onErrorWidget   : onErrorWidget,
+    onLoadingWidget : onLoadingWidget,
+    margin          : margin,
+    backgroundColor : backgroundColor,
+    borderRadius    : borderRadius,
+    border          : border,
+    shadow          : shadow,
+    fit             : fit ?? BoxFit.cover,
+    shape           : BoxShape.rectangle,
+    headers         : headers,
+    tag             : tag,
+    duration        : duration ?? Duration(milliseconds: 250),
+    maxSize         : maxSize,
   );
 }

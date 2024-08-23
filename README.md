@@ -172,3 +172,11 @@ ImageViewer.expand(
     image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
 )
 ```
+
+## Acknowledgements
+### A special thanks to [Moinkhan780](https://github.com/moinkhan780) for his contributions to version 2.3.3:
+```
+- Fix setFromURL method.
+- Fixed typo mistakes in the code.
+- Optimized and updated the example code for better clarity and functionality.
+```
