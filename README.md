@@ -174,7 +174,7 @@ ImageViewer.expand(
 ```
 
 ## Acknowledgements
-### A special thanks to [Moinkhan780](https://github.com/moinkhan780) for his contributions to version 2.3.3:
+### A special thanks to [Moinkhan780](https://github.com/moinkhan780) for his contributions to version 2.3.2:
 ```
 - Fix setFromURL method.
 - Fixed typo mistakes in the code.

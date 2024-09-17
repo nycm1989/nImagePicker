@@ -1,3 +1,6 @@
+## 2.3.3
+* new aliveName in setFromUrl, in case of rewrhite
+
 ## 2.3.2
 * All variables are final now (performance)
 * Fix setFromURL method. [Moinkhan780](https://github.com/moinkhan780)

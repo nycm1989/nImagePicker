@@ -83,7 +83,8 @@ class ImageController with ChangeNotifier {
   Future<bool> setFromURL(final BuildContext context, {
     required final String url,
     final Map<String, String>? headers,
-    final int? maxSize
+    final int? maxSize,
+    final String ? aliveName,
   }) async {
     final RegExp urlPattern = RegExp( r'^https?:\/\/[^\s/$.?#].[^\s]*$', caseSensitive: false );
 
@@ -103,7 +104,7 @@ class ImageController with ChangeNotifier {
       if (value.statusCode == 200) {
         try {
           await value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name      : '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${url.split('/').last.split('.').first}',
+            name      : aliveName??'${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${url.split('/').last.split('.').first}',
             bytes     : bytes,
             extension : url.split('.').last.split('?').first,
             maxSize   : maxSize,
