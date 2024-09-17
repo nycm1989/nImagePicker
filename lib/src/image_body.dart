@@ -13,6 +13,7 @@ class ImageBody extends StatefulWidget {
   final ImageController         ? controller;
   final Future<void> Function() ? onTap;
   final String                  ? onLoadingImage;
+  final String                  ? aliveName;
   final double                  ? width;
   final double                  ? height;
   final double                  ? filterOpacity;
@@ -42,8 +43,10 @@ class ImageBody extends StatefulWidget {
 
   const ImageBody({
     this.controller,
-      ///Only load image from https or http
+    ///Only load image from https or http
     this.onLoadingImage,
+    ///Works if onLoadingImage has a value
+    this.aliveName,
     this.margin         = EdgeInsets.zero,
     this.readOnly       = false,
     this.fit            = BoxFit.cover,
@@ -91,9 +94,10 @@ class __ImageState extends State<ImageBody> {
           await widget.controller!
           .setFromURL(
             context,
-            url     : widget.onLoadingImage!,
-            headers : widget.controller!.headers,
-            maxSize : widget.maxSize,
+            url       : widget.onLoadingImage!,
+            headers   : widget.controller!.headers,
+            maxSize   : widget.maxSize,
+            aliveName : widget.aliveName
           )
           .then((state) async {
             streamController?.close();
@@ -120,9 +124,10 @@ class __ImageState extends State<ImageBody> {
           await memoryController
           .setFromURL(
             context,
-            url     : widget.onLoadingImage!,
-            headers : memoryController.headers,
-            maxSize : widget.maxSize,
+            url       : widget.onLoadingImage!,
+            headers   : memoryController.headers,
+            maxSize   : widget.maxSize,
+            aliveName : widget.aliveName
           )
           .then((state) async {
             streamController?.close();
