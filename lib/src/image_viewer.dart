@@ -7,6 +7,7 @@ class ImageViewer extends ImageBody {
   ImageViewer({
     super.onTap,
     required final String image,
+    super.aliveName,
     super.width,
     super.height,
     super.onErrorWidget,
@@ -34,6 +35,7 @@ class ImageViewer extends ImageBody {
   factory ImageViewer.square({
     final Future<void> Function() ? onTap,
     required final  String           image,
+    final String                  ? aliveName,
     final double                  ? dimension,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
@@ -53,6 +55,7 @@ class ImageViewer extends ImageBody {
   ImageViewer(
     onTap           : onTap,
     image           : image,
+    aliveName       : aliveName,
     width           : dimension,
     height          : dimension,
     onErrorWidget   : onErrorWidget,
@@ -73,6 +76,7 @@ class ImageViewer extends ImageBody {
   factory ImageViewer.circle({
     final Future<void> Function() ? onTap,
     required final String           image,
+    final String                  ? aliveName,
     final double                  ? dimension,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
@@ -91,6 +95,7 @@ class ImageViewer extends ImageBody {
   ImageViewer(
     onTap           : onTap,
     image           : image,
+    aliveName       : aliveName,
     width           : dimension,
     height          : dimension,
     onErrorWidget   : onErrorWidget,
@@ -110,6 +115,7 @@ class ImageViewer extends ImageBody {
   factory ImageViewer.expand({
     final Future<void> Function() ? onTap,
     required final String           image,
+    final String                  ? aliveName,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
     final Widget                  ? onErrorWidget,
@@ -128,6 +134,7 @@ class ImageViewer extends ImageBody {
   ImageViewer(
     onTap           : onTap,
     image           : image,
+    aliveName       : aliveName,
     width           : double.infinity,
     height          : double.infinity,
     onErrorWidget   : onErrorWidget,

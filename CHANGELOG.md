@@ -1,5 +1,8 @@
+## 2.3.3+2
+* AliveName routing for imageViewer
+
 ## 2.3.3+1
-* AliveName routing
+* AliveName routing for imagePicker
 
 ## 2.3.3
 * new aliveName in setFromUrl, in case of rewrhite
