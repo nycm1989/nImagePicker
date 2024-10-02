@@ -1,3 +1,8 @@
+## 2.4.0
+* [New] alive bool option for keeping image names on memory
+* [Upgraded] image|onloadingImage for htmlImage
+* [New] assetImage
+
 ## 2.3.3+2
 * AliveName routing for imageViewer
 

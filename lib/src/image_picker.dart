@@ -1,7 +1,6 @@
 library n_image_picker_view;
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import 'image_body.dart';
@@ -13,8 +12,9 @@ class ImagePicker extends ImageBody {
     required super.width,
     required super.height,
     super.onTap,
-    super.onLoadingImage,
-    super.aliveName,
+    super.htmlImage,
+    super.assetImage,
+    super.alive,
     super.filterOpacity,
     super.emptyWidget,
     super.filledWidget,
@@ -38,13 +38,14 @@ class ImagePicker extends ImageBody {
     super.maxSize,
     super.headers,
     super.key,
-  });
+  }) : assert( htmlImage == null || assetImage == null, "Only one image must be provided" );
 
   factory ImagePicker.square({
     required final ImageController  controller,
     final Future<void> Function() ? onTap,
-    final String                  ? onLoadingImage,
-    final String                  ? aliveName,
+    final String                  ? htmlImage,
+    final String                  ? assetImage,
+    final bool                    ? alive,
     final double                  ? dimension,
     final double                  ? filterOpacity,
     final Widget                  ? emptyWidget,
@@ -70,8 +71,9 @@ class ImagePicker extends ImageBody {
   ImagePicker(
     controller        : controller,
     onTap             : onTap,
-    onLoadingImage    : onLoadingImage,
-    aliveName         : aliveName,
+    htmlImage         : htmlImage,
+    assetImage        : assetImage,
+    alive             : alive,
     width             : dimension     ?? 250,
     height            : dimension     ?? 250,
     filterOpacity     : filterOpacity ?? 0.2,
@@ -100,8 +102,9 @@ class ImagePicker extends ImageBody {
   factory ImagePicker.circle({
     required final ImageController  controller,
     final Future<void> Function() ? onTap,
-    final String                  ? onLoadingImage,
-    final String                  ? aliveName,
+    final String                  ? htmlImage,
+    final String                  ? assetImage,
+    final bool                    ? alive,
     final double                  ? dimension,
     final double                  ? filterOpacity,
     final Widget                  ? emptyWidget,
@@ -126,8 +129,9 @@ class ImagePicker extends ImageBody {
   ImagePicker(
     controller        : controller,
     onTap             : onTap,
-    onLoadingImage    : onLoadingImage,
-    aliveName         : aliveName,
+    htmlImage         : htmlImage,
+    assetImage        : assetImage,
+    alive             : alive,
     width             : dimension ?? 250,
     height            : dimension ?? 250,
     filterOpacity     : filterOpacity ?? 0.2,
@@ -155,8 +159,9 @@ class ImagePicker extends ImageBody {
   factory ImagePicker.expand({
     required final ImageController  controller,
     final Future<void> Function() ? onTap,
-    final String                  ? onLoadingImage,
-    final String                  ? aliveName,
+    final String                  ? htmlImage,
+    final String                  ? assetImage,
+    final bool                    ? alive,
     final double                  ? filterOpacity,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
@@ -181,8 +186,9 @@ class ImagePicker extends ImageBody {
   ImagePicker(
     controller        : controller,
     onTap             : onTap,
-    onLoadingImage    : onLoadingImage,
-    aliveName         : aliveName,
+    htmlImage         : htmlImage,
+    assetImage        : assetImage,
+    alive             : alive,
     width             : double.infinity,
     height            : double.infinity,
     filterOpacity     : filterOpacity ?? 0.2,

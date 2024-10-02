@@ -17,13 +17,16 @@
 
 
 ## With this widget, you can:
-- Select images
+- Provide URL images
+- Provide assets images
 - Load images on startup
 - Name the JSON key of the image
 - Obtain the multipart file
 - Have error control when loading the image
 - Change the widgets displayed when loading the initial image, when selecting an image, when undoing the selection of an image, and when an error occurs.
 - Full preview
+- Resize image
+- Get image bytes
 
 ## Controller properties
 ```dart
@@ -47,7 +50,7 @@ imageController.path -> Path
 
 /// return an async [MultipartFile] for uploading using [key], example:
 /// - {"key" : "image_path.png"}
-await imageController.image(key: "key") -> Furute<MultipartFile>
+await imageController.image(key: "key").then((image) {}) -> Furute<MultipartFile>
 
 /// Map for headers, this need a backend open port for your domain
 imageController.headers -> Map<String, String>
@@ -75,32 +78,32 @@ imageController.showImageViewer(notify: bool)
 ```dart
 ImagePicker(
     controller          : ImageController : required,
-    width               : double? null,
-    height              : double? null,
-    onTap               : Future<void> Function() ? null,
-    onLoadingImage      : String? null,
-    filterOpacity       : double? null,
-    emptyWidget         : Widget? null,
-    filledWidget        : Widget? null,
-    onErrorWidget       : Widget? null,
-    onLoadingWidget     : Widget? null,
-    margin              : EdgeInsetsGeometry? null,
-    bankgroundColor     : Color? null,
-    border              : Border? null,
-    shadow              : BoxShadow? null,
-    readOnly            : bool? null,
-    fit                 : BoxFit? null,
-    viewerBlur          : bool? null,
-    viewerBlurSigma     : double? null,
-    previewBlur         : bool? null,
-    previewBlurSigma    : double? null,
-    shape               : BoxShape? null,
-    borderRadius        : BorderRadius? null,
-    headers             : Map<String, String>? null,
-    dimension           : Double?? null
-
-    /// Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
-    maxSize             : int??null //resize image
+    width               : double | null,
+    height              : double | null,
+    onTap               : Future<void> Function() | null,
+    htmlImage           : String | null, // only one of this must be filled
+    assetImage          : String | null, // only one of this must be filled
+    filterOpacity       : double | null,
+    emptyWidget         : Widget | null,
+    filledWidget        : Widget | null,
+    onErrorWidget       : Widget | null,
+    onLoadingWidget     : Widget | null,
+    margin              : EdgeInsetsGeometry | null,
+    bankgroundColor     : Color | null,
+    border              : Border | null,
+    shadow              : BoxShadow | null,
+    readOnly            : bool | null,
+    fit                 : BoxFit | null,
+    viewerBlur          : bool | null,
+    viewerBlurSigma     : double | null,
+    previewBlur         : bool | null,
+    previewBlurSigma    : double | null,
+    shape               : BoxShape | null,
+    borderRadius        : BorderRadius | null,
+    headers             : Map<String, String> | null,
+    dimension           : Double | null
+    alive               : bool | null // Works if htmlImage has a value, keep the image name in memory
+    maxSize             : int | null // Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
 )
 ```
 
@@ -154,22 +157,23 @@ ImagePicker.expand(
 //! image will not be displayed.
 
 ImageViewer(
-    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
-    width       : 250,
-    height      : 250,
+    urlImage : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg'
+    width    : 250,
+    height   : 250,
 )
 
 ImageViewer.square(
-    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+    urlImage  : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
     dimension : 200
 )
 
 ImageViewer.circle(
-    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+    urlImage  : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
     dimension : 200
 )
+
 ImageViewer.expand(
-    image     : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
+    urlImage  : 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg',
 )
 ```
 

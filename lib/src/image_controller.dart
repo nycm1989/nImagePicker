@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:n_image_picker/src/image_viewer_dialog.dart';
@@ -46,7 +47,7 @@ class ImageController with ChangeNotifier {
 
   set error(bool onError) {
     _error = onError;
-    notifyListeners();
+    try{ notifyListeners(); } catch(e) { null; }
   }
 
   /// Map for headers, this need a backend open port for your domain
@@ -80,20 +81,26 @@ class ImageController with ChangeNotifier {
     notifyListeners();
   }
 
+  RegExp get _urlPattern => RegExp(
+    r'^https?:\/\/[^\s/$.?#].[^\s]*$|http?:\/\/[^\s/$.?#].[^\s]*$',
+    caseSensitive: false
+  );
+
   Future<bool> setFromURL(final BuildContext context, {
     required final String url,
     final Map<String, String>? headers,
-    final int? maxSize,
-    final String ? aliveName,
+    final int   ? maxSize,
+    final bool  ? alive,
   }) async {
-    final RegExp urlPattern = RegExp( r'^https?:\/\/[^\s/$.?#].[^\s]*$', caseSensitive: false );
 
     // Validate URL format
-    if (!urlPattern.hasMatch(url)) {
+    if (!_urlPattern.hasMatch(url)) {
       error = true;
       fromLoading = false;
       throw Exception("The URL is not valid");
     }
+
+    // print(url);
 
     Request request = Request("GET", Uri.parse(url))..followRedirects = false;
 
@@ -103,12 +110,25 @@ class ImageController with ChangeNotifier {
     return await request.send().then((value) async {
       if (value.statusCode == 200) {
         try {
+          final image_name_extendion = url.split('/').last.split('.');
+          String name = image_name_extendion.first;
+
+          if(alive != null) {
+            if(!alive) name = '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-$name';
+          } else {
+            name = '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-$name';
+          }
+
           await value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name      : aliveName??'${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${url.split('/').last.split('.').first}',
+            name      : name,
             bytes     : bytes,
-            extension : url.split('.').last.split('?').first,
+            extension : image_name_extendion.last,
             maxSize   : maxSize,
-          ));
+          ))
+          .onError((error, stackTrace) {
+            _reset(error: true);
+            return false;
+          });
 
           return true;
         } catch (e) {
@@ -119,6 +139,9 @@ class ImageController with ChangeNotifier {
         _reset(error: true);
         return false;
       }
+    }).onError((error, stackTrace){
+        _reset(error: true);
+        return false;
     });
   }
 
@@ -142,6 +165,33 @@ class ImageController with ChangeNotifier {
       _extension  = extension;
       notifyListeners();
     }).onError((error, stackTrace) => _reset(error: true));
+  }
+
+  Future<void> setFromAsset({
+    required final String path,
+    final int? maxSize
+  }) async {
+    if (path.isEmpty) throw Exception("path cant be empty");
+    if (_urlPattern.hasMatch(path)) throw Exception("A URL can't be an asset");
+
+    await rootBundle.load(path)
+    .then((data) async {
+      final extension = path.split('.').last.split('?').first;
+      await PlatformTools().write(
+        name      : '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${path.split('/').last.split('.').first}',
+        extension : extension,
+        bytes     : data.buffer.asUint8List(),
+        maxSize   : maxSize
+      ).then((_f) {
+        _file       = _f;
+        _bytes      = _f.bytes;
+        _error      = false;
+        _hasImage   = true;
+        _extension  = extension;
+        notifyListeners();
+      }).onError((error, stackTrace) => _reset(error: true));
+    })
+    .onError((error, stackTrace) => _reset(error: true));
   }
 
   /// Set the image file from http response and url

@@ -12,8 +12,9 @@ import 'image_controller.dart';
 class ImageBody extends StatefulWidget {
   final ImageController         ? controller;
   final Future<void> Function() ? onTap;
-  final String                  ? onLoadingImage;
-  final String                  ? aliveName;
+  final String                  ? htmlImage;
+  final String                  ? assetImage;
+  final bool                    ? alive;
   final double                  ? width;
   final double                  ? height;
   final double                  ? filterOpacity;
@@ -44,9 +45,11 @@ class ImageBody extends StatefulWidget {
   const ImageBody({
     this.controller,
     ///Only load image from https or http
-    this.onLoadingImage,
-    ///Works if onLoadingImage has a value
-    this.aliveName,
+    this.htmlImage,
+    ///Only load image from assets
+    this.assetImage,
+    ///Works if htmlImage has a value, keep the image name in memory
+    this.alive,
     this.margin         = EdgeInsets.zero,
     this.readOnly       = false,
     this.fit            = BoxFit.cover,
@@ -86,7 +89,7 @@ class __ImageState extends State<ImageBody> {
 
   startLoading() async {
     if (streamController != null) streamController == null;
-    if (widget.onLoadingImage != null) {
+    if (widget.htmlImage != null) {
       try {
         streamController = StreamController<bool>();
         setState(() => streamController?.add(true));
@@ -94,10 +97,10 @@ class __ImageState extends State<ImageBody> {
           await widget.controller!
           .setFromURL(
             context,
-            url       : widget.onLoadingImage!,
+            url       : widget.htmlImage!,
             headers   : widget.controller!.headers,
             maxSize   : widget.maxSize,
-            aliveName : widget.aliveName
+            alive     : widget.alive
           )
           .then((state) async {
             streamController?.close();
@@ -124,10 +127,10 @@ class __ImageState extends State<ImageBody> {
           await memoryController
           .setFromURL(
             context,
-            url       : widget.onLoadingImage!,
-            headers   : memoryController.headers,
-            maxSize   : widget.maxSize,
-            aliveName : widget.aliveName
+            url     : widget.htmlImage!,
+            headers : memoryController.headers,
+            maxSize : widget.maxSize,
+            alive   : widget.alive
           )
           .then((state) async {
             streamController?.close();
@@ -162,6 +165,45 @@ class __ImageState extends State<ImageBody> {
           setState(() => widget.controller?.error = true);
         } catch (e) {}
       }
+    } else if (widget.assetImage != null) {
+      streamController = null;
+      streamController?.close();
+      if (widget.controller != null) {
+        await widget.controller!
+        .setFromAsset(
+          path    : widget.assetImage!,
+          maxSize : widget.maxSize
+        )
+        .then((state) async {
+          streamController?.close();
+          streamController = null;
+        })
+        .onError((error, stackTrace) {
+          streamController?.close();
+          streamController = null;
+          widget.controller!.fromLoading = false;
+          widget.controller!.error = true;
+        });
+      } else {
+        ImageController memoryController = ImageController();
+        await memoryController
+        .setFromAsset(
+          path    : widget.assetImage!,
+          maxSize : widget.maxSize
+        )
+        .then((state) async {
+          streamController?.close();
+          streamController = null;
+          setState(() => image = memoryController.file!.bytes! );
+        })
+        .onError((error, stackTrace) {
+          streamController?.close();
+          streamController = null;
+          try {
+            setState(() => widget.controller?.error = true);
+          } catch (e) {}
+        });
+      }
     } else {
       streamController = null;
       streamController?.close();
@@ -190,7 +232,8 @@ class __ImageState extends State<ImageBody> {
   void didUpdateWidget(covariant ImageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller == null) {
-      if (widget.onLoadingImage != oldWidget.onLoadingImage) startLoading();
+      if(widget.htmlImage  != null) if (widget.htmlImage  != oldWidget.htmlImage  ) startLoading();
+      if(widget.assetImage != null) if (widget.assetImage != oldWidget.assetImage ) startLoading();
     } else {
       if (widget.controller != oldWidget.controller) startLoading();
     }
