@@ -81,7 +81,7 @@ ImagePicker(
     width               : double | null,
     height              : double | null,
     onTap               : Future<void> Function() | null,
-    htmlImage           : String | null, // only one of this must be filled
+    urlImage           : String | null, // only one of this must be filled
     assetImage          : String | null, // only one of this must be filled
     filterOpacity       : double | null,
     emptyWidget         : Widget | null,
@@ -102,7 +102,7 @@ ImagePicker(
     borderRadius        : BorderRadius | null,
     headers             : Map<String, String> | null,
     dimension           : Double | null
-    alive               : bool | null // Works if htmlImage has a value, keep the image name in memory
+    alive               : bool | null // Works if urlImage has a value, keep the image name in memory
     maxSize             : int | null // Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
 )
 ```

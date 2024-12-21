@@ -1,6 +1,6 @@
 ## 2.4.0
 * [New] alive bool option for keeping image names on memory
-* [Upgraded] image|onloadingImage for htmlImage
+* [Upgraded] image|onloadingImage for urlImage
 * [New] assetImage
 
 ## 2.3.3+2

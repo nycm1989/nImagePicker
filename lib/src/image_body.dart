@@ -12,7 +12,7 @@ import 'image_controller.dart';
 class ImageBody extends StatefulWidget {
   final ImageController         ? controller;
   final Future<void> Function() ? onTap;
-  final String                  ? htmlImage;
+  final String                  ? urlImage;
   final String                  ? assetImage;
   final bool                    ? alive;
   final double                  ? width;
@@ -45,10 +45,10 @@ class ImageBody extends StatefulWidget {
   const ImageBody({
     this.controller,
     ///Only load image from https or http
-    this.htmlImage,
+    this.urlImage,
     ///Only load image from assets
     this.assetImage,
-    ///Works if htmlImage has a value, keep the image name in memory
+    ///Works if urlImage has a value, keep the image name in memory
     this.alive,
     this.margin         = EdgeInsets.zero,
     this.readOnly       = false,
@@ -83,13 +83,14 @@ class ImageBody extends StatefulWidget {
 }
 
 class __ImageState extends State<ImageBody> {
+  final GlobalKey widgetKey = GlobalKey();
   StreamController<bool>? streamController;
   Uint8List? image;
   bool error = false;
 
   startLoading() async {
     if (streamController != null) streamController == null;
-    if (widget.htmlImage != null) {
+    if (widget.urlImage != null) {
       try {
         streamController = StreamController<bool>();
         setState(() => streamController?.add(true));
@@ -97,7 +98,7 @@ class __ImageState extends State<ImageBody> {
           await widget.controller!
           .setFromURL(
             context,
-            url       : widget.htmlImage!,
+            url       : widget.urlImage!,
             headers   : widget.controller!.headers,
             maxSize   : widget.maxSize,
             alive     : widget.alive
@@ -122,12 +123,13 @@ class __ImageState extends State<ImageBody> {
             widget.controller!.error = true;
           });
         } else {
+          // This works if controller is null
           ImageController memoryController = ImageController();
           if (widget.headers != null) memoryController.headers = widget.headers!;
           await memoryController
           .setFromURL(
             context,
-            url     : widget.htmlImage!,
+            url     : widget.urlImage!,
             headers : memoryController.headers,
             maxSize : widget.maxSize,
             alive   : widget.alive
@@ -214,6 +216,16 @@ class __ImageState extends State<ImageBody> {
   void initState() {
     super.initState();
     startLoading();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if((widget.readOnly??true) == false) {
+        if(widget.controller != null){
+          // WidgetsBinding.instance.addPostFrameCallback((_) {
+            // final String className = "${Random().nextInt(100000).toString()}";
+            widget.controller?.dragAndDrop(widgetKey);
+          // });
+        }
+      }
+    });
   }
 
   @override
@@ -232,7 +244,7 @@ class __ImageState extends State<ImageBody> {
   void didUpdateWidget(covariant ImageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller == null) {
-      if(widget.htmlImage  != null) if (widget.htmlImage  != oldWidget.htmlImage  ) startLoading();
+      if(widget.urlImage  != null) if (widget.urlImage  != oldWidget.urlImage  ) startLoading();
       if(widget.assetImage != null) if (widget.assetImage != oldWidget.assetImage ) startLoading();
     } else {
       if (widget.controller != oldWidget.controller) startLoading();
@@ -242,6 +254,7 @@ class __ImageState extends State<ImageBody> {
   @override
   Widget build(BuildContext context) {
     return Hero(
+      key   : widgetKey,
       tag   : widget.tag ?? Random().nextInt(100000),
       child :
       AnimatedContainer(
@@ -263,14 +276,14 @@ class __ImageState extends State<ImageBody> {
             : DecorationImage(
                 image       : Image.memory(image!).image,
                 fit         : widget.fit,
-                colorFilter : widget.controller == null ? null : ColorFilter.mode(Colors.black.withOpacity(widget.filterOpacity ?? 0), BlendMode.darken),
+                colorFilter : widget.controller == null ? null : ColorFilter.mode(Colors.black.withValues(alpha: widget.filterOpacity ?? 0), BlendMode.darken),
               )
           : widget.controller!.file == null
             ? null
             : DecorationImage(
               image       : Image.memory(widget.controller!.file!.bytes!).image,
               fit         : widget.fit,
-              colorFilter : ColorFilter.mode(Colors.black.withOpacity(widget.filterOpacity ?? 0), BlendMode.darken),
+              colorFilter : ColorFilter.mode(Colors.black.withValues(alpha: widget.filterOpacity ?? 0), BlendMode.darken),
             ),
         ),
         child:

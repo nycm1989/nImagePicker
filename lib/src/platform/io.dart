@@ -1,13 +1,15 @@
 import 'dart:math';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
-import 'package:n_image_picker/src/platform/helpers.dart';
-import 'package:n_image_picker/src/platform/tools.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' show Response;
 import 'dart:io' as io show File;
+import 'package:flutter/foundation.dart' show Uint8List;
+import 'package:file_picker/file_picker.dart' show PlatformFile;
 
-import 'package:n_image_picker/src/response_model.dart';
+import 'package:n_image_picker/n_image_picker.dart' show ImageController;
+import 'package:n_image_picker/src/platform/helpers.dart' show Helpers;
+import 'package:n_image_picker/src/platform/tools.dart' show PlatformTools;
+import 'package:n_image_picker/src/response_model.dart' show ResponseModel;
 import 'package:path_provider/path_provider.dart' as pp show getTemporaryDirectory;
 
 PlatformTools getInstance() => IoFile();
@@ -104,4 +106,10 @@ class IoFile implements PlatformTools{
       });
     }
   }
+
+  @override
+  void dragAndDrop({required final ImageController controller, required final String className}) async => null;
+
+  @override
+  void createDiv(final GlobalKey widgetKey, {required final String className}) {}
 }

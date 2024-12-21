@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  static const String htmlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
+  static const String urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
   static const String assetImage = 'assets/flutter_logo.png';
 
   @override
@@ -59,12 +59,12 @@ class _MyAppState extends State<MyApp> {
                         // ImagePicker Rectangle
                         ImagePicker(
                           assetImage        : assetImage,
-                          // htmlImage         : htmlImage,
+                          // urlImage         : urlImage,
                           controller        : imageControllers[0],
                           margin            : const EdgeInsets.only(bottom: 16),
                           width             : 200,
                           height            : 150,
-                          backgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                          backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
                           filterOpacity     : 0.2,
                           borderRadius      : BorderRadius.circular(20),
                           fit               : BoxFit.cover,
@@ -79,11 +79,11 @@ class _MyAppState extends State<MyApp> {
 
                         // ImagePicker Circle
                         ImagePicker.circle(
-                          htmlImage         : htmlImage,
+                          urlImage          : urlImage,
                           tag               : "TAGFORTESTING01",
                           controller        : imageControllers[1],
                           margin            : const EdgeInsets.only(bottom: 16),
-                          backgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                          backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
                           dimension         : 200,
                           filterOpacity     : 0.2,
                           fit               : BoxFit.cover,
@@ -102,7 +102,7 @@ class _MyAppState extends State<MyApp> {
                           assetImage        : assetImage,
                           controller        : imageControllers[2],
                           margin            : const EdgeInsets.only(bottom: 16),
-                          backgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                          backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
                           dimension         : 200,
                           filterOpacity     : 0.2,
                           borderRadius      : BorderRadius.circular(20),
@@ -121,12 +121,12 @@ class _MyAppState extends State<MyApp> {
                           height: 200,
                           child:
                           ImagePicker.expand(
-                            htmlImage         : htmlImage,
+                            urlImage         : urlImage,
                             // assetImage        : assetImage,
                             tag               : "TAGFORTESTING02",
                             controller        : imageControllers[3],
                             margin            : const EdgeInsets.only(bottom: 16),
-                            backgroundColor   : const Color(0xFFededed).withOpacity(0.8),
+                            backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
                             filterOpacity     : 0.2,
                             borderRadius      : BorderRadius.circular(20),
                             fit               : BoxFit.cover,
@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
 
                       // ImageViewer Square
                       ImageViewer.square(
-                        htmlImage : htmlImage,
+                        urlImage  : urlImage,
                         dimension : 200,
                         margin    : const EdgeInsets.only(bottom: 16),
                       ),
@@ -166,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                       // ImageViewer Circle
                       ImageViewer.circle(
                         assetImage  : assetImage,
-                        // htmlImage   : htmlImage,
+                        // urlImage   : urlImage,
                         fit         : BoxFit.fill,
                         dimension   : 200,
                         margin      : const EdgeInsets.only(bottom: 16),
@@ -178,7 +178,7 @@ class _MyAppState extends State<MyApp> {
                         height  : 200,
                         child   :
                         ImageViewer.expand(
-                          htmlImage : htmlImage,
+                          urlImage : urlImage,
                           margin    : const EdgeInsets.only(bottom: 16),
                         ),
                       ),

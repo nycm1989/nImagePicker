@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:uuid/uuid.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,9 @@ class ImageController with ChangeNotifier {
   bool          _error        = false;
   bool          _hasImage     = false;
   bool          _fromLoading  = false;
+  bool          onDrag        = false;
+
+  String        _className    = "";
 
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
@@ -27,6 +30,18 @@ class ImageController with ChangeNotifier {
     "origin": "*",
     "method": "GET",
   };
+
+  void dragAndDrop(final GlobalKey widgetKey) {
+    _className = Uuid().v4();
+    if(kIsWeb) PlatformTools().createDiv(widgetKey, className: _className);
+    PlatformTools().dragAndDrop(controller: this, className: _className);
+  }
+
+  changeOnDragState(bool state) {
+    onDrag = state;
+    print("onDrag -> " + onDrag.toString());
+    notifyListeners();
+  }
 
   /// Map for headers, this need a backend open port for your domain
   set headers(Map<String, String> headers) {

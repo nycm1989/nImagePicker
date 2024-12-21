@@ -12,7 +12,7 @@ class ImagePicker extends ImageBody {
     required super.width,
     required super.height,
     super.onTap,
-    super.htmlImage,
+    super.urlImage,
     super.assetImage,
     super.alive,
     super.filterOpacity,
@@ -38,12 +38,12 @@ class ImagePicker extends ImageBody {
     super.maxSize,
     super.headers,
     super.key,
-  }) : assert( htmlImage == null || assetImage == null, "Only one image must be provided" );
+  }) : assert( urlImage == null || assetImage == null, "Only one image must be provided" );
 
   factory ImagePicker.square({
     required final ImageController  controller,
     final Future<void> Function() ? onTap,
-    final String                  ? htmlImage,
+    final String                  ? urlImage,
     final String                  ? assetImage,
     final bool                    ? alive,
     final double                  ? dimension,
@@ -71,7 +71,7 @@ class ImagePicker extends ImageBody {
   ImagePicker(
     controller        : controller,
     onTap             : onTap,
-    htmlImage         : htmlImage,
+    urlImage         : urlImage,
     assetImage        : assetImage,
     alive             : alive,
     width             : dimension     ?? 250,
@@ -102,7 +102,7 @@ class ImagePicker extends ImageBody {
   factory ImagePicker.circle({
     required final ImageController  controller,
     final Future<void> Function() ? onTap,
-    final String                  ? htmlImage,
+    final String                  ? urlImage,
     final String                  ? assetImage,
     final bool                    ? alive,
     final double                  ? dimension,
@@ -129,7 +129,7 @@ class ImagePicker extends ImageBody {
   ImagePicker(
     controller        : controller,
     onTap             : onTap,
-    htmlImage         : htmlImage,
+    urlImage         : urlImage,
     assetImage        : assetImage,
     alive             : alive,
     width             : dimension ?? 250,
@@ -159,7 +159,7 @@ class ImagePicker extends ImageBody {
   factory ImagePicker.expand({
     required final ImageController  controller,
     final Future<void> Function() ? onTap,
-    final String                  ? htmlImage,
+    final String                  ? urlImage,
     final String                  ? assetImage,
     final bool                    ? alive,
     final double                  ? filterOpacity,
@@ -186,7 +186,7 @@ class ImagePicker extends ImageBody {
   ImagePicker(
     controller        : controller,
     onTap             : onTap,
-    htmlImage         : htmlImage,
+    urlImage         : urlImage,
     assetImage        : assetImage,
     alive             : alive,
     width             : double.infinity,

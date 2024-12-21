@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:n_image_picker/n_image_picker.dart';
+
 import './router.dart' if (dart.library.html) './web.dart' if (dart.library.io) './io.dart';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart';
-import 'package:n_image_picker/src/response_model.dart';
-import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' show Response;
+import 'package:file_picker/file_picker.dart' show PlatformFile;
+import 'package:flutter/foundation.dart' show Uint8List;
+import 'package:n_image_picker/src/response_model.dart' show ResponseModel;
 
 
 abstract class PlatformTools{
@@ -38,4 +41,7 @@ abstract class PlatformTools{
     required final Uint8List? bytes,
     required final int?       maxSize,
   }) async => PlatformFile(name: '', size: 0);
+
+  void dragAndDrop({required final ImageController controller, required final String className}) async {}
+  void createDiv(final GlobalKey widgetKey, {required final String className}) {}
 }

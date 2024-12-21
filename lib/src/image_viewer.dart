@@ -6,7 +6,7 @@ import 'image_body.dart';
 class ImageViewer extends ImageBody {
   ImageViewer({
     super.onTap,
-    super.htmlImage,
+    super.urlImage,
     super.assetImage,
     super.alive,
     super.width,
@@ -26,7 +26,7 @@ class ImageViewer extends ImageBody {
     super.duration,
     super.maxSize,
   }) :
-  assert( htmlImage == null || assetImage == null, "Only one image must be provided" ),
+  assert( urlImage == null || assetImage == null, "Only one image must be provided" ),
   super(
     readOnly      : true,
     filterOpacity : 0,
@@ -35,7 +35,7 @@ class ImageViewer extends ImageBody {
 
   factory ImageViewer.square({
     final Future<void> Function() ? onTap,
-    final String                  ? htmlImage,
+    final String                  ? urlImage,
     final String                  ? assetImage,
     final bool                    ? alive,
     final double                  ? dimension,
@@ -56,7 +56,7 @@ class ImageViewer extends ImageBody {
   }) =>
   ImageViewer(
     onTap           : onTap,
-    htmlImage       : htmlImage,
+    urlImage       : urlImage,
     assetImage      : assetImage,
     alive           : alive,
     width           : dimension,
@@ -78,7 +78,7 @@ class ImageViewer extends ImageBody {
 
   factory ImageViewer.circle({
     final Future<void> Function() ? onTap,
-    final String                  ? htmlImage,
+    final String                  ? urlImage,
     final String                  ? assetImage,
     final bool                    ? alive,
     final double                  ? dimension,
@@ -98,7 +98,7 @@ class ImageViewer extends ImageBody {
   }) =>
   ImageViewer(
     onTap           : onTap,
-    htmlImage       : htmlImage,
+    urlImage       : urlImage,
     assetImage      : assetImage,
     alive       : alive,
     width           : dimension,
@@ -119,7 +119,7 @@ class ImageViewer extends ImageBody {
 
   factory ImageViewer.expand({
     final Future<void> Function() ? onTap,
-    final String                  ? htmlImage,
+    final String                  ? urlImage,
     final String                  ? assetImage,
     final bool                    ? alive,
     final Widget                  ? emptyWidget,
@@ -139,7 +139,7 @@ class ImageViewer extends ImageBody {
   }) =>
   ImageViewer(
     onTap           : onTap,
-    htmlImage       : htmlImage,
+    urlImage       : urlImage,
     assetImage      : assetImage,
     alive           : alive,
     width           : double.infinity,
