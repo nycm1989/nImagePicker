@@ -1,14 +1,12 @@
 library n_image_picker_view;
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'image_body.dart';
+import 'dart:async' show Future;
+import 'package:n_image_picker/src/image_body.dart' show ImageBody;
 
 class ImageViewer extends ImageBody {
   ImageViewer({
-    super.onTap,
     super.urlImage,
     super.assetImage,
-    super.alive,
     super.width,
     super.height,
     super.onErrorWidget,
@@ -25,11 +23,11 @@ class ImageViewer extends ImageBody {
     super.tag,
     super.duration,
     super.maxSize,
+    super.errorIcon,
   }) :
   assert( urlImage == null || assetImage == null, "Only one image must be provided" ),
   super(
     readOnly      : true,
-    filterOpacity : 0,
     viewerBlur    : false,
   );
 
@@ -53,12 +51,11 @@ class ImageViewer extends ImageBody {
     final Object                  ? tag,
     final Duration                ? duration,
     final int                     ? maxSize,
+    final IconData                ? errorIcon,
   }) =>
   ImageViewer(
-    onTap           : onTap,
-    urlImage       : urlImage,
+    urlImage        : urlImage,
     assetImage      : assetImage,
-    alive           : alive,
     width           : dimension,
     height          : dimension,
     onErrorWidget   : onErrorWidget,
@@ -74,13 +71,12 @@ class ImageViewer extends ImageBody {
     tag             : tag,
     duration        : duration ?? Duration(milliseconds: 250),
     maxSize         : maxSize,
+    errorIcon       : errorIcon,
   );
 
   factory ImageViewer.circle({
-    final Future<void> Function() ? onTap,
     final String                  ? urlImage,
     final String                  ? assetImage,
-    final bool                    ? alive,
     final double                  ? dimension,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
@@ -95,12 +91,12 @@ class ImageViewer extends ImageBody {
     final Object                  ? tag,
     final Duration                ? duration,
     final int                     ? maxSize,
+    final IconData                ? errorIcon,
+    final String                  ? errorMessage,
   }) =>
   ImageViewer(
-    onTap           : onTap,
-    urlImage       : urlImage,
+    urlImage        : urlImage,
     assetImage      : assetImage,
-    alive       : alive,
     width           : dimension,
     height          : dimension,
     onErrorWidget   : onErrorWidget,
@@ -115,13 +111,13 @@ class ImageViewer extends ImageBody {
     tag             : tag,
     duration        : duration ?? Duration(milliseconds: 250),
     maxSize         : maxSize,
+    errorIcon       : errorIcon,
   );
 
   factory ImageViewer.expand({
     final Future<void> Function() ? onTap,
     final String                  ? urlImage,
     final String                  ? assetImage,
-    final bool                    ? alive,
     final Widget                  ? emptyWidget,
     final Widget                  ? filledWidget,
     final Widget                  ? onErrorWidget,
@@ -136,12 +132,12 @@ class ImageViewer extends ImageBody {
     final Object                  ? tag,
     final Duration                ? duration,
     final int                     ? maxSize,
+    final IconData                ? errorIcon,
+    final String                  ? errorMessage,
   }) =>
   ImageViewer(
-    onTap           : onTap,
-    urlImage       : urlImage,
+    urlImage        : urlImage,
     assetImage      : assetImage,
-    alive           : alive,
     width           : double.infinity,
     height          : double.infinity,
     onErrorWidget   : onErrorWidget,
@@ -157,5 +153,6 @@ class ImageViewer extends ImageBody {
     tag             : tag,
     duration        : duration ?? Duration(milliseconds: 250),
     maxSize         : maxSize,
+    errorIcon       : errorIcon,
   );
 }

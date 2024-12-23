@@ -1,3 +1,9 @@
+## 3.0.0
+* [New] New drag and drop area, web-only
+* [Upgraded] remove filled widget
+* [New] filled state icons
+* [New] icons size is computed now
+
 ## 2.4.0
 * [New] alive bool option for keeping image names on memory
 * [Upgraded] image|onloadingImage for urlImage

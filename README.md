@@ -11,14 +11,20 @@
     <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/4.png" alt="" style="width:300px;">
 </p>
 
+
 <p align="center">
     <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/5.png" alt="" style="height:300px;">
 </p>
 
+<p align="center">New drag and drop area, web-only for now in version 3.0.0</p>
+<p align="center">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/6.png" alt="" style="width:300px;">
+</p>
 
 ## With this widget, you can:
 - Provide URL images
 - Provide assets images
+- Drag and Drop (web-only)
 - Load images on startup
 - Name the JSON key of the image
 - Obtain the multipart file
@@ -77,33 +83,33 @@ imageController.showImageViewer(notify: bool)
 ## Widget properties
 ```dart
 ImagePicker(
-    controller          : ImageController : required,
-    width               : double | null,
-    height              : double | null,
-    onTap               : Future<void> Function() | null,
-    urlImage           : String | null, // only one of this must be filled
-    assetImage          : String | null, // only one of this must be filled
-    filterOpacity       : double | null,
-    emptyWidget         : Widget | null,
-    filledWidget        : Widget | null,
-    onErrorWidget       : Widget | null,
-    onLoadingWidget     : Widget | null,
-    margin              : EdgeInsetsGeometry | null,
-    bankgroundColor     : Color | null,
-    border              : Border | null,
-    shadow              : BoxShadow | null,
-    readOnly            : bool | null,
-    fit                 : BoxFit | null,
-    viewerBlur          : bool | null,
-    viewerBlurSigma     : double | null,
-    previewBlur         : bool | null,
-    previewBlurSigma    : double | null,
-    shape               : BoxShape | null,
-    borderRadius        : BorderRadius | null,
-    headers             : Map<String, String> | null,
-    dimension           : Double | null
-    alive               : bool | null // Works if urlImage has a value, keep the image name in memory
-    maxSize             : int | null // Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
+    controller          : required ImageController,
+    urlImage            : null | String, // only one of this must be filled
+    assetImage          : null | String, // only one of this must be filled
+    width               : null | double,
+    height              : null | double,
+    emptyWidget         : null | Widget,
+    onErrorWidget       : null | Widget,
+    onLoadingWidget     : null | Widget,
+    margin              : null | EdgeInsetsGeometry,
+    bankgroundColor     : null | Color,
+    borderRadius        : null | BorderRadius,
+    border              : null | Border,
+    shadow              : null | BoxShadow,
+    readOnly            : null | bool,
+    fit                 : null | BoxFit,
+    viewerBlur          : null | bool,
+    viewerBlurSigma     : null | double,
+    shape               : null | BoxShape,
+    tag                 : null | Object, // String relation for hero animation
+    duration            : null | Duration, // Animation duration
+    dimension           : null | Double,
+    deleteIcon          : null | IconData, // icon like Icons.{name}
+    expandIcon          : null | IconData, // icon like Icons.{name}
+    errorIcon           : null | IconData, // icon like Icons.{name}
+    dragIcon            : null | IconData, // icon like Icons.{name}
+    maxSize             : null | int, // Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
+    headers             : null | Map<String, String>,
 )
 ```
 

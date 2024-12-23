@@ -1,13 +1,12 @@
-import 'dart:math';
-import 'package:uuid/uuid.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart';
-import 'package:http_parser/http_parser.dart';
-import 'package:n_image_picker/src/image_viewer_dialog.dart';
-import 'package:n_image_picker/src/platform/tools.dart';
+import 'dart:math' show Random;
+import 'package:file_picker/file_picker.dart' show FilePicker, FileType, PlatformFile;
+import 'package:flutter/foundation.dart' show ChangeNotifier, Uint8List, debugPrint, kIsWeb;
+import 'package:flutter/services.dart' show Color, Size, Uint8List, rootBundle;
+import 'package:http/http.dart' show MultipartFile, Request, Response;
+import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:n_image_picker/src/image_viewer_dialog.dart' show imageViewerDialog;
+import 'package:n_image_picker/src/platform/tools.dart' show PlatformTools;
 
 class ImageController with ChangeNotifier {
   PlatformFile? _file;
@@ -21,8 +20,6 @@ class ImageController with ChangeNotifier {
   bool          _fromLoading  = false;
   bool          onDrag        = false;
 
-  String        _className    = "";
-
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST',
@@ -31,15 +28,13 @@ class ImageController with ChangeNotifier {
     "method": "GET",
   };
 
-  void dragAndDrop(final GlobalKey widgetKey) {
-    _className = Uuid().v4();
-    if(kIsWeb) PlatformTools().createDiv(widgetKey, className: _className);
-    PlatformTools().dragAndDrop(controller: this, className: _className);
+  void dragAndDrop(final GlobalKey widgetKey, {required String className}) {
+    if(kIsWeb) PlatformTools().createDiv(widgetKey, className: className);
+    PlatformTools().dragAndDrop(controller: this, className: className);
   }
 
   changeOnDragState(bool state) {
     onDrag = state;
-    print("onDrag -> " + onDrag.toString());
     notifyListeners();
   }
 
@@ -80,9 +75,6 @@ class ImageController with ChangeNotifier {
   bool          get fromLoading => _fromLoading;
   Size          get size        => _size;
   double        get weight      => _weight;
-  // Image               get image       =>  _file == null
-  // ? throw Exception()
-  // : Image.file( File.fromRawPath(_file!.bytes!) );
 
   _reset({required bool error}) {
     _file         = null;
@@ -104,8 +96,8 @@ class ImageController with ChangeNotifier {
   Future<bool> setFromURL(final BuildContext context, {
     required final String url,
     final Map<String, String>? headers,
-    final int   ? maxSize,
-    final bool  ? alive,
+    final int     ? maxSize,
+    required final String className,
   }) async {
 
     // Validate URL format
@@ -114,8 +106,6 @@ class ImageController with ChangeNotifier {
       fromLoading = false;
       throw Exception("The URL is not valid");
     }
-
-    // print(url);
 
     Request request = Request("GET", Uri.parse(url))..followRedirects = false;
 
@@ -126,16 +116,9 @@ class ImageController with ChangeNotifier {
       if (value.statusCode == 200) {
         try {
           final image_name_extendion = url.split('/').last.split('.');
-          String name = image_name_extendion.first;
-
-          if(alive != null) {
-            if(!alive) name = '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-$name';
-          } else {
-            name = '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-$name';
-          }
 
           await value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name      : name,
+            name      : className,
             bytes     : bytes,
             extension : image_name_extendion.last,
             maxSize   : maxSize,

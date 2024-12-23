@@ -1,7 +1,7 @@
-import 'dart:async';
-import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui' show Clip, Color, FilterQuality, ImageFilter, Shadow, Size;
+import 'dart:async' show Future;
+import 'package:flutter/foundation.dart' show Uint8List;
 
 Future<void> imageViewerDialog( BuildContext context, {
   required bool      blur,
