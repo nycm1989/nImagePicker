@@ -19,6 +19,7 @@ class ImageController with ChangeNotifier {
   bool          _hasImage     = false;
   bool          _fromLoading  = false;
   bool          onDrag        = false;
+  String        className     = "";
 
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
@@ -27,6 +28,8 @@ class ImageController with ChangeNotifier {
     "origin": "*",
     "method": "GET",
   };
+
+  changueClassName({required final String className}) => this.className = className;
 
   void dragAndDrop(final GlobalKey widgetKey, {required String className}) {
     if(kIsWeb) PlatformTools().createDiv(widgetKey, className: className);
@@ -97,7 +100,6 @@ class ImageController with ChangeNotifier {
     required final String url,
     final Map<String, String>? headers,
     final int     ? maxSize,
-    required final String className,
   }) async {
 
     // Validate URL format

@@ -1,13 +1,16 @@
+## 3.0.1
+* [Upgraded] setFromUrl dont need className anymore
+
 ## 3.0.0
 * [New] New drag and drop area, web-only
-* [Upgraded] remove filled widget
-* [New] filled state icons
-* [New] icons size is computed now
+* [Upgraded] Remove filled widget
+* [New] Filled state icons
+* [New] Icons size is computed now
 
 ## 2.4.0
-* [New] alive bool option for keeping image names on memory
-* [Upgraded] image|onloadingImage for urlImage
-* [New] assetImage
+* [New] Alive bool option for keeping image names on memory
+* [Upgraded] Image|onloadingImage for urlImage
+* [New] AssetImage
 
 ## 2.3.3+2
 * AliveName routing for imageViewer

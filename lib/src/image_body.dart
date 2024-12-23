@@ -107,7 +107,6 @@ class __ImageState extends State<ImageBody> {
             url       : widget.urlImage!,
             headers   : widget.controller!.headers,
             maxSize   : widget.maxSize,
-            className : widget.className
           )
           .then((state) async {
             streamController?.close();
@@ -138,7 +137,6 @@ class __ImageState extends State<ImageBody> {
             url       : widget.urlImage!,
             headers   : memoryController.headers,
             maxSize   : widget.maxSize,
-            className : widget.className
           )
           .then((state) async {
             streamController?.close();
@@ -223,6 +221,7 @@ class __ImageState extends State<ImageBody> {
     super.initState();
     startLoading();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller?.changueClassName(className : widget.className);
       if((widget.readOnly??true) == false) {
         if(widget.controller != null){
           widget.controller?.dragAndDrop(widgetKey, className : widget.className);
