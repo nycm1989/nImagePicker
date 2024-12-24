@@ -51,7 +51,7 @@ class ImageBody extends StatefulWidget {
   final IconData ? errorIcon;
   final IconData ? dragIcon;
 
-  // New for version 3.1.1
+  // New for version 3.1.0
   final GestureTapCallback? onDelete;
   final GestureTapCallback? onAdd;
 

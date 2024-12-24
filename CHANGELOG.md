@@ -1,4 +1,4 @@
-## 3.1.1
+## 3.1.0
 * [New] onAdd Funtion
 * [New] onDelete Function
 

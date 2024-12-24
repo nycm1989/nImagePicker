@@ -37,55 +37,67 @@
 ## Controller properties
 ```dart
 /// Image in bytes list
-imageController.bytes -> Uint8List
+.bytes -> Uint8List
 
 /// When onLoadingImage has a url
-imageController.error -> bool
+.error -> bool
 
 /// Show blur background or black transparency
-imageController.viewerBlur -> bool
+.viewerBlur -> bool
 
 /// List of supported formats
-imageController.fileTypes -> List<String>
+.fileTypes -> List<String>
 
-imageController.hasImage -> bool
-imageController.hasNoImage -> bool
-imageController.image -> Image
-imageController.file -> File
-imageController.path -> Path
-
-/// return an async [MultipartFile] for uploading using [key], example:
-/// - {"key" : "image_path.png"}
-await imageController.image(key: "key").then((image) {}) -> Furute<MultipartFile>
+.hasImage -> bool
+.hasNoImage -> bool
+.image -> Image
+.file -> File
+.path -> Path
 
 /// Map for headers, this need a backend open port for your domain
-imageController.headers -> Map<String, String>
+.headers -> Map<String, String>
+
 ```
 
 ## Controller metodhs
 ```dart
 /// Set the image file from http response and url
-imageController.setFromResponse(response: Response, url: String)
+.setFromResponse(response: Response, url: String)
 
 /// This don't work in web!
-imageController.setFromPath(path: String)
+.setFromPath(path: String)
 
 /// Get image from url, this works in all enviroment
-imageController.setFromURL(context, url: String, headers: Map<String, String>)
+.setFromURL(context, url: String, headers: Map<String, String>)
 
 /// Open the image dialog picker
-imageController.pickImage(maxSize: int)
+.pickImage(maxSize: int)
 
-imageController.removeImage(notify: bool)
-imageController.showImageViewer(notify: bool)
+.removeImage(notify: bool)
+
+/// return an async [MultipartFile] for uploading using [key], example:
+/// - {"key" : "image_path.png"}
+await imageController.image(key: "key").then((image) {}) -> Furute<MultipartFile>
+.showImageViewer(notify: bool)
 ```
 
 ## Widget properties
 ```dart
 ImagePicker(
     controller          : required ImageController,
-    urlImage            : null | String, // only one of this must be filled
-    assetImage          : null | String, // only one of this must be filled
+
+    // Sync Function when a image is Added
+    onAdd               : null | Function () {},
+
+    // Sync Function when a image is Removed
+    onDelete            : null | Function () {},
+
+    // only one of this must be filled urlImage or assetImage
+    urlImage            : null | String,
+
+    // only one of this must be filled urlImage or assetImage
+    assetImage          : null | String,
+
     width               : null | double,
     height              : null | double,
     emptyWidget         : null | Widget,
@@ -101,14 +113,32 @@ ImagePicker(
     viewerBlur          : null | bool,
     viewerBlurSigma     : null | double,
     shape               : null | BoxShape,
-    tag                 : null | Object, // String relation for hero animation
-    duration            : null | Duration, // Animation duration
+
+    // String relation for hero animation
+    tag                 : null | Object,
+
+    // Animation duration
+    duration            : null | Duration,
+
+    // For .circle or .square
     dimension           : null | Double,
-    deleteIcon          : null | IconData, // icon like Icons.{name}
-    expandIcon          : null | IconData, // icon like Icons.{name}
-    errorIcon           : null | IconData, // icon like Icons.{name}
-    dragIcon            : null | IconData, // icon like Icons.{name}
-    maxSize             : null | int, // Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
+
+    // Icon like Icons.{name}
+    deleteIcon          : null | IconData,
+
+    // Icon like Icons.{name}
+    expandIcon          : null | IconData,
+
+    // Icon like Icons.{name}
+    errorIcon           : null | IconData,
+
+    // Icon like Icons.{name}
+    dragIcon            : null | IconData,
+
+     // Only available for bmp, cur, jpg, png, pvr, tga, tiff formats
+    maxSize             : null | int,
+
+    /// Map for headers, this need a backend open port for your domain
     headers             : null | Map<String, String>,
 )
 ```
