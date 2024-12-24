@@ -52,7 +52,7 @@ class __BodyimageWebViewerDialogState extends State<_BodyimageWebViewerDialog> {
     LayoutBuilder(
       builder: (context, size) {
         return Material(
-          color: widget.blur? Colors.transparent : Colors.black.withOpacity(0.3),
+          color: widget.blur? Colors.transparent : Colors.black.withValues(alpha: 0.3),
           child:
           BackdropFilter(
             filter  :

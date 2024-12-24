@@ -79,9 +79,10 @@ class WebFile implements PlatformTools{
   );
 
   @override
-  void dragAndDrop({required final ImageController controller, required final String className}) async {
+  void dragAndDrop({required final ImageController controller, required final String className, Function()? onAdd}) async {
     final body = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement;
 
+    body
     // ..onDragEnter.listen((event) {
     //   event.preventDefault();
     //   controller.changeOnDragState(true);
@@ -90,7 +91,6 @@ class WebFile implements PlatformTools{
     //   event.preventDefault();
     //   controller.changeOnDragState(false);
     // })
-    body
     ..onDragOver.listen((event) => event.preventDefault() )
     ..onDrop.listen((event) async {
       event.preventDefault();
@@ -111,13 +111,16 @@ class WebFile implements PlatformTools{
             .onError((event) { null; })
           ..readAsArrayBuffer(file);
 
-          await completer.future.then((data) =>
+          await completer.future.then((data) {
             controller.setFromBytes(
               name      : file.name,
               extension : file.name.split(".").last,
-              bytes     : data
-            )
-          );
+              bytes     : data,
+              onAdd     : onAdd,
+            );
+          });
+        } else {
+          debugPrint("Format not supported [${controller.fileTypes.join(", ")}]");
         }
       }
     });
@@ -151,9 +154,11 @@ class WebFile implements PlatformTools{
   "left: ${position.dx}px; "
   "top: ${position.dy}px; "
   "width: ${size.width}px; "
-  "height: ${size.height/2}px; ";
+  "height: ${size.height/2}px; "
+  "z-index: 1000;";
+  // "background-color: rgba(0, 0, 0, 0.7); ";
   // "mask: inset(30% 10% 30% 10%); "
-  // "-webkit-mask: inset(30% 10% 30% 10%); "
+  // "-webkit-mask: inset(30% 10% 30% 10%); ";
 
   @override
   void removeDiv({required final String className}) {

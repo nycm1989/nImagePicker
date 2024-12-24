@@ -56,10 +56,11 @@ class _MyAppState extends State<MyApp> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                        // ImagePicker Rectangle
+
                         ImagePicker(
                           assetImage        : assetImage,
-                          // urlImage         : urlImage,
+                          onAdd             : () => print("Add 1"),
+                          onDelete          : () => print("Delete 1"),
                           controller        : imageControllers[0],
                           margin            : const EdgeInsets.only(bottom: 16),
                           width             : 200,
@@ -73,9 +74,10 @@ class _MyAppState extends State<MyApp> {
                           viewerBlurSigma   : 10,
                         ),
 
-                        // ImagePicker Circle
                         ImagePicker.circle(
                           urlImage          : urlImage,
+                          onAdd             : () => print("Add 2"),
+                          onDelete          : () => print("Delete 2"),
                           tag               : "TAGFORTESTING01",
                           controller        : imageControllers[1],
                           margin            : const EdgeInsets.only(bottom: 16),
@@ -91,9 +93,10 @@ class _MyAppState extends State<MyApp> {
                           maxSize           : 500,
                         ),
 
-                        // ImagePicker Square
                         ImagePicker.square(
                           assetImage        : assetImage,
+                          onAdd             : () => print("Add 3"),
+                          onDelete          : () => print("Delete 3"),
                           controller        : imageControllers[2],
                           margin            : const EdgeInsets.only(bottom: 16),
                           backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
@@ -106,14 +109,14 @@ class _MyAppState extends State<MyApp> {
                           viewerBlurSigma   : 10,
                         ),
 
-                        // ImagePicker Expand
                         SizedBox(
-                          width: 100,
-                          height: 200,
-                          child:
+                          width   : 100,
+                          height  : 200,
+                          child   :
                           ImagePicker.expand(
-                            urlImage         : urlImage,
-                            // assetImage        : assetImage,
+                            urlImage          : urlImage,
+                            onAdd             : () => print("Add 4"),
+                            onDelete          : () => print("Delete 4"),
                             tag               : "TAGFORTESTING02",
                             controller        : imageControllers[3],
                             margin            : const EdgeInsets.only(bottom: 16),
@@ -137,7 +140,6 @@ class _MyAppState extends State<MyApp> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
 
-                      // ImageViewer Rectangle
                       ImageViewer(
                         assetImage  : assetImage,
                         fit         : BoxFit.fitHeight,
@@ -146,14 +148,12 @@ class _MyAppState extends State<MyApp> {
                         margin      : const EdgeInsets.only(bottom: 16),
                       ),
 
-                      // ImageViewer Square
                       ImageViewer.square(
                         urlImage  : urlImage,
                         dimension : 200,
                         margin    : const EdgeInsets.only(bottom: 16),
                       ),
 
-                      // ImageViewer Circle
                       ImageViewer.circle(
                         assetImage  : assetImage,
                         // urlImage   : urlImage,
@@ -162,7 +162,6 @@ class _MyAppState extends State<MyApp> {
                         margin      : const EdgeInsets.only(bottom: 16),
                       ),
 
-                      // ImageViewer Expand
                       SizedBox(
                         width   : 100,
                         height  : 200,

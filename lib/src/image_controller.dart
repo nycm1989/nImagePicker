@@ -31,13 +31,16 @@ class ImageController with ChangeNotifier {
 
   changueClassName({required final String className}) => this.className = className;
 
-  void dragAndDrop(final GlobalKey widgetKey, {required String className}) {
+  void dragAndDrop(final GlobalKey widgetKey, {required String className, Function()? onAdd}) {
     if(kIsWeb) PlatformTools().createDiv(widgetKey, className: className);
-    PlatformTools().dragAndDrop(controller: this, className: className);
+    PlatformTools().dragAndDrop(controller: this, className: className, onAdd: onAdd);
   }
+
+  void removeDragAndDrop({required String className}) => PlatformTools().removeDiv(className: className);
 
   changeOnDragState(bool state) {
     onDrag = state;
+    print(onDrag);
     notifyListeners();
   }
 
@@ -100,6 +103,7 @@ class ImageController with ChangeNotifier {
     required final String url,
     final Map<String, String>? headers,
     final int     ? maxSize,
+    final Function()? onAdd
   }) async {
 
     // Validate URL format
@@ -124,6 +128,7 @@ class ImageController with ChangeNotifier {
             bytes     : bytes,
             extension : image_name_extendion.last,
             maxSize   : maxSize,
+            onAdd     : onAdd
           ))
           .onError((error, stackTrace) {
             _reset(error: true);
@@ -149,7 +154,8 @@ class ImageController with ChangeNotifier {
     required final String name,
     required final String extension,
     required final Uint8List? bytes,
-    final int? maxSize
+    final int? maxSize,
+    final Function()? onAdd
   }) async {
     if (bytes == null) throw Exception("bytes cant be null");
     await PlatformTools().write(
@@ -163,13 +169,15 @@ class ImageController with ChangeNotifier {
       _error      = false;
       _hasImage   = true;
       _extension  = extension;
+      onAdd?.call();
       notifyListeners();
     }).onError((error, stackTrace) => _reset(error: true));
   }
 
   Future<void> setFromAsset({
     required final String path,
-    final int? maxSize
+    final int? maxSize,
+    final Function()? onAdd
   }) async {
     if (path.isEmpty) throw Exception("path cant be empty");
     if (_urlPattern.hasMatch(path)) throw Exception("A URL can't be an asset");
@@ -188,6 +196,7 @@ class ImageController with ChangeNotifier {
         _error      = false;
         _hasImage   = true;
         _extension  = extension;
+        onAdd?.call();
         notifyListeners();
       }).onError((error, stackTrace) => _reset(error: true));
     })
@@ -198,7 +207,7 @@ class ImageController with ChangeNotifier {
   Future<void> setFromResponse({
     required final Response response,
     required final String url,
-    final int? maxSize
+    final int? maxSize,
   }) async {
     List<String> _e = url.split(".");
     if (_e.length <= 1) throw Exception("url dont have extension");
@@ -240,7 +249,7 @@ class ImageController with ChangeNotifier {
   /// This dont work in web!
   Future<void> setFromPath({
     required final String path,
-    final int? maxSize
+    final int? maxSize,
   }) async {
     List<String> _e = path.split(".");
     if (_e.length <= 1) throw Exception("path dont have extension");
@@ -286,7 +295,8 @@ class ImageController with ChangeNotifier {
     );
 
   /// Open the image dialog picker
-  Future<void> pickImage({final int? maxSize}) async => await FilePicker.platform.pickFiles(
+  Future<void> pickImage({final int? maxSize, final Function()? onAdd}) async =>
+  await FilePicker.platform.pickFiles(
     type              : FileType.custom,
     allowedExtensions : _fileTypes,
     lockParentWindow  : true,
@@ -298,17 +308,20 @@ class ImageController with ChangeNotifier {
     } else {
       final f = response.files.single;
       setFromBytes(
-        name: f.name,
-        extension: f.extension ?? '',
-        bytes: f.bytes,
-        maxSize: maxSize,
+        name      : f.name,
+        extension : f.extension ?? '',
+        bytes     : f.bytes,
+        maxSize   : maxSize,
       );
+      onAdd?.call();
     }
     notifyListeners();
-  });
+  })
+  .onError((error, stackTrace) => _reset(error: false));
 
-  removeImage({required final bool notify}) {
+  removeImage({required final bool notify, final Function()? onDelete}) {
     _reset(error: false);
+    onDelete?.call();
     if (notify) notifyListeners();
   }
 

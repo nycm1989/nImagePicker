@@ -42,7 +42,7 @@ abstract class PlatformTools{
     required final int?       maxSize,
   }) async => PlatformFile(name: '', size: 0);
 
-  void dragAndDrop({required final ImageController controller, required final String className}) async {}
+  void dragAndDrop({required final ImageController controller, required final String className, Function()? onAdd}) async {}
   void createDiv(final GlobalKey widgetKey, {required final String className}) {}
   void updateDiv(final GlobalKey widgetKey, {required final String className}) {}
   void removeDiv({required final String className}) {}

@@ -12,7 +12,8 @@ import 'package:dotted_decoration/dotted_decoration.dart' show DottedDecoration;
 import 'image_controller.dart';
 
 class ImageBody extends StatefulWidget {
-  final ImageController         ? controller;
+  final ImageController? controller;
+
 
   ///Only load image from https or http
   final String? urlImage;
@@ -20,40 +21,44 @@ class ImageBody extends StatefulWidget {
   ///Only load image from assets
   final String? assetImage;
 
-  final double                  ? width;
-  final double                  ? height;
-  final Widget                  ? emptyWidget;
-  final Widget                  ? onErrorWidget;
-  final Widget                  ? onLoadingWidget;
-  final EdgeInsetsGeometry      ? margin;
-  final Color                   ? backgroundColor;
-  final BorderRadius            ? borderRadius;
-  final Border                  ? border;
-  final BoxShadow               ? shadow;
-  final bool                    ? readOnly;
-  final BoxFit                  ? fit;
-  final bool                    ? viewerBlur;
-  final double                  ? viewerBlurSigma;
-  final BoxShape                ? shape;
-  final Object                  ? tag;
-  final Duration                ? duration;
-  final Color                   ? closeColor;
-  final int                     ? maxSize;
+  final double             ? width;
+  final double             ? height;
+  final Widget             ? emptyWidget;
+  final Widget             ? onErrorWidget;
+  final Widget             ? onLoadingWidget;
+  final EdgeInsetsGeometry ? margin;
+  final Color              ? backgroundColor;
+  final BorderRadius       ? borderRadius;
+  final Border             ? border;
+  final BoxShadow          ? shadow;
+  final bool               ? readOnly;
+  final BoxFit             ? fit;
+  final bool               ? viewerBlur;
+  final double             ? viewerBlurSigma;
+  final BoxShape           ? shape;
+  final Object             ? tag;
+  final Duration           ? duration;
+  final Color              ? closeColor;
+  final int                ? maxSize;
 
   ///only for viewer
   final Map<String, String>? headers;
 
-  // New for version 3.0.0, auto generated UUID
+  // New for version 3.0.0
   final String className;
-
-  // New for version 3.0.0, because filled widget is removed
   final IconData ? deleteIcon;
   final IconData ? expandIcon;
   final IconData ? errorIcon;
   final IconData ? dragIcon;
 
+  // New for version 3.1.1
+  final GestureTapCallback? onDelete;
+  final GestureTapCallback? onAdd;
+
   ImageBody({
     this.controller,
+    this.onDelete,
+    this.onAdd,
     this.urlImage,
     this.assetImage,
     this.margin         = EdgeInsets.zero,
@@ -94,7 +99,7 @@ class __ImageState extends State<ImageBody> {
   bool error = false;
   double iconSize = 30;
 
-  startLoading() async {
+  _startLoading() async {
     if (streamController != null) streamController == null;
     if (widget.urlImage != null) {
       try {
@@ -107,6 +112,7 @@ class __ImageState extends State<ImageBody> {
             url       : widget.urlImage!,
             headers   : widget.controller!.headers,
             maxSize   : widget.maxSize,
+            onAdd     : widget.onAdd
           )
           .then((state) async {
             streamController?.close();
@@ -137,6 +143,7 @@ class __ImageState extends State<ImageBody> {
             url       : widget.urlImage!,
             headers   : memoryController.headers,
             maxSize   : widget.maxSize,
+            onAdd     : widget.onAdd
           )
           .then((state) async {
             streamController?.close();
@@ -178,7 +185,8 @@ class __ImageState extends State<ImageBody> {
         await widget.controller!
         .setFromAsset(
           path    : widget.assetImage!,
-          maxSize : widget.maxSize
+          maxSize : widget.maxSize,
+          onAdd   : widget.onAdd
         )
         .then((state) async {
           streamController?.close();
@@ -195,7 +203,8 @@ class __ImageState extends State<ImageBody> {
         await memoryController
         .setFromAsset(
           path    : widget.assetImage!,
-          maxSize : widget.maxSize
+          maxSize : widget.maxSize,
+          onAdd   : widget.onAdd
         )
         .then((state) async {
           streamController?.close();
@@ -216,29 +225,36 @@ class __ImageState extends State<ImageBody> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    startLoading();
+  _startDragAndDrop(){
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller?.changueClassName(className : widget.className);
       if((widget.readOnly??true) == false) {
         if(widget.controller != null){
-          widget.controller?.dragAndDrop(widgetKey, className : widget.className);
+          widget.controller?.dragAndDrop(widgetKey, className : widget.className, onAdd: widget.onAdd);
         }
       }
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    _startLoading();
+    _startDragAndDrop();
+  }
+
+  @override
   void reassemble() {
     super.reassemble();
     streamController?.close();
+    widget.controller?.removeDragAndDrop(className: widget.className);
+    _startDragAndDrop();
   }
 
   @override
   void dispose() {
     super.dispose();
+    widget.controller?.removeImage(notify: false);
     streamController?.close();
   }
 
@@ -246,17 +262,17 @@ class __ImageState extends State<ImageBody> {
   void didUpdateWidget(covariant ImageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller == null) {
-      if(widget.urlImage  != null) if (widget.urlImage  != oldWidget.urlImage  ) startLoading();
-      if(widget.assetImage != null) if (widget.assetImage != oldWidget.assetImage ) startLoading();
+      if(widget.urlImage  != null) if (widget.urlImage  != oldWidget.urlImage  ) _startLoading();
+      if(widget.assetImage != null) if (widget.assetImage != oldWidget.assetImage ) _startLoading();
     } else {
-      if (widget.controller != oldWidget.controller) startLoading();
+      if (widget.controller != oldWidget.controller) _startLoading();
     }
 
     if(kIsWeb){
       if(oldWidget.className.isNotEmpty && widget.className.isNotEmpty){
         if(oldWidget.className != widget.className) {
           PlatformTools().removeDiv(className: oldWidget.className);
-          widget.controller?.dragAndDrop(widgetKey, className : widget.className);
+          widget.controller?.dragAndDrop(widgetKey, className : widget.className, onAdd: widget.onAdd);
         }
       }
     }
@@ -340,7 +356,7 @@ class __ImageState extends State<ImageBody> {
                     Expanded(
                       child:
                       _IconContainer(
-                        onTap     : (widget.readOnly ?? false) ? null : () => widget.controller!.removeImage(notify: true),
+                        onTap     : (widget.readOnly ?? false) ? null : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
                         widgetKey : widgetKey,
                         icon      : Icons.error_outline,
                         hasImage  : false,
@@ -353,7 +369,7 @@ class __ImageState extends State<ImageBody> {
                       child:
                       _IconContainer(
                         widgetKey : widgetKey,
-                        onTap     : (widget.readOnly ?? false) ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize),
+                        onTap     : (widget.readOnly ?? false) ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize, onAdd: widget.onAdd),
                         icon      : Icons.file_upload_outlined,
                         hasImage  : false,
                         error     : false,
@@ -368,11 +384,11 @@ class __ImageState extends State<ImageBody> {
                         children          : [
                           if (!(widget.readOnly ?? false))
                           _IconContainer(
-                            onTap: () => widget.controller!.removeImage(notify: true),
-                            widgetKey: widgetKey,
-                            icon: widget.deleteIcon ?? Icons.delete_outline,
-                            hasImage: true,
-                            error: false,
+                            onTap     : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
+                            widgetKey : widgetKey,
+                            icon      : widget.deleteIcon ?? Icons.delete_outline,
+                            hasImage  : true,
+                            error     : false,
                           ),
                           _IconContainer(
                             onTap: () => widget.controller?.showImageViewer(

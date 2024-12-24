@@ -1,3 +1,7 @@
+## 3.1.1
+* [New] onAdd Funtion
+* [New] onDelete Function
+
 ## 3.0.1
 * [Upgraded] setFromUrl dont need className anymore
 
