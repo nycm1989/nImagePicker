@@ -79,7 +79,7 @@ class WebFile implements PlatformTools{
   );
 
   @override
-  void dragAndDrop({required final ImageController controller, required final String className, Function()? onAdd}) async {
+  void dragAndDrop(/*final GlobalKey widgetKey,*/ {required final ImageController controller, required final String className, Function()? onAdd}) async {
     final body = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement;
 
     body
@@ -91,6 +91,21 @@ class WebFile implements PlatformTools{
     //   event.preventDefault();
     //   controller.changeOnDragState(false);
     // })
+    ..onResize.listen((event) {
+      print("asd 1");
+    })
+    ..onScroll.listen((event) {
+      print("asd 2");
+    })
+    ..onChange.listen((event) {
+      print("asd 3");
+    })
+    ..onChange.listen((event) {
+      print("asd 4");
+    })
+    //   body
+    //   ..removeAttribute("style")
+    //   ..setAttribute("style", style(position, size));
     ..onDragOver.listen((event) => event.preventDefault() )
     ..onDrop.listen((event) async {
       event.preventDefault();
@@ -128,44 +143,51 @@ class WebFile implements PlatformTools{
 
   @override
   void createDiv(final GlobalKey widgetKey, {required final String className}) {
-    final div = web.document.createElement('div');
-    final RenderBox renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox;
-    final position = renderObject.localToGlobal(Offset.zero);
-    final size = renderObject.size;
-    div
-    ..setAttribute("class", className)
-    ..setAttribute("style", style(position, size));
-    web.document.body?.append(div);
+    final _divs = web.document.body?.getElementsByClassName(className); //.item(0) as web.HTMLElement?;
+    bool _create = true;
+    if(_divs!.length > 0) if((_divs.item(0) as web.HTMLElement?) != null) _create = false;
+
+    if(_create){
+      final RenderBox renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox;
+      final position = renderObject.localToGlobal(Offset.zero);
+      final size = renderObject.size;
+      final div = web.document.createElement('div');
+      div ..setAttribute("class", className) ..setAttribute("style", style(position, size));
+      web.document.body?.append(div);
+    } else {
+      updateDiv(widgetKey, className: className);
+    }
   }
 
   @override
   void updateDiv(final GlobalKey widgetKey, {required final String className}) {
-    final div = web.document.createElement('div');
+    print("update");
+    final div = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement?;
     final RenderBox renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox;
     final position = renderObject.localToGlobal(Offset.zero);
     final size = renderObject.size;
-    div
-    ..removeAttribute("style")
-    ..setAttribute("style", style(position, size));
+    if(div != null) div ..removeAttribute("style") ..setAttribute("style", style(position, size));
   }
 
   String style(Offset position, Size size)  =>
-  "position: absolute; "
-  "left: ${position.dx}px; "
-  "top: ${position.dy}px; "
-  "width: ${size.width}px; "
-  "height: ${size.height/2}px; "
-  "z-index: 1000;";
+  "position: absolute;"
+  "left: ${position.dx}px;"
+  "top: ${position.dy}px;"
+  "width: ${size.width}px;"
+  "height: ${size.height/2}px;"
+  "z-index: 1000;"
+  "border: 5px solid red;";
   // "background-color: rgba(0, 0, 0, 0.7); ";
   // "mask: inset(30% 10% 30% 10%); "
   // "-webkit-mask: inset(30% 10% 30% 10%); ";
 
   @override
   void removeDiv({required final String className}) {
-    try{
-      final div = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement;
+    final div = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement?;
+    if(div != null){
+      div.style.display = "hidden";
       div.remove();
-    }catch(e){ null; }
+    }
   }
 
 }

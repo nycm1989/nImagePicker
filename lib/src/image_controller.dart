@@ -19,7 +19,7 @@ class ImageController with ChangeNotifier {
   bool          _hasImage     = false;
   bool          _fromLoading  = false;
   bool          onDrag        = false;
-  String        className     = "";
+  String        _className    = "";
 
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
@@ -29,14 +29,16 @@ class ImageController with ChangeNotifier {
     "method": "GET",
   };
 
-  changueClassName({required final String className}) => this.className = className;
+  String get className => _className;
 
-  void dragAndDrop(final GlobalKey widgetKey, {required String className, Function()? onAdd}) {
-    if(kIsWeb) PlatformTools().createDiv(widgetKey, className: className);
+  changeClass(final GlobalKey widgetKey, {required String className, Function()? onAdd}) {
+    if(_className != className) PlatformTools().removeDiv(className: _className);
+    _className = className;
+    PlatformTools().createDiv(widgetKey, className: className);
     PlatformTools().dragAndDrop(controller: this, className: className, onAdd: onAdd);
   }
 
-  void removeDragAndDrop({required String className}) => PlatformTools().removeDiv(className: className);
+  void removeClass() => PlatformTools().removeDiv(className: _className);
 
   changeOnDragState(bool state) {
     onDrag = state;
@@ -124,7 +126,7 @@ class ImageController with ChangeNotifier {
           final image_name_extendion = url.split('/').last.split('.');
 
           await value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name      : className,
+            name      : _className,
             bytes     : bytes,
             extension : image_name_extendion.last,
             maxSize   : maxSize,

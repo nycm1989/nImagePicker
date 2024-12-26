@@ -59,8 +59,8 @@ class _MyAppState extends State<MyApp> {
 
                         ImagePicker(
                           assetImage        : assetImage,
-                          onAdd             : () => print("Add 1"),
-                          onDelete          : () => print("Delete 1"),
+                          // onAdd             : () => print("Add 1"),
+                          // onDelete          : () => print("Delete 1"),
                           controller        : imageControllers[0],
                           margin            : const EdgeInsets.only(bottom: 16),
                           width             : 200,
@@ -76,14 +76,13 @@ class _MyAppState extends State<MyApp> {
 
                         ImagePicker.circle(
                           urlImage          : urlImage,
-                          onAdd             : () => print("Add 2"),
-                          onDelete          : () => print("Delete 2"),
+                          // onAdd             : () => print("Add 2"),
+                          // onDelete          : () => print("Delete 2"),
                           tag               : "TAGFORTESTING01",
                           controller        : imageControllers[1],
                           margin            : const EdgeInsets.only(bottom: 16),
                           backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
                           dimension         : 200,
-                          filterOpacity     : 0.2,
                           fit               : BoxFit.cover,
                           border            : Border.all(color: Colors.grey, width: 1),
                           shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
@@ -95,8 +94,8 @@ class _MyAppState extends State<MyApp> {
 
                         ImagePicker.square(
                           assetImage        : assetImage,
-                          onAdd             : () => print("Add 3"),
-                          onDelete          : () => print("Delete 3"),
+                          // onAdd             : () => print("Add 3"),
+                          // onDelete          : () => print("Delete 3"),
                           controller        : imageControllers[2],
                           margin            : const EdgeInsets.only(bottom: 16),
                           backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
@@ -115,8 +114,8 @@ class _MyAppState extends State<MyApp> {
                           child   :
                           ImagePicker.expand(
                             urlImage          : urlImage,
-                            onAdd             : () => print("Add 4"),
-                            onDelete          : () => print("Delete 4"),
+                            // onAdd             : () => print("Add 4"),
+                            // onDelete          : () => print("Delete 4"),
                             tag               : "TAGFORTESTING02",
                             controller        : imageControllers[3],
                             margin            : const EdgeInsets.only(bottom: 16),
@@ -127,8 +126,6 @@ class _MyAppState extends State<MyApp> {
                             shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
                             viewerBlur        : true,
                             viewerBlurSigma   : 10,
-                            previewBlur       : true,
-                            previewBlurSigma  : 1,
                           ),
                         ),
 

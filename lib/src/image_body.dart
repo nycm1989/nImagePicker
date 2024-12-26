@@ -6,9 +6,7 @@ import 'dart:math' show Random;
 import 'dart:async' show FutureExtensions, StreamController;
 import 'package:uuid/uuid.dart' show Uuid;
 import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
-import 'package:n_image_picker/src/platform/tools.dart' show PlatformTools;
 import 'package:dotted_decoration/dotted_decoration.dart' show DottedDecoration;
-
 import 'image_controller.dart';
 
 class ImageBody extends StatefulWidget {
@@ -21,21 +19,21 @@ class ImageBody extends StatefulWidget {
   ///Only load image from assets
   final String? assetImage;
 
+  final EdgeInsetsGeometry   margin;
+  final bool                 readOnly;
+  final BoxFit               fit;
+  final bool                 viewerBlur;
+  final double               viewerBlurSigma;
+  final BoxShape             shape;
   final double             ? width;
   final double             ? height;
   final Widget             ? emptyWidget;
   final Widget             ? onErrorWidget;
   final Widget             ? onLoadingWidget;
-  final EdgeInsetsGeometry ? margin;
   final Color              ? backgroundColor;
   final BorderRadius       ? borderRadius;
   final Border             ? border;
   final BoxShadow          ? shadow;
-  final bool               ? readOnly;
-  final BoxFit             ? fit;
-  final bool               ? viewerBlur;
-  final double             ? viewerBlurSigma;
-  final BoxShape           ? shape;
   final Object             ? tag;
   final Duration           ? duration;
   final Color              ? closeColor;
@@ -45,7 +43,6 @@ class ImageBody extends StatefulWidget {
   final Map<String, String>? headers;
 
   // New for version 3.0.0
-  final String className;
   final IconData ? deleteIcon;
   final IconData ? expandIcon;
   final IconData ? errorIcon;
@@ -61,9 +58,12 @@ class ImageBody extends StatefulWidget {
     this.onAdd,
     this.urlImage,
     this.assetImage,
-    this.margin         = EdgeInsets.zero,
-    this.readOnly       = false,
-    this.fit            = BoxFit.cover,
+    required this.margin         ,
+    required this.readOnly       ,
+    required this.fit            ,
+    required this.viewerBlur     ,
+    required this.viewerBlurSigma,
+    required this.shape          ,
     this.backgroundColor,
     this.shadow,
     this.borderRadius,
@@ -73,9 +73,6 @@ class ImageBody extends StatefulWidget {
     this.emptyWidget,
     this.onErrorWidget,
     this.onLoadingWidget,
-    this.viewerBlur       = true,
-    this.viewerBlurSigma  = 5.0,
-    this.shape            = BoxShape.rectangle,
     this.headers,
     this.tag,
     this.duration,
@@ -86,20 +83,20 @@ class ImageBody extends StatefulWidget {
     this.errorIcon,
     this.dragIcon,
     super.key
-  }) : className = Uuid().v4();
+  });
 
   @override
   State<ImageBody> createState() => __ImageState();
 }
 
 class __ImageState extends State<ImageBody> {
-  final GlobalKey widgetKey = GlobalKey();
+  final GlobalKey _globalKey = GlobalKey();
   StreamController<bool>? streamController;
   Uint8List? image;
   bool error = false;
   double iconSize = 30;
 
-  _startLoading() async {
+  _startLoading() async => WidgetsBinding.instance.addPostFrameCallback((_) async {
     if (streamController != null) streamController == null;
     if (widget.urlImage != null) {
       try {
@@ -114,29 +111,29 @@ class __ImageState extends State<ImageBody> {
             maxSize   : widget.maxSize,
             onAdd     : widget.onAdd
           )
-          .then((state) async {
+          .then((state) => setState(() {
             streamController?.close();
             streamController = null;
-            setState(() {
-              if (state) {
-                widget.controller!.fromLoading = true;
-                widget.controller!.error = false;
-              } else {
-                widget.controller!.fromLoading = false;
-                widget.controller!.error = true;
-              }
-            });
-          })
-          .onError((error, stackTrace) {
+            if (state) {
+              widget.controller!.fromLoading = true;
+              widget.controller!.error = false;
+            } else {
+              widget.controller!.fromLoading = false;
+              widget.controller!.error = true;
+            }
+          }))
+          .onError((error, stackTrace) => setState(() {
             streamController?.close();
             streamController = null;
             widget.controller!.fromLoading = false;
             widget.controller!.error = true;
-          });
+          }));
         } else {
           // This works if controller is null
           ImageController memoryController = ImageController();
           if (widget.headers != null) memoryController.headers = widget.headers!;
+          streamController = StreamController<bool>();
+          setState(() => streamController?.add(true));
           await memoryController
           .setFromURL(
             context,
@@ -145,30 +142,34 @@ class __ImageState extends State<ImageBody> {
             maxSize   : widget.maxSize,
             onAdd     : widget.onAdd
           )
-          .then((state) async {
+          .then((state) async => setState(() {
             streamController?.close();
             streamController = null;
-            setState(() {
-              if (state) {
-                try {
-                  image = memoryController.file!.bytes!;
-                  error = false;
-                } catch (e) {
-                  image = null;
-                  error = true;
-                }
-              } else {
+            if (state) {
+              try {
+                image = memoryController.file!.bytes!;
+                error = false;
+              } catch (e) {
                 image = null;
                 error = true;
               }
-            });
-          })
+            } else {
+              image = null;
+              error = true;
+            }
+          }))
           .onError((error, stackTrace) {
-            streamController?.close();
-            streamController = null;
             try {
-              setState(() => widget.controller?.error = true);
-            } catch (e) {}
+              setState(() {
+                widget.controller?.error = true;
+                streamController?.close();
+                streamController = null;
+              });
+            } catch (e) {
+                widget.controller?.error = true;
+                streamController?.close();
+                streamController = null;
+            }
           });
         }
       } catch (e) {
@@ -223,32 +224,35 @@ class __ImageState extends State<ImageBody> {
       streamController = null;
       streamController?.close();
     }
+  });
+
+  _createClass() => WidgetsBinding.instance.addPostFrameCallback((_) {
+    widget.controller?.changeClass(_globalKey, className : "n_image_div_" + Uuid().v4(), onAdd: widget.onAdd);
+  });
+
+
+  _updatePosition() {
+    widget.controller?.removeClass();
+    _createClass();
   }
 
-  _startDragAndDrop(){
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.controller?.changueClassName(className : widget.className);
-      if((widget.readOnly??true) == false) {
-        if(widget.controller != null){
-          widget.controller?.dragAndDrop(widgetKey, className : widget.className, onAdd: widget.onAdd);
-        }
-      }
-    });
+  _listenChanges(){
+    print((_globalKey.currentContext?.findRenderObject() as RenderBox?)?.localToGlobal(Offset.zero));
   }
 
   @override
   void initState() {
     super.initState();
     _startLoading();
-    _startDragAndDrop();
+    _createClass();
   }
 
   @override
   void reassemble() {
     super.reassemble();
+
     streamController?.close();
-    widget.controller?.removeDragAndDrop(className: widget.className);
-    _startDragAndDrop();
+    _updatePosition();
   }
 
   @override
@@ -268,33 +272,26 @@ class __ImageState extends State<ImageBody> {
       if (widget.controller != oldWidget.controller) _startLoading();
     }
 
-    if(kIsWeb){
-      if(oldWidget.className.isNotEmpty && widget.className.isNotEmpty){
-        if(oldWidget.className != widget.className) {
-          PlatformTools().removeDiv(className: oldWidget.className);
-          widget.controller?.dragAndDrop(widgetKey, className : widget.className, onAdd: widget.onAdd);
-        }
-      }
-    }
+    _updatePosition();
   }
 
   @override
   Widget build(BuildContext context) {
     return Hero(
+      key           : _globalKey  ,
       tag   : widget.tag ?? Random().nextInt(100000),
       child :
       Padding(
-        padding : widget.margin??EdgeInsets.zero,
+        padding : widget.margin,
         child   :
         AnimatedContainer(
-          key           : widgetKey,
           duration      : widget.duration ?? Duration(milliseconds: 250),
           width         : widget.width,
           height        : widget.height,
           clipBehavior  : Clip.hardEdge,
           decoration    :
           BoxDecoration(
-            shape         : widget.shape ?? BoxShape.rectangle,
+            shape         : widget.shape,
             color         : widget.backgroundColor ?? Colors.transparent,
             borderRadius  : widget.borderRadius,
             border        : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
@@ -323,7 +320,7 @@ class __ImageState extends State<ImageBody> {
                 ? Center(
                   child:
                   _IconContainer(
-                    widgetKey : widgetKey,
+                    widgetKey : _globalKey,
                     onTap     : null,
                     icon      : Icons.error_outline,
                     hasImage  : false,
@@ -340,7 +337,7 @@ class __ImageState extends State<ImageBody> {
                       child:
                       _IconContainer(
                         onTap     : null,
-                        widgetKey : widgetKey,
+                        widgetKey : _globalKey,
                         icon      : widget.dragIcon ?? Icons.drag_handle_outlined,
                         hasImage  : widget.controller!.file != null,
                         error     : false,
@@ -352,12 +349,13 @@ class __ImageState extends State<ImageBody> {
                       width     : double.infinity,
                       decoration: DottedDecoration(),
                     ),
+                    Text(widget.controller?.className??'', textAlign: TextAlign.center, style: TextStyle(fontSize: 8)),
                     if (widget.controller!.error || error)
                     Expanded(
                       child:
                       _IconContainer(
-                        onTap     : (widget.readOnly ?? false) ? null : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
-                        widgetKey : widgetKey,
+                        onTap     : widget.readOnly ? null : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
+                        widgetKey : _globalKey,
                         icon      : Icons.error_outline,
                         hasImage  : false,
                         error     : true,
@@ -368,8 +366,8 @@ class __ImageState extends State<ImageBody> {
                     Expanded(
                       child:
                       _IconContainer(
-                        widgetKey : widgetKey,
-                        onTap     : (widget.readOnly ?? false) ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize, onAdd: widget.onAdd),
+                        widgetKey : _globalKey,
+                        onTap     : widget.readOnly ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize, onAdd: widget.onAdd),
                         icon      : Icons.file_upload_outlined,
                         hasImage  : false,
                         error     : false,
@@ -380,12 +378,12 @@ class __ImageState extends State<ImageBody> {
                     Expanded(
                       child:
                       Row(
-                        mainAxisAlignment : (widget.readOnly ?? false) ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment : widget.readOnly ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
                         children          : [
-                          if (!(widget.readOnly ?? false))
+                          if (!widget.readOnly)
                           _IconContainer(
                             onTap     : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
-                            widgetKey : widgetKey,
+                            widgetKey : _globalKey,
                             icon      : widget.deleteIcon ?? Icons.delete_outline,
                             hasImage  : true,
                             error     : false,
@@ -394,11 +392,11 @@ class __ImageState extends State<ImageBody> {
                             onTap: () => widget.controller?.showImageViewer(
                               context,
                               tag         : widget.tag,
-                              blur        : widget.viewerBlur ?? false,
-                              sigma       : widget.viewerBlurSigma ?? 0,
+                              blur        : widget.viewerBlur,
+                              sigma       : widget.viewerBlurSigma,
                               closeColor  : widget.closeColor
                             ),
-                            widgetKey : widgetKey,
+                            widgetKey : _globalKey,
                             icon      : widget.expandIcon ?? Icons.zoom_out_map_rounded,
                             hasImage  : true,
                             error     : false,
