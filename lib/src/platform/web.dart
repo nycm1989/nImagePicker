@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'dart:js';
 import 'dart:js_interop' show JSAny, JSAnyOperatorExtension, JSArray, NumToJSExtension;
 import 'dart:math' show Random;
 import 'dart:async' show Completer, Future;
@@ -79,33 +79,9 @@ class WebFile implements PlatformTools{
   );
 
   @override
-  void dragAndDrop(/*final GlobalKey widgetKey,*/ {required final ImageController controller, required final String className, Function()? onAdd}) async {
-    final body = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement;
-
-    body
-    // ..onDragEnter.listen((event) {
-    //   event.preventDefault();
-    //   controller.changeOnDragState(true);
-    // })
-    // ..onDragOver.listen((event) {
-    //   event.preventDefault();
-    //   controller.changeOnDragState(false);
-    // })
-    ..onResize.listen((event) {
-      print("asd 1");
-    })
-    ..onScroll.listen((event) {
-      print("asd 2");
-    })
-    ..onChange.listen((event) {
-      print("asd 3");
-    })
-    ..onChange.listen((event) {
-      print("asd 4");
-    })
-    //   body
-    //   ..removeAttribute("style")
-    //   ..setAttribute("style", style(position, size));
+  void dragAndDrop({required final ImageController controller, Function()? onAdd}) async {
+    final div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement;
+    div
     ..onDragOver.listen((event) => event.preventDefault() )
     ..onDrop.listen((event) async {
       event.preventDefault();
@@ -142,8 +118,10 @@ class WebFile implements PlatformTools{
   }
 
   @override
-  void createDiv(final GlobalKey widgetKey, {required final String className}) {
-    final _divs = web.document.body?.getElementsByClassName(className); //.item(0) as web.HTMLElement?;
+  void createDiv(final GlobalKey widgetKey, {required final ImageController controller}) {
+    _Observer.body(widgetKey, controller: controller);
+
+    final _divs = web.document.body?.getElementsByClassName(controller.className); //.item(0) as web.HTMLElement?;
     bool _create = true;
     if(_divs!.length > 0) if((_divs.item(0) as web.HTMLElement?) != null) _create = false;
 
@@ -152,21 +130,22 @@ class WebFile implements PlatformTools{
       final position = renderObject.localToGlobal(Offset.zero);
       final size = renderObject.size;
       final div = web.document.createElement('div');
-      div ..setAttribute("class", className) ..setAttribute("style", style(position, size));
+      div ..setAttribute("class", controller.className) ..setAttribute("style", style(position, size));
       web.document.body?.append(div);
     } else {
-      updateDiv(widgetKey, className: className);
+      updateDiv(widgetKey, controller: controller);
     }
   }
 
   @override
-  void updateDiv(final GlobalKey widgetKey, {required final String className}) {
-    print("update");
-    final div = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement?;
-    final RenderBox renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox;
-    final position = renderObject.localToGlobal(Offset.zero);
-    final size = renderObject.size;
-    if(div != null) div ..removeAttribute("style") ..setAttribute("style", style(position, size));
+  void updateDiv(final GlobalKey widgetKey, {required final ImageController controller}) {
+    final web.HTMLElement? div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement?;
+    if(div != null) {
+      final RenderBox? renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox?;
+      if(renderObject != null){
+        div ..removeAttribute("style") ..setAttribute("style", style(renderObject.localToGlobal(Offset.zero), renderObject.size));
+      }
+    }
   }
 
   String style(Offset position, Size size)  =>
@@ -174,7 +153,7 @@ class WebFile implements PlatformTools{
   "left: ${position.dx}px;"
   "top: ${position.dy}px;"
   "width: ${size.width}px;"
-  "height: ${size.height/2}px;"
+  "height: ${(size.height/2) - 20}px;"
   "z-index: 1000;"
   "border: 5px solid red;";
   // "background-color: rgba(0, 0, 0, 0.7); ";
@@ -182,12 +161,41 @@ class WebFile implements PlatformTools{
   // "-webkit-mask: inset(30% 10% 30% 10%); ";
 
   @override
-  void removeDiv({required final String className}) {
-    final div = web.document.body?.getElementsByClassName(className).item(0) as web.HTMLElement?;
+  void removeDiv({required final ImageController controller}) {
+    final div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement?;
     if(div != null){
       div.style.display = "hidden";
       div.remove();
     }
   }
 
+}
+
+class _Observer {
+  static body(final GlobalKey widgetKey, {required final ImageController controller}){
+    context.callMethod('eval', ["""
+      let observer;
+      function observeBodySize(callback) {
+        const body = document.body;
+        observer = new ResizeObserver(entries => {
+          const entry = entries[0];
+          const { width, height } = entry.contentRect;
+          callback(width, height);
+        });
+        observer.observe(body);
+      }
+
+      function stopObservingBodySize() {
+        observer?.disconnect();
+      }
+    """]);
+
+    void onBodyResize(double width, double height) {
+      if(controller.screenSize.width != width || controller.screenSize.height != height) PlatformTools().updateDiv(widgetKey, controller: controller);
+      controller.changeScreenSize(screenSize: Size(width, height));
+    }
+
+    final Function resizeCallback = allowInterop(onBodyResize);
+    context.callMethod('observeBodySize', [resizeCallback]);
+  }
 }

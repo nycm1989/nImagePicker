@@ -20,6 +20,7 @@ class ImageController with ChangeNotifier {
   bool          _fromLoading  = false;
   bool          onDrag        = false;
   String        _className    = "";
+  Size          _screenSize   = Size(0, 0);
 
   Map<String, String> _headers = {
     'Access-Control-Allow-Origin': '*',
@@ -29,16 +30,24 @@ class ImageController with ChangeNotifier {
     "method": "GET",
   };
 
+  /// Web-only
   String get className => _className;
 
+  /// Web-only
+  Size get screenSize => _screenSize;
+
+
+  /// Web-only
+  changeScreenSize({required Size screenSize}) => _screenSize = screenSize;
+
   changeClass(final GlobalKey widgetKey, {required String className, Function()? onAdd}) {
-    if(_className != className) PlatformTools().removeDiv(className: _className);
+    if(_className != className) PlatformTools().removeDiv(controller: this);
     _className = className;
-    PlatformTools().createDiv(widgetKey, className: className);
-    PlatformTools().dragAndDrop(controller: this, className: className, onAdd: onAdd);
+    PlatformTools().createDiv(widgetKey, controller: this);
+    PlatformTools().dragAndDrop(controller: this, onAdd: onAdd);
   }
 
-  void removeClass() => PlatformTools().removeDiv(className: _className);
+  void removeClass() => PlatformTools().removeDiv(controller: this);
 
   changeOnDragState(bool state) {
     onDrag = state;

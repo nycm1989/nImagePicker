@@ -226,18 +226,18 @@ class __ImageState extends State<ImageBody> {
     }
   });
 
-  _createClass() => WidgetsBinding.instance.addPostFrameCallback((_) {
-    widget.controller?.changeClass(_globalKey, className : "n_image_div_" + Uuid().v4(), onAdd: widget.onAdd);
-  });
+  _createClass() => WidgetsBinding.instance.addPostFrameCallback((_) =>
+    widget.controller?.changeClass(
+      _globalKey,
+      className : "nImageDiv_" + Uuid().v4().replaceAll("-", ""),
+      onAdd     : widget.onAdd
+    )
+  );
 
 
   _updatePosition() {
     widget.controller?.removeClass();
     _createClass();
-  }
-
-  _listenChanges(){
-    print((_globalKey.currentContext?.findRenderObject() as RenderBox?)?.localToGlobal(Offset.zero));
   }
 
   @override
@@ -349,7 +349,6 @@ class __ImageState extends State<ImageBody> {
                       width     : double.infinity,
                       decoration: DottedDecoration(),
                     ),
-                    Text(widget.controller?.className??'', textAlign: TextAlign.center, style: TextStyle(fontSize: 8)),
                     if (widget.controller!.error || error)
                     Expanded(
                       child:

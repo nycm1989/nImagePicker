@@ -108,14 +108,14 @@ class IoFile implements PlatformTools{
   }
 
   @override
-  void dragAndDrop({required final ImageController controller, required final String className, Function()? onAdd}) async => null;
+  void dragAndDrop({Function()? onAdd, required final ImageController controller}) async {}
 
   @override
-  void createDiv(final GlobalKey widgetKey, {required final String className}) {}
+  void createDiv(final GlobalKey widgetKey, {required final ImageController controller}) {}
 
   @override
-  void updateDiv(final GlobalKey widgetKey, {required final String className}) {}
+  void updateDiv(final GlobalKey widgetKey, {required final ImageController controller}) {}
 
   @override
-  void removeDiv({required final String className}) {}
+  void removeDiv({required final ImageController controller}) {}
 }
