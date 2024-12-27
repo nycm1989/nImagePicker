@@ -1,3 +1,6 @@
+## 3.2.1
+* [Restored] shape for ImageViewer and ImagePicker
+
 ## 3.2.0
 * [Upgraded] dragArea logic
 * [Upgraded] dragArea now detect any position change

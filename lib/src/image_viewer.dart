@@ -11,11 +11,12 @@ class ImageViewer extends ImageBody {
     super.onErrorWidget,
     super.onLoadingWidget,
     super.backgroundColor,
-    super.borderRadius,
     super.border,
     super.shadow,
+    super.borderRadius,
     final EdgeInsetsGeometry ? margin,
     final BoxFit             ? fit,
+    final BoxShape           ? shape,
     super.tag,
     super.duration,
     super.maxSize,
@@ -23,14 +24,15 @@ class ImageViewer extends ImageBody {
     super.key,
     super.errorIcon,
   }) :
-  assert( urlImage == null || assetImage == null, "Only one image must be provided" ),
+  assert(urlImage == null || assetImage == null, "Only one image must be provided"),
+  assert(shape != BoxShape.circle || borderRadius == null, "If shape == BoxShape.circle, borderRadius must be null"),
   super(
-    margin          : margin           ?? EdgeInsets.zero,
+    margin          : margin ?? EdgeInsets.zero,
+    fit             : fit    ?? BoxFit.cover,
+    shape           : shape  ?? BoxShape.rectangle,
     readOnly        : true,
-    fit             : fit              ?? BoxFit.cover,
     viewerBlur      : false,
     viewerBlurSigma : 0,
-    shape           : BoxShape.rectangle,
   );
 
   ImageViewer.square({
@@ -71,7 +73,6 @@ class ImageViewer extends ImageBody {
     super.onErrorWidget,
     super.onLoadingWidget,
     super.backgroundColor,
-    super.borderRadius,
     super.border,
     super.shadow,
     final EdgeInsetsGeometry ? margin,
