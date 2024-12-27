@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:js';
 import 'dart:js_interop' show JSAny, JSAnyOperatorExtension, JSArray, NumToJSExtension;
 import 'dart:math' show Random;
 import 'dart:async' show Completer, Future;
@@ -118,33 +117,27 @@ class WebFile implements PlatformTools{
   }
 
   @override
-  void createDiv(final GlobalKey widgetKey, {required final ImageController controller}) {
-    _Observer.body(widgetKey, controller: controller);
+  void createDiv({required final RenderBox renderBox, required final ImageController controller}) {
+    // _Observer.body(widgetKey, controller: controller);
 
     final _divs = web.document.body?.getElementsByClassName(controller.className); //.item(0) as web.HTMLElement?;
     bool _create = true;
     if(_divs!.length > 0) if((_divs.item(0) as web.HTMLElement?) != null) _create = false;
 
     if(_create){
-      final RenderBox renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox;
-      final position = renderObject.localToGlobal(Offset.zero);
-      final size = renderObject.size;
       final div = web.document.createElement('div');
-      div ..setAttribute("class", controller.className) ..setAttribute("style", style(position, size));
+      div ..setAttribute("class", controller.className) ..setAttribute("style", style(renderBox.localToGlobal(Offset.zero), renderBox.size));
       web.document.body?.append(div);
     } else {
-      updateDiv(widgetKey, controller: controller);
+      updateDiv(renderBox: renderBox, controller: controller);
     }
   }
 
   @override
-  void updateDiv(final GlobalKey widgetKey, {required final ImageController controller}) {
+  void updateDiv({required final RenderBox renderBox, required final ImageController controller}) {
     final web.HTMLElement? div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement?;
     if(div != null) {
-      final RenderBox? renderObject = widgetKey.currentContext?.findRenderObject() as RenderBox?;
-      if(renderObject != null){
-        div ..removeAttribute("style") ..setAttribute("style", style(renderObject.localToGlobal(Offset.zero), renderObject.size));
-      }
+      div ..removeAttribute("style") ..setAttribute("style", style(renderBox.localToGlobal(Offset.zero), renderBox.size));
     }
   }
 
@@ -154,8 +147,8 @@ class WebFile implements PlatformTools{
   "top: ${position.dy}px;"
   "width: ${size.width}px;"
   "height: ${(size.height/2) - 20}px;"
-  "z-index: 1000;"
-  "border: 5px solid red;";
+  "z-index: 1000;";
+  // "border: 5px solid red;";
   // "background-color: rgba(0, 0, 0, 0.7); ";
   // "mask: inset(30% 10% 30% 10%); "
   // "-webkit-mask: inset(30% 10% 30% 10%); ";
@@ -171,31 +164,31 @@ class WebFile implements PlatformTools{
 
 }
 
-class _Observer {
-  static body(final GlobalKey widgetKey, {required final ImageController controller}){
-    context.callMethod('eval', ["""
-      let observer;
-      function observeBodySize(callback) {
-        const body = document.body;
-        observer = new ResizeObserver(entries => {
-          const entry = entries[0];
-          const { width, height } = entry.contentRect;
-          callback(width, height);
-        });
-        observer.observe(body);
-      }
+// class _Observer {
+//   static body(final GlobalKey widgetKey, {required final ImageController controller}){
+//     context.callMethod('eval', ["""
+//       let observer;
+//       function observeBodySize(callback) {
+//         const body = document.body;
+//         observer = new ResizeObserver(entries => {
+//           const entry = entries[0];
+//           const { width, height } = entry.contentRect;
+//           callback(width, height);
+//         });
+//         observer.observe(body);
+//       }
 
-      function stopObservingBodySize() {
-        observer?.disconnect();
-      }
-    """]);
+//       function stopObservingBodySize() {
+//         observer?.disconnect();
+//       }
+//     """]);
 
-    void onBodyResize(double width, double height) {
-      if(controller.screenSize.width != width || controller.screenSize.height != height) PlatformTools().updateDiv(widgetKey, controller: controller);
-      controller.changeScreenSize(screenSize: Size(width, height));
-    }
+//     void onBodyResize(double width, double height) {
+//       if(controller.screenSize.width != width || controller.screenSize.height != height) PlatformTools().updateDiv(widgetKey, controller: controller);
+//       controller.changeScreenSize(screenSize: Size(width, height));
+//     }
 
-    final Function resizeCallback = allowInterop(onBodyResize);
-    context.callMethod('observeBodySize', [resizeCallback]);
-  }
-}
+//     final Function resizeCallback = allowInterop(onBodyResize);
+//     context.callMethod('observeBodySize', [resizeCallback]);
+//   }
+// }

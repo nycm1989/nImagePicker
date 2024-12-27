@@ -43,7 +43,7 @@ abstract class PlatformTools{
   }) async => PlatformFile(name: '', size: 0);
 
   void dragAndDrop({Function()? onAdd, required final ImageController controller}) async {}
-  void createDiv(final GlobalKey widgetKey, {required final ImageController controller}) {}
-  void updateDiv(final GlobalKey widgetKey, {required final ImageController controller}) {}
+  void createDiv({required final RenderBox renderBox, required final ImageController controller}) {}
+  void updateDiv({required final RenderBox renderBox, required final ImageController controller}) {}
   void removeDiv({required final ImageController controller}) {}
 }

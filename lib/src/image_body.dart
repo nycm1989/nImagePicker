@@ -1,17 +1,14 @@
 library n_image_picker_view;
 import 'package:flutter/material.dart';
-
-import 'dart:ui' show Clip, Color, ImageFilter, Shadow, Size, StrokeCap;
-import 'dart:math' show Random;
+import 'dart:ui' show Clip, Color, ImageFilter, Shadow, StrokeCap;
 import 'dart:async' show FutureExtensions, StreamController;
 import 'package:uuid/uuid.dart' show Uuid;
 import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 import 'package:dotted_decoration/dotted_decoration.dart' show DottedDecoration;
-import 'image_controller.dart';
+import 'package:n_image_picker/src/image_controller.dart' show ImageController;
 
 class ImageBody extends StatefulWidget {
   final ImageController? controller;
-
 
   ///Only load image from https or http
   final String? urlImage;
@@ -19,28 +16,31 @@ class ImageBody extends StatefulWidget {
   ///Only load image from assets
   final String? assetImage;
 
-  final EdgeInsetsGeometry   margin;
-  final bool                 readOnly;
-  final BoxFit               fit;
-  final bool                 viewerBlur;
-  final double               viewerBlurSigma;
-  final BoxShape             shape;
-  final double             ? width;
-  final double             ? height;
-  final Widget             ? emptyWidget;
-  final Widget             ? onErrorWidget;
-  final Widget             ? onLoadingWidget;
-  final Color              ? backgroundColor;
-  final BorderRadius       ? borderRadius;
-  final Border             ? border;
-  final BoxShadow          ? shadow;
-  final Object             ? tag;
-  final Duration           ? duration;
-  final Color              ? closeColor;
-  final int                ? maxSize;
+  final EdgeInsetsGeometry    margin;
+  final bool                  readOnly;
+  final BoxFit                fit;
+  final bool                  viewerBlur;
+  final double                viewerBlurSigma;
+  final BoxShape              shape;
+  final double              ? width;
+  final double              ? height;
+  final Widget              ? emptyWidget;
+  final Widget              ? onErrorWidget;
+  final Widget              ? onLoadingWidget;
+  final Color               ? backgroundColor;
+  final BorderRadius        ? borderRadius;
+  final Border              ? border;
+  final BoxShadow           ? shadow;
+  final Object              ? tag;
+  final Duration            ? duration;
+  final Color               ? closeColor;
+  final int                 ? maxSize;
 
   ///only for viewer
   final Map<String, String>? headers;
+
+  // New for version 3.2.0
+  final IconData ? uploadIcon;
 
   // New for version 3.0.0
   final IconData ? deleteIcon;
@@ -58,12 +58,12 @@ class ImageBody extends StatefulWidget {
     this.onAdd,
     this.urlImage,
     this.assetImage,
-    required this.margin         ,
-    required this.readOnly       ,
-    required this.fit            ,
-    required this.viewerBlur     ,
+    required this.margin,
+    required this.readOnly,
+    required this.fit,
+    required this.viewerBlur,
     required this.viewerBlurSigma,
-    required this.shape          ,
+    required this.shape,
     this.backgroundColor,
     this.shadow,
     this.borderRadius,
@@ -78,6 +78,7 @@ class ImageBody extends StatefulWidget {
     this.duration,
     this.closeColor,
     this.maxSize,
+    this.uploadIcon,
     this.deleteIcon,
     this.expandIcon,
     this.errorIcon,
@@ -91,18 +92,21 @@ class ImageBody extends StatefulWidget {
 
 class __ImageState extends State<ImageBody> {
   final GlobalKey _globalKey = GlobalKey();
+  RenderBox? _renderBox;
+  Offset? previousPosition;
   StreamController<bool>? streamController;
   Uint8List? image;
   bool error = false;
   double iconSize = 30;
 
-  _startLoading() async => WidgetsBinding.instance.addPostFrameCallback((_) async {
+  _startLoading() async {
     if (streamController != null) streamController == null;
     if (widget.urlImage != null) {
       try {
         streamController = StreamController<bool>();
         setState(() => streamController?.add(true));
         if (widget.controller != null) {
+          // Future.delayed(const Duration(minutes: 1), () async =>
           await widget.controller!
           .setFromURL(
             context,
@@ -128,6 +132,7 @@ class __ImageState extends State<ImageBody> {
             widget.controller!.fromLoading = false;
             widget.controller!.error = true;
           }));
+          // );
         } else {
           // This works if controller is null
           ImageController memoryController = ImageController();
@@ -224,27 +229,40 @@ class __ImageState extends State<ImageBody> {
       streamController = null;
       streamController?.close();
     }
-  });
+  }
 
-  _createClass() => WidgetsBinding.instance.addPostFrameCallback((_) =>
-    widget.controller?.changeClass(
-      _globalKey,
-      className : "nImageDiv_" + Uuid().v4().replaceAll("-", ""),
-      onAdd     : widget.onAdd
-    )
+  _createClass() => _renderBox == null ? null :
+  widget.controller?.changeClass(
+    _renderBox!,
+    className : "nImageDiv_" + Uuid().v4().replaceAll("-", ""),
+    onAdd     : widget.onAdd
   );
 
 
-  _updatePosition() {
+  _reasembleClass() {
     widget.controller?.removeClass();
     _createClass();
+  }
+
+  void _checkPosition() {
+    _renderBox = _globalKey.currentContext?.findRenderObject() as RenderBox?;
+    if(_renderBox != null){
+      final Offset currentPosition = _renderBox!.localToGlobal(Offset.zero);
+      if (previousPosition != null && previousPosition != currentPosition) widget.controller?.updateClass(renderBox: _renderBox!);
+      previousPosition = currentPosition;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkPosition());
   }
 
   @override
   void initState() {
     super.initState();
-    _startLoading();
-    _createClass();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _renderBox = _globalKey.currentContext!.findRenderObject() as RenderBox?;
+      _startLoading();
+      _createClass();
+      _checkPosition();
+    });
   }
 
   @override
@@ -252,12 +270,13 @@ class __ImageState extends State<ImageBody> {
     super.reassemble();
 
     streamController?.close();
-    _updatePosition();
+    _reasembleClass();
   }
 
   @override
   void dispose() {
     super.dispose();
+    widget.controller?.removeClass();
     widget.controller?.removeImage(notify: false);
     streamController?.close();
   }
@@ -272,222 +291,224 @@ class __ImageState extends State<ImageBody> {
       if (widget.controller != oldWidget.controller) _startLoading();
     }
 
-    _updatePosition();
+    _reasembleClass();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Hero(
-      key           : _globalKey  ,
-      tag   : widget.tag ?? Random().nextInt(100000),
-      child :
-      Padding(
-        padding : widget.margin,
-        child   :
-        AnimatedContainer(
-          duration      : widget.duration ?? Duration(milliseconds: 250),
-          width         : widget.width,
-          height        : widget.height,
-          clipBehavior  : Clip.hardEdge,
-          decoration    :
-          BoxDecoration(
-            shape         : widget.shape,
-            color         : widget.backgroundColor ?? Colors.transparent,
-            borderRadius  : widget.borderRadius,
-            border        : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
-            boxShadow     : widget.shadow == null ? null : [widget.shadow!],
-            image         : widget.controller == null
-            ? image == null
-              ? null
-              : DecorationImage(
-                  image : Image.memory(image!).image,
-                  fit   : widget.fit,
-                )
-            : widget.controller!.file == null
-              ? null
-              : DecorationImage(
-                image : Image.memory(widget.controller!.file!.bytes!).image,
-                fit   : widget.fit,
-              ),
+  Widget build(BuildContext context) =>
+  Padding(
+    padding : widget.margin,
+    child   :
+    AnimatedContainer(
+      key           : _globalKey,
+      duration      : widget.duration ?? Duration(milliseconds: 250),
+      width         : widget.width,
+      height        : widget.height,
+      clipBehavior  : Clip.hardEdge,
+      decoration    :
+      BoxDecoration(
+        shape         : widget.shape,
+        color         : widget.backgroundColor ?? Colors.transparent,
+        borderRadius  : widget.borderRadius,
+        border        : widget.border?.add(Border.all(strokeAlign: BorderSide.strokeAlignOutside)),
+        boxShadow     : widget.shadow == null ? null : [widget.shadow!],
+        image         : widget.controller == null
+        ? image == null
+          ? null
+          : DecorationImage(
+              image : Image.memory(image!).image,
+              fit   : widget.fit,
+            )
+        : widget.controller!.file == null
+          ? null
+          : DecorationImage(
+            image : Image.memory(widget.controller!.file!.bytes!).image,
+            fit   : widget.fit,
           ),
-          child:
-          StreamBuilder<bool>(
-            stream  : streamController?.stream,
-            builder : (context, snapshot) =>
-            snapshot.connectionState == ConnectionState.none
-            ? widget.controller == null
-              ? (widget.controller?.error??false) || error
-                ? Center(
-                  child:
-                  _IconContainer(
-                    widgetKey : _globalKey,
-                    onTap     : null,
-                    icon      : Icons.error_outline,
-                    hasImage  : false,
-                    error     : true,
-                  )
-                )
-                : const SizedBox.shrink()
-              : SizedBox.expand(
+      ),
+      child:
+      _renderBox == null
+      ? const SizedBox.shrink()
+      : Hero(
+        tag   : widget.tag ?? Uuid().v4(),
+        child :
+        StreamBuilder<bool>(
+          stream  : streamController?.stream,
+          builder : (context, snapshot) =>
+          snapshot.connectionState == ConnectionState.none
+          ? widget.controller == null
+            ? (widget.controller?.error??false) || error
+              ? Center(
                 child:
-                Column(
-                  children: [
-                    if(kIsWeb)
-                    Expanded(
+                _IconContainer(
+                  renderBox : _renderBox!,
+                  onTap     : null,
+                  icon      : widget.errorIcon ?? Icons.error_outline,
+                  hasImage  : false,
+                  error     : true,
+                )
+              )
+              : const SizedBox.shrink()
+            : SizedBox.expand(
+              child:
+              Column(
+                children: [
+                  if(kIsWeb)
+                  Expanded(
+                    child:
+                    Center(
                       child:
                       _IconContainer(
                         onTap     : null,
-                        widgetKey : _globalKey,
+                        renderBox : _renderBox!,
                         icon      : widget.dragIcon ?? Icons.drag_handle_outlined,
                         hasImage  : widget.controller!.file != null,
                         error     : false,
-                      )
-                    ),
-                    if(kIsWeb)
-                    Container(
-                      height    : 1,
-                      width     : double.infinity,
-                      decoration: DottedDecoration(),
-                    ),
-                    if (widget.controller!.error || error)
-                    Expanded(
+                      ),
+                    )
+                  ),
+                  if(kIsWeb)
+                  Container(
+                    height    : 1,
+                    width     : double.infinity,
+                    decoration: DottedDecoration(),
+                  ),
+                  if (widget.controller!.error || error)
+                  Expanded(
+                    child:
+                    Center(
                       child:
                       _IconContainer(
                         onTap     : widget.readOnly ? null : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
-                        widgetKey : _globalKey,
-                        icon      : Icons.error_outline,
+                        renderBox : _renderBox!,
+                        icon      : widget.errorIcon ?? Icons.error_outline,
                         hasImage  : false,
                         error     : true,
                       ),
                     ),
-                    if (!widget.controller!.error && !error)
-                    if(widget.controller!.file == null)
-                    Expanded(
+                  ),
+                  if (!widget.controller!.error && !error)
+                  if(widget.controller!.file == null)
+                  Expanded(
+                    child:
+                    Center(
                       child:
                       _IconContainer(
-                        widgetKey : _globalKey,
+                        renderBox : _renderBox!,
                         onTap     : widget.readOnly ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize, onAdd: widget.onAdd),
-                        icon      : Icons.file_upload_outlined,
+                        icon      : widget.uploadIcon ?? Icons.file_upload_outlined,
                         hasImage  : false,
                         error     : false,
                       ),
                     ),
-                    if (!widget.controller!.error && !error)
-                    if(widget.controller!.file != null)
-                    Expanded(
-                      child:
-                      Row(
-                        mainAxisAlignment : widget.readOnly ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
-                        children          : [
-                          if (!widget.readOnly)
-                          _IconContainer(
-                            onTap     : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
-                            widgetKey : _globalKey,
-                            icon      : widget.deleteIcon ?? Icons.delete_outline,
-                            hasImage  : true,
-                            error     : false,
+                  ),
+                  if (!widget.controller!.error && !error)
+                  if(widget.controller!.file != null)
+                  Expanded(
+                    child:
+                    Row(
+                      mainAxisAlignment : widget.readOnly ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
+                      children          : [
+                        if (!widget.readOnly)
+                        _IconContainer(
+                          onTap     : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
+                          renderBox : _renderBox!,
+                          icon      : widget.deleteIcon ?? Icons.delete_outline,
+                          hasImage  : true,
+                          error     : false,
+                        ),
+                        _IconContainer(
+                          onTap: () => widget.controller?.showImageViewer(
+                            context,
+                            tag         : widget.tag,
+                            blur        : widget.viewerBlur,
+                            sigma       : widget.viewerBlurSigma,
+                            closeColor  : widget.closeColor
                           ),
-                          _IconContainer(
-                            onTap: () => widget.controller?.showImageViewer(
-                              context,
-                              tag         : widget.tag,
-                              blur        : widget.viewerBlur,
-                              sigma       : widget.viewerBlurSigma,
-                              closeColor  : widget.closeColor
-                            ),
-                            widgetKey : _globalKey,
-                            icon      : widget.expandIcon ?? Icons.zoom_out_map_rounded,
-                            hasImage  : true,
-                            error     : false,
-                            // ),
-                          )
-                        ],
-                      ),
+                          renderBox : _renderBox!,
+                          icon      : widget.expandIcon ?? Icons.zoom_out_map_rounded,
+                          hasImage  : true,
+                          error     : false,
+                          // ),
+                        )
+                      ],
                     ),
-                  ],
-                ),
-              )
-            : widget.onLoadingWidget ??
-            const Center(
-              child:
-              SizedBox.square(
-                dimension : 60,
-                child     :
-                CircularProgressIndicator(
-                  strokeWidth : 2,
-                  color       : Colors.grey,
-                  strokeCap   : StrokeCap.round,
-                )
+                  ),
+                ],
+              ),
+            )
+          : widget.onLoadingWidget ??
+          const Center(
+            child:
+            SizedBox.square(
+              dimension : 60,
+              child     :
+              CircularProgressIndicator(
+                strokeWidth : 2,
+                color       : Colors.grey,
+                strokeCap   : StrokeCap.round,
               )
             )
           )
-        ),
-      )
-    );
-  }
+        )
+      ),
+    )
+  );
 }
 
 
 class _IconContainer extends StatelessWidget {
-  final GlobalKey widgetKey;
+  final RenderBox renderBox;
   final GestureTapCallback? onTap;
   final IconData  icon;
   final bool      hasImage;
   final bool      error;
+  final double    _maxSize;
 
   _IconContainer({
-    required this.widgetKey,
+    required this.renderBox,
     required this.onTap,
     required this.icon,
     required this.hasImage,
     required this.error,
-  });
+  }) : _maxSize = ((renderBox.size.width >= renderBox.size.height) ? renderBox.size.width : renderBox.size.height) * (error ? 0.30 : 0.15);
 
   @override
   Widget build(BuildContext context) =>
   MouseRegion(
     cursor  : SystemMouseCursors.click,
     child   :
-    GestureDetector(
-      onTap: onTap,
+    onTap == null
+    ? _body
+    : IconButton(
+      onPressed : onTap,
+      icon      : _body
+    )
+  );
+
+  Container get _body => Container(
+    width   : _maxSize,
+    height  : _maxSize,
+    child   :
+    BackdropFilter(
+      filter  :
+      ImageFilter.blur(
+        sigmaX  : hasImage ? 0 : 0.4,
+        sigmaY  : hasImage ? 0 : 0.4,
+      ),
       child:
-      Builder(
-        builder: (context) {
-          final Size _size = (widgetKey.currentContext?.findRenderObject() as RenderBox?)?.size??Size(100, 100);
-          final double _maxSize = ((_size.width >= _size.height) ? _size.width : _size.height) * (error ? 0.30 : 0.15);
-          return Container(
-            width         : _maxSize+ 15,
-            height        : _maxSize+ 15,
-            clipBehavior  : Clip.hardEdge,
-            decoration    :
-            BoxDecoration(
-              color: Colors.transparent,
-              shape: BoxShape.circle
-            ),
-            child   :
-            BackdropFilter(
-              filter  :
-              ImageFilter.blur(
-                sigmaX  : hasImage ? 0 : 0.4,
-                sigmaY  : hasImage ? 0 : 0.4,
-              ),
-              child:
-              Icon(
-                icon,
-                size    : _maxSize,
-                color   : error ? Colors.red : hasImage ? Colors.white : Colors.grey,
-                shadows : hasImage ? _shadow() : null
-              ),
-            )
-          );
-        }
-      )
+      Icon(
+        icon,
+        size    : _maxSize,
+        color   : error ? Colors.red : hasImage ? Colors.white : Colors.grey,
+        shadows : hasImage
+        ? [
+          Shadow(color: Colors.black, blurRadius: 10),
+          Shadow(color: Colors.black, blurRadius: 5 ),
+          Shadow(color: Colors.grey,  blurRadius: 2 ),
+        ]
+        : null
+      ),
     )
   );
 }
-
-List<Shadow> _shadow () => [
-  Shadow(color: Colors.black, blurRadius: 10),
-  Shadow(color: Colors.black, blurRadius: 5 ),
-  Shadow(color: Colors.grey,  blurRadius: 2 ),
-];

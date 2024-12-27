@@ -1,3 +1,13 @@
+## 3.2.0
+* [Upgraded] dragArea logic
+* [Upgraded] dragArea now detect any position change
+* [Upgraded] remove unused dragArea
+* [Upgraded] dont create multiples dragAreas for one item un html body
+* [Upgraded] classes declaration upgraded
+* [Fix] icon size logic
+* [Fix] tag for hero
+* [New] uploadIcon for picker
+
 ## 3.1.0
 * [New] onAdd Funtion
 * [New] onDelete Function

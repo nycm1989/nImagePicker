@@ -40,14 +40,16 @@ class ImageController with ChangeNotifier {
   /// Web-only
   changeScreenSize({required Size screenSize}) => _screenSize = screenSize;
 
-  changeClass(final GlobalKey widgetKey, {required String className, Function()? onAdd}) {
+  changeClass(final RenderBox renderBox, {required String className, Function()? onAdd}) {
     if(_className != className) PlatformTools().removeDiv(controller: this);
     _className = className;
-    PlatformTools().createDiv(widgetKey, controller: this);
+    PlatformTools().createDiv(renderBox: renderBox, controller: this);
     PlatformTools().dragAndDrop(controller: this, onAdd: onAdd);
   }
 
   void removeClass() => PlatformTools().removeDiv(controller: this);
+
+  void updateClass({required RenderBox renderBox}) => PlatformTools().updateDiv(renderBox: renderBox, controller: this);
 
   changeOnDragState(bool state) {
     onDrag = state;
@@ -102,7 +104,7 @@ class ImageController with ChangeNotifier {
     _fromLoading  = false;
     _size         = Size(0, 0);
     _weight       = 0;
-    notifyListeners();
+    try{ notifyListeners(); } catch(e) { null; };
   }
 
   RegExp get _urlPattern => RegExp(
@@ -333,7 +335,9 @@ class ImageController with ChangeNotifier {
   removeImage({required final bool notify, final Function()? onDelete}) {
     _reset(error: false);
     onDelete?.call();
-    if (notify) notifyListeners();
+    if (notify) {
+      try { notifyListeners(); } catch(e) { null; }
+    }
   }
 
   showImageViewer(
