@@ -258,7 +258,7 @@ class __ImageState extends State<ImageBody> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _renderBox = _globalKey.currentContext!.findRenderObject() as RenderBox?;
+      setState(()=> _renderBox = _globalKey.currentContext!.findRenderObject() as RenderBox?);
       _startLoading();
       _createClass();
       _checkPosition();

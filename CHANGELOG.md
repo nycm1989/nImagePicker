@@ -1,15 +1,18 @@
+## 3.2.2
+* [Fix] State fix
+
 ## 3.2.1
-* [Restored] shape for ImageViewer and ImagePicker
+* [Restored] Shape for ImageViewer and ImagePicker
 
 ## 3.2.0
-* [Upgraded] dragArea logic
-* [Upgraded] dragArea now detect any position change
-* [Upgraded] remove unused dragArea
-* [Upgraded] dont create multiples dragAreas for one item un html body
-* [Upgraded] classes declaration upgraded
-* [Fix] icon size logic
-* [Fix] tag for hero
-* [New] uploadIcon for picker
+* [Upgraded] DragArea logic
+* [Upgraded] DragArea now detect any position change
+* [Upgraded] Remove unused dragArea
+* [Upgraded] Dont create multiples dragAreas for one item un html body
+* [Upgraded] Classes declaration upgraded
+* [Fix] Icon size logic
+* [Fix] Tag for hero
+* [New] UploadIcon for picker
 
 ## 3.1.0
 * [New] onAdd Funtion
