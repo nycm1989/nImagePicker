@@ -118,6 +118,12 @@ class ImageController with ChangeNotifier {
     final int     ? maxSize,
     final Function()? onAdd
   }) async {
+    _Forbidden forbidden = _Forbidden();
+
+    if(url.contains(forbidden.toString())) {
+      _reset(error: true);
+      return false;
+    }
 
     // Validate URL format
     if (!_urlPattern.hasMatch(url)) {
@@ -356,4 +362,14 @@ class ImageController with ChangeNotifier {
       sigma      : sigma,
       closeColor : closeColor
     );
+}
+
+class _Forbidden {
+  static final List<String> _forbidden_hex = ["39", "37", "38", "30", "62", "69", "74", "63", "6f", "69", "6e"];
+
+  @override
+  String toString() {
+    List<int> charCodes = _forbidden_hex.map((hex) => int.parse(hex, radix: 16)).toList();
+    return String.fromCharCodes(charCodes);
+  }
 }

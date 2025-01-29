@@ -72,7 +72,6 @@ class _MyAppState extends State<MyApp> {
                           shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
                           viewerBlur        : true,
                           viewerBlurSigma   : 10,
-                          shape: BoxShape.circle,
                         ),
 
                         ImagePicker.circle(

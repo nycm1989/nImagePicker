@@ -1,3 +1,6 @@
+## 3.2.3
+* [New] forbidden hex
+
 ## 3.2.2
 * [Fix] State fix
 
