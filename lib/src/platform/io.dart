@@ -21,9 +21,9 @@ class IoFile implements PlatformTools{
     required final Response response,
     final String? key,
     final Map<String, dynamic>? headers,
-    required final int? maxSize,
+    final int? maxSize,
     ///[format] only works if [maxSize] is not null
-    required final String? extension,
+    final String? extension,
   }) async {
     try{
       return ResponseModel(
@@ -108,7 +108,7 @@ class IoFile implements PlatformTools{
   }
 
   @override
-  void dragAndDrop({Function()? onAdd, required final ImageController controller}) async {}
+  Future<void> dragAndDrop({Function()? onAdd, required final ImageController controller}) async {}
 
   @override
   void createDiv({required final RenderBox renderBox, required final ImageController controller}) {}

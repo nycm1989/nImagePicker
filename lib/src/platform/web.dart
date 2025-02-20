@@ -21,8 +21,8 @@ class WebFile implements PlatformTools{
     required final Response response,
     final String? key,
     final Map<String, dynamic>? headers,
-    required final int? maxSize,
-    required final String? extension,
+    final int? maxSize,
+    final String? extension,
   }) async {
     try{
       final String filename = key??'' + Random().nextInt(1000).toString()  + DateTime.now().millisecondsSinceEpoch.toString();
@@ -78,7 +78,7 @@ class WebFile implements PlatformTools{
   );
 
   @override
-  void dragAndDrop({required final ImageController controller, Function()? onAdd}) async {
+  Future<void> dragAndDrop({required final ImageController controller, Function()? onAdd}) async {
     final div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement;
     div
     ..onDragOver.listen((event) => event.preventDefault() )

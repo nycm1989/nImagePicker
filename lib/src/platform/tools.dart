@@ -15,35 +15,27 @@ abstract class PlatformTools{
   Future<ResponseModel> setFile({
     required final Response response,
     final Map<String, dynamic>? headers,
-    required final int? maxSize,
-    ///[format] only works if [maxSize] is not null
-    required final String? extension
-  }) async =>
-  ResponseModel(
-    platformFile : PlatformFile( name: '', size: 0 ),
-    error        : false
-  );
+    final int? maxSize,
+    final String? extension
+  });
 
   Future<ResponseModel> setFileFromPath({
     required final String path,
     required final int? maxSize
-  }) async =>
-  ResponseModel(
-    platformFile : PlatformFile( name: '', size: 0 ),
-    error        : false
-  );
+  });
 
-  remove(final PlatformFile file) => null;
 
   Future<PlatformFile> write({
     required final String     name,
     required final String     extension,
     required final Uint8List? bytes,
     required final int?       maxSize,
-  }) async => PlatformFile(name: '', size: 0);
+  });
 
-  void dragAndDrop({Function()? onAdd, required final ImageController controller}) async {}
-  void createDiv({required final RenderBox renderBox, required final ImageController controller}) {}
-  void updateDiv({required final RenderBox renderBox, required final ImageController controller}) {}
-  void removeDiv({required final ImageController controller}) {}
+  void remove(final PlatformFile file);
+
+  Future<void> dragAndDrop({Function()? onAdd, required final ImageController controller});
+  void createDiv({required final RenderBox renderBox, required final ImageController controller});
+  void updateDiv({required final RenderBox renderBox, required final ImageController controller});
+  void removeDiv({required final ImageController controller});
 }
