@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart' show ChangeNotifier, Uint8List, debugPr
 import 'package:flutter/services.dart' show Color, Size, Uint8List, rootBundle;
 import 'package:http/http.dart' show MultipartFile, Request, Response;
 import 'package:http_parser/http_parser.dart' show MediaType;
-import 'package:n_image_picker/src/image_viewer_dialog.dart' show imageViewerDialog;
-import 'package:n_image_picker/domain/interfaces/image_interface.dart' show ImageInterface;
-import 'package:n_image_picker/domain/interfaces/drop_interface.dart' show DropInterface;
+import 'package:n_image_picker/src/domain/interfaces/image_interface.dart' show ImageInterface;
+import 'package:n_image_picker/src/domain/interfaces/drop_interface.dart' show DropInterface;
+import 'package:n_image_picker/src/presentation/image_preview.dart' show imagePreview;
 
 class ImageController with ChangeNotifier {
   PlatformFile? _file;
@@ -356,7 +356,7 @@ class ImageController with ChangeNotifier {
   }) =>
   _bytes == null
   ? throw Exception('There is no any image loaded')
-  : imageViewerDialog(context,
+  : imagePreview(context,
       tag        : tag    ?? Random().nextInt(100000),
       bytes      : _bytes ?? Uint8List(0),
       blur       : blur,

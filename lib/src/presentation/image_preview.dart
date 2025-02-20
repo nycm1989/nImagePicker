@@ -3,7 +3,7 @@ import 'dart:ui' show Clip, Color, FilterQuality, ImageFilter, Shadow, Size;
 import 'dart:async' show Future;
 import 'package:flutter/foundation.dart' show Uint8List;
 
-Future<void> imageViewerDialog( BuildContext context, {
+Future<void> imagePreview( BuildContext context, {
   required bool      blur,
   required Uint8List bytes,
   required double    sigma,

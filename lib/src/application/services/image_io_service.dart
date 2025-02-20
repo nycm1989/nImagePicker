@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart' show Uint8List;
 import 'package:file_picker/file_picker.dart' show PlatformFile;
 import 'package:path_provider/path_provider.dart' as pp show getTemporaryDirectory;
 
-import 'package:n_image_picker/src/platform/helpers.dart' show Helpers;
-import 'package:n_image_picker/domain/models/response_model.dart' show ResponseModel;
-import 'package:n_image_picker/domain/interfaces/image_interface.dart' show ImageInterface;
+import 'package:n_image_picker/src/shared/helper.dart' show Helper;
+import 'package:n_image_picker/src/domain/models/response_model.dart' show ResponseModel;
+import 'package:n_image_picker/src/domain/interfaces/image_interface.dart' show ImageInterface;
 
 ImageInterface getInstance() => ImageIoService();
 
@@ -28,7 +28,7 @@ class ImageIoService implements ImageInterface{
         PlatformFile(
           name  : Random().nextInt(10000).toString() + DateTime.now().millisecondsSinceEpoch.toString(),
           size  : response.contentLength??0,
-          bytes : maxSize != null ? Helpers().Rezize(bytes: response.bodyBytes, maxSize: maxSize, extension: extension??'') : response.bodyBytes
+          bytes : maxSize != null ? Helper().Rezize(bytes: response.bodyBytes, maxSize: maxSize, extension: extension??'') : response.bodyBytes
         ),
         error: false
       );
@@ -57,7 +57,7 @@ class ImageIoService implements ImageInterface{
           PlatformFile(
             name  : filename,
             size  : length,
-            bytes : maxSize != null ? Helpers().Rezize(bytes: bytes, maxSize: maxSize, extension: path.split(".").last) : bytes,
+            bytes : maxSize != null ? Helper().Rezize(bytes: bytes, maxSize: maxSize, extension: path.split(".").last) : bytes,
             path  : file.path
           ),
           error: false
@@ -91,7 +91,7 @@ class ImageIoService implements ImageInterface{
         io.File file = io.File(dir.path + "/" + name + "." + extension);
         return await file.writeAsBytes(bytes).then((_f) async =>
           _f.readAsBytes().then((_b){
-            Uint8List? _rb = maxSize != null ? Helpers().Rezize(bytes: _b, maxSize: maxSize, extension: extension) : null;
+            Uint8List? _rb = maxSize != null ? Helper().Rezize(bytes: _b, maxSize: maxSize, extension: extension) : null;
             return PlatformFile(
               name  : name + "." + extension,
               size  : maxSize != null ? _rb?.lengthInBytes??0 : _f.lengthSync(),

@@ -5,7 +5,7 @@ import 'dart:async' show FutureExtensions, StreamController;
 import 'package:uuid/uuid.dart' show Uuid;
 import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 import 'package:dotted_decoration/dotted_decoration.dart' show DottedDecoration;
-import 'package:n_image_picker/src/image_controller.dart' show ImageController;
+import 'package:n_image_picker/src/presentation/image_controller.dart' show ImageController;
 
 class ImageBody extends StatefulWidget {
   final ImageController? controller;

@@ -1,7 +1,7 @@
 library n_image_picker_view;
 
 import 'package:flutter/material.dart';
-import 'image_body.dart' show ImageBody;
+import 'package:n_image_picker/src/presentation/image_body.dart' show ImageBody;
 
 @immutable
 class ImagePicker extends ImageBody {

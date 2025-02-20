@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'dart:async' show Future;
-import 'package:n_image_picker/src/image_controller.dart' show ImageController;
-import 'package:n_image_picker/domain/interfaces/drop_interface.dart' show DropInterface;
+import 'package:n_image_picker/src/presentation/image_controller.dart' show ImageController;
+import 'package:n_image_picker/src/domain/interfaces/drop_interface.dart' show DropInterface;
 
 
 DropInterface getInstance() => DropIoService();

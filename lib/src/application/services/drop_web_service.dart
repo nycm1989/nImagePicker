@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:n_image_picker/domain/interfaces/drop_interface.dart';
-import 'package:n_image_picker/src/image_controller.dart';
+import 'package:n_image_picker/src/domain/interfaces/drop_interface.dart';
+import 'package:n_image_picker/src/presentation/image_controller.dart';
 
 import 'dart:async' show Completer, Future;
 import 'dart:typed_data' show ByteBuffer, Uint8List;

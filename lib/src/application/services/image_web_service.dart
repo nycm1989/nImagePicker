@@ -6,9 +6,9 @@ import 'package:web/web.dart' as web show File;
 import 'package:http/http.dart' show Response;
 import 'package:file_picker/file_picker.dart' show PlatformFile;
 
-import 'package:n_image_picker/src/platform/helpers.dart' show Helpers;
-import 'package:n_image_picker/domain/models/response_model.dart' show ResponseModel;
-import 'package:n_image_picker/domain/interfaces/image_interface.dart' show ImageInterface;
+import 'package:n_image_picker/src/shared/helper.dart' show Helper;
+import 'package:n_image_picker/src/domain/models/response_model.dart' show ResponseModel;
+import 'package:n_image_picker/src/domain/interfaces/image_interface.dart' show ImageInterface;
 
 ImageInterface getInstance() => ImageWebService();
 
@@ -35,7 +35,7 @@ class ImageWebService implements ImageInterface{
         platformFile: PlatformFile(
           name  : filename,
           size  : i.size,
-          bytes : maxSize != null ? Helpers().Rezize(bytes: response.bodyBytes, maxSize: maxSize, extension: extension??'') : response.bodyBytes,
+          bytes : maxSize != null ? Helper().Rezize(bytes: response.bodyBytes, maxSize: maxSize, extension: extension??'') : response.bodyBytes,
           path  : null
         ),
         error: false
@@ -71,7 +71,7 @@ class ImageWebService implements ImageInterface{
   PlatformFile(
     name  : DateTime.now().millisecondsSinceEpoch.toString() + name + "." + extension,
     size  : bytes?.length??0,
-    bytes : maxSize != null ? bytes != null ? Helpers().Rezize(bytes: bytes, maxSize: maxSize, extension: extension) : null : bytes
+    bytes : maxSize != null ? bytes != null ? Helper().Rezize(bytes: bytes, maxSize: maxSize, extension: extension) : null : bytes
   );
 }
 
