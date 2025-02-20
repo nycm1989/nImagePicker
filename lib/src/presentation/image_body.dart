@@ -240,7 +240,7 @@ class __ImageState extends State<ImageBody> {
 
 
   _reasembleClass() {
-    widget.controller?.removeClass();
+    widget.controller?.removeDrop();
     _createClass();
   }
 
@@ -248,7 +248,7 @@ class __ImageState extends State<ImageBody> {
     _renderBox = _globalKey.currentContext?.findRenderObject() as RenderBox?;
     if(_renderBox != null){
       final Offset currentPosition = _renderBox!.localToGlobal(Offset.zero);
-      if (previousPosition != null && previousPosition != currentPosition) widget.controller?.updateClass(renderBox: _renderBox!);
+      if (previousPosition != null && previousPosition != currentPosition) widget.controller?.updateDrop(renderBox: _renderBox!);
       previousPosition = currentPosition;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkPosition());
@@ -276,7 +276,7 @@ class __ImageState extends State<ImageBody> {
   @override
   void dispose() {
     super.dispose();
-    widget.controller?.removeClass();
+    widget.controller?.removeDrop();
     widget.controller?.removeImage(notify: false);
     streamController?.close();
   }

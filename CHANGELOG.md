@@ -1,3 +1,8 @@
+## 3.3.0
+* [Upgraded] dart version
+* [Upgraded] architecture
+* [New] Drag and Drop area now hide and show element state in DOM
+
 ## 3.2.3
 * [New] forbidden hex
 

@@ -9,9 +9,9 @@ import 'package:n_image_picker/src/shared/helper.dart' show Helper;
 import 'package:n_image_picker/src/domain/models/response_model.dart' show ResponseModel;
 import 'package:n_image_picker/src/domain/interfaces/image_interface.dart' show ImageInterface;
 
-ImageInterface getInstance() => ImageIoService();
+ImageInterface getInstance() => ImageIoRepository();
 
-class ImageIoService implements ImageInterface{
+class ImageIoRepository implements ImageInterface{
 
   @override
   Future<ResponseModel> setFile({

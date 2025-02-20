@@ -6,9 +6,9 @@ import 'dart:async' show Completer, Future;
 import 'dart:typed_data' show ByteBuffer, Uint8List;
 import 'package:web/web.dart' as web show DragEvent, ElementEventGetters, File, FileReader, FileReaderEventGEtters, HTMLElement, document;
 
-DropInterface getInstance() => DropWebService();
+DropInterface getInstance() => DropWebRepository();
 
-class DropWebService implements DropInterface{
+class DropWebRepository implements DropInterface{
   @override
   Future<void> dragAndDrop({required final ImageController controller, Function()? onAdd}) async {
     final div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement;
@@ -42,6 +42,7 @@ class DropWebService implements DropInterface{
             );
           });
         } else {
+          controller.reset(error: true);
           debugPrint("Format not supported [${controller.fileTypes.join(", ")}]");
         }
       }
@@ -49,20 +50,21 @@ class DropWebService implements DropInterface{
   }
 
   @protected
-  String _style(Offset position, Size size)  =>
+  String _style(Offset position, Size size, {bool hidden = false})  =>
+  "display: ${hidden ? "none" : "block"};"
   "position: absolute;"
   "left: ${position.dx}px;"
   "top: ${position.dy}px;"
   "width: ${size.width}px;"
   "height: ${(size.height/2) - 20}px;"
-  "z-index: 1000;";
+  "z-index: ${hidden ? "-1" : "1000"};";
   // "border: 5px solid red;";
   // "background-color: rgba(0, 0, 0, 0.7); ";
   // "mask: inset(30% 10% 30% 10%); "
   // "-webkit-mask: inset(30% 10% 30% 10%); ";
 
   @override
-  void createDiv({required final RenderBox renderBox, required final ImageController controller}) {
+  void createDrop({required final RenderBox renderBox, required final ImageController controller}) {
     // _Observer.body(widgetKey, controller: controller);
 
     final _divs = web.document.body?.getElementsByClassName(controller.className); //.item(0) as web.HTMLElement?;
@@ -74,12 +76,12 @@ class DropWebService implements DropInterface{
       div ..setAttribute("class", controller.className) ..setAttribute("style", _style(renderBox.localToGlobal(Offset.zero), renderBox.size));
       web.document.body?.append(div);
     } else {
-      updateDiv(renderBox: renderBox, controller: controller);
+      updateDrop(renderBox: renderBox, controller: controller);
     }
   }
 
   @override
-  void updateDiv({required final RenderBox renderBox, required final ImageController controller}) {
+  void updateDrop({required final RenderBox renderBox, required final ImageController controller}) {
     final web.HTMLElement? div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement?;
     if(div != null) {
       div ..removeAttribute("style") ..setAttribute("style", _style(renderBox.localToGlobal(Offset.zero), renderBox.size));
@@ -87,11 +89,31 @@ class DropWebService implements DropInterface{
   }
 
   @override
-  void removeDiv({required final ImageController controller}) {
+  void removeDrop({required final ImageController controller}) {
     final div = web.document.body?.getElementsByClassName(controller.className).item(0) as web.HTMLElement?;
     if(div != null){
       div.style.display = "hidden";
       div.remove();
+    }
+  }
+
+  @override
+  void hideDrop() {
+    for(var element in web.document.querySelectorAll('[class^="nImageDiv_"]') as List<web.HTMLElement?>){
+      if(element != null){
+        element.style.display = "hidden";
+        element.style.zIndex = "-1";
+      }
+    }
+  }
+
+  @override
+  void showDrop() {
+    for(var element in web.document.querySelectorAll('[class^="nImageDiv_"]') as List<web.HTMLElement?>){
+      if(element != null){
+        element.style.display = "block";
+        element.style.zIndex = "1000";
+      }
     }
   }
 }

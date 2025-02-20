@@ -10,9 +10,9 @@ import 'package:n_image_picker/src/shared/helper.dart' show Helper;
 import 'package:n_image_picker/src/domain/models/response_model.dart' show ResponseModel;
 import 'package:n_image_picker/src/domain/interfaces/image_interface.dart' show ImageInterface;
 
-ImageInterface getInstance() => ImageWebService();
+ImageInterface getInstance() => ImageWebRepository();
 
-class ImageWebService implements ImageInterface{
+class ImageWebRepository implements ImageInterface{
   @override
   Future<ResponseModel> setFile({
     required final Response response,
@@ -95,7 +95,7 @@ class ImageWebService implements ImageInterface{
 //     """]);
 
 //     void onBodyResize(double width, double height) {
-//       if(controller.screenSize.width != width || controller.screenSize.height != height) ImageInterface().updateDiv(widgetKey, controller: controller);
+//       if(controller.screenSize.width != width || controller.screenSize.height != height) ImageInterface().updateDrop(widgetKey, controller: controller);
 //       controller.changeScreenSize(screenSize: Size(width, height));
 //     }
 

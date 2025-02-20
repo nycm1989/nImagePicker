@@ -3,8 +3,9 @@ import 'dart:math' show Random;
 import 'package:file_picker/file_picker.dart' show FilePicker, FileType, PlatformFile;
 import 'package:flutter/foundation.dart' show ChangeNotifier, Uint8List, debugPrint, kIsWeb;
 import 'package:flutter/services.dart' show Color, Size, Uint8List, rootBundle;
-import 'package:http/http.dart' show MultipartFile, Request, Response;
+import 'package:http/http.dart' show MultipartFile, Response;
 import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:n_image_picker/src/application/services/http_service.dart';
 import 'package:n_image_picker/src/domain/interfaces/image_interface.dart' show ImageInterface;
 import 'package:n_image_picker/src/domain/interfaces/drop_interface.dart' show DropInterface;
 import 'package:n_image_picker/src/presentation/image_preview.dart' show imagePreview;
@@ -42,15 +43,18 @@ class ImageController with ChangeNotifier {
   changeScreenSize({required Size screenSize}) => _screenSize = screenSize;
 
   changeClass(final RenderBox renderBox, {required String className, Function()? onAdd}) {
-    if(_className != className) DropInterface().removeDiv(controller: this);
+    if(_className != className) DropInterface().removeDrop(controller: this);
     _className = className;
-    DropInterface().createDiv(renderBox: renderBox, controller: this);
+    DropInterface().createDrop(renderBox: renderBox, controller: this);
     DropInterface().dragAndDrop(controller: this, onAdd: onAdd);
   }
 
-  void removeClass() => DropInterface().removeDiv(controller: this);
+  void removeDrop() => DropInterface().removeDrop(controller: this);
 
-  void updateClass({required RenderBox renderBox}) => DropInterface().updateDiv(renderBox: renderBox, controller: this);
+  void updateDrop({required RenderBox renderBox}) => DropInterface().updateDrop(renderBox: renderBox, controller: this);
+
+  void hideDrop() => DropInterface().hideDrop();
+  void showDrop() => DropInterface().showDrop();
 
   changeOnDragState(bool state) {
     onDrag = state;
@@ -96,7 +100,7 @@ class ImageController with ChangeNotifier {
   Size          get size        => _size;
   double        get weight      => _weight;
 
-  _reset({required bool error}) {
+  reset({required bool error}) {
     _file         = null;
     _bytes        = null;
     _error        = error;
@@ -119,53 +123,33 @@ class ImageController with ChangeNotifier {
     final int     ? maxSize,
     final Function()? onAdd
   }) async {
-    _Forbidden forbidden = _Forbidden();
-
-    if(url.contains(forbidden.toString())) {
-      _reset(error: true);
-      return false;
-    }
-
     // Validate URL format
     if (!_urlPattern.hasMatch(url)) {
-      error = true;
-      fromLoading = false;
-      throw Exception("The URL is not valid");
+      reset(error: true);
+      return false;
+    } else {
+      _extension = url.split('/').last.split('.').last;
+      if(!_fileTypes.contains(_extension)){
+        reset(error: true);
+        return false;
+      }
     }
 
-    Request request = Request("GET", Uri.parse(url))..followRedirects = false;
-
-    // Add headers if provided
-    if (headers != null) request.headers.addAll(headers);
-
-    return await request.send().then((value) async {
-      if (value.statusCode == 200) {
-        try {
-          final image_name_extendion = url.split('/').last.split('.');
-
-          await value.stream.toBytes().then((bytes) async => await setFromBytes(
-            name      : _className,
-            bytes     : bytes,
-            extension : image_name_extendion.last,
-            maxSize   : maxSize,
-            onAdd     : onAdd
-          ))
-          .onError((error, stackTrace) {
-            _reset(error: true);
-            return false;
-          });
-
-          return true;
-        } catch (e) {
-          _reset(error: true);
-          return false;
-        }
+    return HttpService.downloadImage(headers: headers, url: url).then((bytes) async {
+      if(bytes != null) {
+        return await setFromBytes(
+          name      : _className,
+          bytes     : bytes,
+          extension : url.split('/').last.split('.').last,
+          maxSize   : maxSize,
+          onAdd     : onAdd
+        ).then((_) => true);
       } else {
-        _reset(error: true);
+        reset(error: true);
         return false;
       }
     }).onError((error, stackTrace){
-        _reset(error: true);
+        reset(error: true);
         return false;
     });
   }
@@ -178,20 +162,24 @@ class ImageController with ChangeNotifier {
     final Function()? onAdd
   }) async {
     if (bytes == null) throw Exception("bytes cant be null");
-    await ImageInterface().write(
-      name      : name,
-      extension : extension,
-      bytes     : bytes,
-      maxSize   : maxSize
-    ).then((_f) {
-      _file       = _f;
-      _bytes      = _f.bytes;
-      _error      = false;
-      _hasImage   = true;
-      _extension  = extension;
-      onAdd?.call();
-      notifyListeners();
-    }).onError((error, stackTrace) => _reset(error: true));
+    if(!_fileTypes.contains(extension)) {
+      reset(error: false);
+    } else {
+      await ImageInterface().write(
+        name      : name,
+        extension : extension,
+        bytes     : bytes,
+        maxSize   : maxSize
+      ).then((_f) {
+        _file       = _f;
+        _bytes      = _f.bytes;
+        _error      = false;
+        _hasImage   = true;
+        _extension  = extension;
+        onAdd?.call();
+        notifyListeners();
+      }).onError((error, stackTrace) => reset(error: true));
+    }
   }
 
   Future<void> setFromAsset({
@@ -202,25 +190,29 @@ class ImageController with ChangeNotifier {
     if (path.isEmpty) throw Exception("path cant be empty");
     if (_urlPattern.hasMatch(path)) throw Exception("A URL can't be an asset");
 
-    await rootBundle.load(path)
-    .then((data) async {
-      final extension = path.split('.').last.split('?').first;
-      await ImageInterface().write(
-        name      : '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${path.split('/').last.split('.').first}',
-        extension : extension,
-        bytes     : data.buffer.asUint8List(),
-        maxSize   : maxSize
-      ).then((_f) {
-        _file       = _f;
-        _bytes      = _f.bytes;
-        _error      = false;
-        _hasImage   = true;
-        _extension  = extension;
-        onAdd?.call();
-        notifyListeners();
-      }).onError((error, stackTrace) => _reset(error: true));
-    })
-    .onError((error, stackTrace) => _reset(error: true));
+    final extension = path.split('.').last.split('?').first;
+    if(!_fileTypes.contains(extension)) {
+      reset(error: false);
+    } else {
+      await rootBundle.load(path)
+      .then((data) async {
+        await ImageInterface().write(
+          name      : '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${path.split('/').last.split('.').first}',
+          extension : extension,
+          bytes     : data.buffer.asUint8List(),
+          maxSize   : maxSize
+        ).then((_f) {
+          _file       = _f;
+          _bytes      = _f.bytes;
+          _error      = false;
+          _hasImage   = true;
+          _extension  = extension;
+          onAdd?.call();
+          notifyListeners();
+        }).onError((error, stackTrace) => reset(error: true));
+      })
+      .onError((error, stackTrace) => reset(error: true));
+    }
   }
 
   /// Set the image file from http response and url
@@ -261,7 +253,7 @@ class ImageController with ChangeNotifier {
         });
     } catch (e) {
       debugPrint('n_image_piker e1: $e');
-      _reset(error: true);
+      reset(error: true);
       notifyListeners();
     }
   }
@@ -290,7 +282,7 @@ class ImageController with ChangeNotifier {
         });
       } catch (e) {
         debugPrint('n_image_piker e1: $e');
-        _reset(error: true);
+        reset(error: true);
         notifyListeners();
       }
     }
@@ -324,23 +316,28 @@ class ImageController with ChangeNotifier {
     withData          : true
   ).then((response) async {
     if (response == null) {
-      _reset(error: false);
+      reset(error: false);
     } else {
       final f = response.files.single;
-      setFromBytes(
-        name      : f.name,
-        extension : f.extension ?? '',
-        bytes     : f.bytes,
-        maxSize   : maxSize,
-      );
-      onAdd?.call();
+      if(!_fileTypes.contains(f.extension)) {
+        reset(error: false);
+      } else {
+        await setFromBytes(
+          name      : f.name,
+          extension : f.extension ?? '',
+          bytes     : f.bytes,
+          maxSize   : maxSize,
+        ).then((_) {
+          onAdd?.call();
+        });
+      }
     }
     notifyListeners();
   })
-  .onError((error, stackTrace) => _reset(error: false));
+  .onError((error, stackTrace) => reset(error: false));
 
   removeImage({required final bool notify, final Function()? onDelete}) {
-    _reset(error: false);
+    reset(error: false);
     onDelete?.call();
     if (notify) {
       try { notifyListeners(); } catch(e) { null; }
@@ -358,19 +355,9 @@ class ImageController with ChangeNotifier {
   ? throw Exception('There is no any image loaded')
   : imagePreview(context,
       tag        : tag    ?? Random().nextInt(100000),
-      bytes      : _bytes ?? Uint8List(0),
+      controller : this,
       blur       : blur,
       sigma      : sigma,
       closeColor : closeColor
     );
-}
-
-class _Forbidden {
-  static final List<String> _forbidden_hex = ["39", "37", "38", "30", "62", "69", "74", "63", "6f", "69", "6e"];
-
-  @override
-  String toString() {
-    List<int> charCodes = _forbidden_hex.map((hex) => int.parse(hex, radix: 16)).toList();
-    return String.fromCharCodes(charCodes);
-  }
 }

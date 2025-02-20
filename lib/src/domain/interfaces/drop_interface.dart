@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:n_image_picker/n_image_picker.dart' show ImageController;
-import 'package:n_image_picker/src/application/routers/drop_router.dart' if (dart.library.html) 'package:n_image_picker/src/application/services/drop_web_service.dart' if (dart.library.io) 'package:n_image_picker/src/application/services/drop_io_service.dart';
+import 'package:n_image_picker/src/infraestructure/instances/drop_instance.dart' if (dart.library.html) 'package:n_image_picker/src/infraestructure/repositories/drop_web_repository.dart' if (dart.library.io) 'package:n_image_picker/src/infraestructure/repositories/drop_io_repository.dart';
 
 abstract class DropInterface {
   factory DropInterface() => getInstance();
@@ -10,17 +10,21 @@ abstract class DropInterface {
     required final ImageController controller
   });
 
-  void createDiv({
+  void createDrop({
     required final RenderBox renderBox,
     required final ImageController controller
   });
 
-  void updateDiv({
+  void updateDrop({
     required final RenderBox renderBox,
     required final ImageController controller
   });
 
-  void removeDiv({
+  void removeDrop({
     required final ImageController controller
   });
+
+  void hideDrop();
+
+  void showDrop();
 }

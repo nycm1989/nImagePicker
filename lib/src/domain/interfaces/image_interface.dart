@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart' show PlatformFile;
 import 'package:flutter/foundation.dart' show Uint8List;
 
 import 'package:n_image_picker/src/domain/models/response_model.dart' show ResponseModel;
-import 'package:n_image_picker/src/application/routers/image_router.dart' if (dart.library.html) 'package:n_image_picker/src/application/services/image_web_service.dart' if (dart.library.io) 'package:n_image_picker/src/application/services/image_io_service.dart';
+import 'package:n_image_picker/src/infraestructure/instances/image_instance.dart' if (dart.library.html) 'package:n_image_picker/src/infraestructure/repositories/image_web_repository.dart' if (dart.library.io) 'package:n_image_picker/src/infraestructure/repositories/image_io_repository.dart';
 
 abstract class ImageInterface{
   factory ImageInterface() => getInstance();
