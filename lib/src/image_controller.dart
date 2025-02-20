@@ -6,7 +6,8 @@ import 'package:flutter/services.dart' show Color, Size, Uint8List, rootBundle;
 import 'package:http/http.dart' show MultipartFile, Request, Response;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:n_image_picker/src/image_viewer_dialog.dart' show imageViewerDialog;
-import 'package:n_image_picker/src/platform/tools.dart' show PlatformTools;
+import 'package:n_image_picker/domain/interfaces/image_interface.dart' show ImageInterface;
+import 'package:n_image_picker/domain/interfaces/drop_interface.dart' show DropInterface;
 
 class ImageController with ChangeNotifier {
   PlatformFile? _file;
@@ -41,15 +42,15 @@ class ImageController with ChangeNotifier {
   changeScreenSize({required Size screenSize}) => _screenSize = screenSize;
 
   changeClass(final RenderBox renderBox, {required String className, Function()? onAdd}) {
-    if(_className != className) PlatformTools().removeDiv(controller: this);
+    if(_className != className) DropInterface().removeDiv(controller: this);
     _className = className;
-    PlatformTools().createDiv(renderBox: renderBox, controller: this);
-    PlatformTools().dragAndDrop(controller: this, onAdd: onAdd);
+    DropInterface().createDiv(renderBox: renderBox, controller: this);
+    DropInterface().dragAndDrop(controller: this, onAdd: onAdd);
   }
 
-  void removeClass() => PlatformTools().removeDiv(controller: this);
+  void removeClass() => DropInterface().removeDiv(controller: this);
 
-  void updateClass({required RenderBox renderBox}) => PlatformTools().updateDiv(renderBox: renderBox, controller: this);
+  void updateClass({required RenderBox renderBox}) => DropInterface().updateDiv(renderBox: renderBox, controller: this);
 
   changeOnDragState(bool state) {
     onDrag = state;
@@ -177,7 +178,7 @@ class ImageController with ChangeNotifier {
     final Function()? onAdd
   }) async {
     if (bytes == null) throw Exception("bytes cant be null");
-    await PlatformTools().write(
+    await ImageInterface().write(
       name      : name,
       extension : extension,
       bytes     : bytes,
@@ -204,7 +205,7 @@ class ImageController with ChangeNotifier {
     await rootBundle.load(path)
     .then((data) async {
       final extension = path.split('.').last.split('?').first;
-      await PlatformTools().write(
+      await ImageInterface().write(
         name      : '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(10000)}-${path.split('/').last.split('.').first}',
         extension : extension,
         bytes     : data.buffer.asUint8List(),
@@ -233,7 +234,7 @@ class ImageController with ChangeNotifier {
 
     try {
       kIsWeb
-      ? await PlatformTools().setFile(
+      ? await ImageInterface().setFile(
         response  : response,
         headers   : headers,
         maxSize   : maxSize,
@@ -246,7 +247,7 @@ class ImageController with ChangeNotifier {
           _extension  = _e.last;
           notifyListeners();
         })
-      : await PlatformTools().setFile(
+      : await ImageInterface().setFile(
         response  : response,
         maxSize   : maxSize,
         extension: _e.last
@@ -277,7 +278,7 @@ class ImageController with ChangeNotifier {
       throw Exception('This dont work in web');
     } else {
       try {
-        await PlatformTools().setFileFromPath(
+        await ImageInterface().setFileFromPath(
           path    : path,
           maxSize : maxSize
         ).then((r) {

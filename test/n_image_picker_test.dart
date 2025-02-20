@@ -1,4 +1,4 @@
 
-// class MockNImagePickerPlatform with MockPlatformInterfaceMixin {
+// class MockNImagePickerPlatform with MockImageInterfaceMixin {
 
 // }
