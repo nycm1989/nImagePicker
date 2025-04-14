@@ -39,6 +39,9 @@
 /// Image in bytes list
 .bytes -> Uint8List
 
+/// Image in list of integers list
+.list -> List<int>
+
 /// When onLoadingImage has a url
 .error -> bool
 

@@ -1,3 +1,6 @@
+## 3.3.1
+* [New] list -> List<int> variable
+
 ## 3.3.0
 * [Upgraded] dart version
 * [Upgraded] architecture

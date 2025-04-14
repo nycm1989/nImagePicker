@@ -13,6 +13,7 @@ import 'package:n_image_picker/src/presentation/image_preview.dart' show imagePr
 class ImageController with ChangeNotifier {
   PlatformFile? _file;
   Uint8List?    _bytes;
+  List<int>     _list         = [];
   Size          _size         = Size(0, 0);
   double        _weight       = 0;
   List<String>  _fileTypes    = const ['png', 'jpg', 'jpeg', 'bmp'];
@@ -93,6 +94,7 @@ class ImageController with ChangeNotifier {
   PlatformFile? get file        => _file;
   String        get path        => _file?.path ?? '';
   Uint8List?    get bytes       => _bytes;
+  List<int>     get list        => _list;
   bool          get error       => _error;
   bool          get hasImage    => _hasImage;
   bool          get hasNoImage  => !_hasImage;
@@ -103,6 +105,7 @@ class ImageController with ChangeNotifier {
   reset({required bool error}) {
     _file         = null;
     _bytes        = null;
+    _list         = [];
     _error        = error;
     _hasImage     = false;
     _extension    = '';
@@ -173,6 +176,7 @@ class ImageController with ChangeNotifier {
       ).then((_f) {
         _file       = _f;
         _bytes      = _f.bytes;
+        _list       = _f.bytes == null ? [] : _f.bytes!.toList();
         _error      = false;
         _hasImage   = true;
         _extension  = extension;
@@ -204,6 +208,7 @@ class ImageController with ChangeNotifier {
         ).then((_f) {
           _file       = _f;
           _bytes      = _f.bytes;
+          _list       = _f.bytes == null ? [] : _f.bytes!.toList();
           _error      = false;
           _hasImage   = true;
           _extension  = extension;
@@ -234,6 +239,7 @@ class ImageController with ChangeNotifier {
       ).then((r) {
           _file       = r.platformFile;
           _bytes      = r.platformFile.bytes;
+          _list       = r.platformFile.bytes == null ? [] : r.platformFile.bytes!.toList();
           _error      = r.error;
           _hasImage   = !r.error;
           _extension  = _e.last;
@@ -246,6 +252,7 @@ class ImageController with ChangeNotifier {
       ).then((r) {
           _file       = r.platformFile;
           _bytes      = r.platformFile.bytes;
+          _list       = r.platformFile.bytes == null ? [] : r.platformFile.bytes!.toList();
           _error      = r.error;
           _hasImage   = !r.error;
           _extension  = _e.last;
@@ -276,6 +283,7 @@ class ImageController with ChangeNotifier {
         ).then((r) {
           _file     = r.platformFile;
           _bytes    = r.platformFile.bytes;
+          _list     = r.platformFile.bytes == null ? [] : r.platformFile.bytes!.toList();
           _error    = r.error;
           _hasImage = !r.error;
           notifyListeners();
