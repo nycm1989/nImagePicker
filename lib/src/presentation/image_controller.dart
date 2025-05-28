@@ -315,7 +315,8 @@ class ImageController with ChangeNotifier {
     );
 
   /// Open the image dialog picker
-  Future<void> pickImage({final int? maxSize, final Function()? onAdd}) async =>
+  Future<void> pickImage({final int? maxSize, final Function()? onAdd}) async {
+    print("object");
   await FilePicker.platform.pickFiles(
     type              : FileType.custom,
     allowedExtensions : _fileTypes,
@@ -343,6 +344,7 @@ class ImageController with ChangeNotifier {
     notifyListeners();
   })
   .onError((error, stackTrace) => reset(error: false));
+  }
 
   removeImage({required final bool notify, final Function()? onDelete}) {
     reset(error: false);

@@ -351,86 +351,97 @@ class __ImageState extends State<ImageBody> {
               : const SizedBox.shrink()
             : SizedBox.expand(
               child:
-              Column(
+              Stack(
                 children: [
-                  if(kIsWeb)
-                  Expanded(
-                    child:
-                    Center(
-                      child:
-                      _IconContainer(
-                        onTap     : null,
-                        renderBox : _renderBox!,
-                        icon      : widget.dragIcon ?? Icons.drag_handle_outlined,
-                        hasImage  : widget.controller!.file != null,
-                        error     : false,
-                      ),
-                    )
+                  if(widget.controller?.hasNoImage??true)
+                  SizedBox.expand(
+                    child: widget.emptyWidget??SizedBox.shrink()
                   ),
-                  if(kIsWeb)
-                  Container(
-                    height    : 1,
-                    width     : double.infinity,
-                    decoration: DottedDecoration(),
-                  ),
-                  if (widget.controller!.error || error)
-                  Expanded(
+                  SizedBox.expand(
                     child:
-                    Center(
-                      child:
-                      _IconContainer(
-                        onTap     : widget.readOnly ? null : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
-                        renderBox : _renderBox!,
-                        icon      : widget.errorIcon ?? Icons.error_outline,
-                        hasImage  : false,
-                        error     : true,
-                      ),
-                    ),
-                  ),
-                  if (!widget.controller!.error && !error)
-                  if(widget.controller!.file == null)
-                  Expanded(
-                    child:
-                    Center(
-                      child:
-                      _IconContainer(
-                        renderBox : _renderBox!,
-                        onTap     : widget.readOnly ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize, onAdd: widget.onAdd),
-                        icon      : widget.uploadIcon ?? Icons.file_upload_outlined,
-                        hasImage  : false,
-                        error     : false,
-                      ),
-                    ),
-                  ),
-                  if (!widget.controller!.error && !error)
-                  if(widget.controller!.file != null)
-                  Expanded(
-                    child:
-                    Row(
-                      mainAxisAlignment : widget.readOnly ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
-                      children          : [
-                        if (!widget.readOnly)
-                        _IconContainer(
-                          onTap     : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
-                          renderBox : _renderBox!,
-                          icon      : widget.deleteIcon ?? Icons.delete_outline,
-                          hasImage  : true,
-                          error     : false,
+                    Column(
+                      children: [
+                        if(kIsWeb)
+                        Expanded(
+                          child:
+                          Center(
+                            child:
+                            _IconContainer(
+                              onTap     : null,
+                              renderBox : _renderBox!,
+                              icon      : widget.dragIcon ?? Icons.drag_handle_outlined,
+                              hasImage  : widget.controller!.file != null,
+                              error     : false,
+                            ),
+                          )
                         ),
-                        _IconContainer(
-                          onTap: () => widget.controller?.showImageViewer(
-                            context,
-                            tag         : widget.tag,
-                            blur        : widget.viewerBlur,
-                            sigma       : widget.viewerBlurSigma,
-                            closeColor  : widget.closeColor
+                        if(kIsWeb)
+                        Container(
+                          height    : 1,
+                          width     : double.infinity,
+                          decoration: DottedDecoration(),
+                        ),
+                        if (widget.controller!.error || error)
+                        Expanded(
+                          child:
+                          Center(
+                            child:
+                            _IconContainer(
+                              onTap     : widget.readOnly ? null : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
+                              renderBox : _renderBox!,
+                              icon      : widget.errorIcon ?? Icons.error_outline,
+                              hasImage  : false,
+                              error     : true,
+                            ),
                           ),
-                          renderBox : _renderBox!,
-                          icon      : widget.expandIcon ?? Icons.zoom_out_map_rounded,
-                          hasImage  : true,
-                          error     : false,
-                          // ),
-                        )
+                        ),
+                        if (!widget.controller!.error && !error)
+                        if(widget.controller!.file == null)
+                        Expanded(
+                          child:
+                          Center(
+                            child:
+                            _IconContainer(
+                              renderBox : _renderBox!,
+                              onTap     : widget.readOnly ? null : () => widget.controller!.pickImage(maxSize: widget.maxSize, onAdd: widget.onAdd),
+                              icon      : widget.uploadIcon ?? Icons.file_upload_outlined,
+                              hasImage  : false,
+                              error     : false,
+                            ),
+                          ),
+                        ),
+                        if (!widget.controller!.error && !error)
+                        if(widget.controller!.file != null)
+                        Expanded(
+                          child:
+                          Row(
+                            mainAxisAlignment : widget.readOnly ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
+                            children          : [
+                              if (!widget.readOnly)
+                              _IconContainer(
+                                onTap     : () => widget.controller!.removeImage(notify: true, onDelete: widget.onDelete),
+                                renderBox : _renderBox!,
+                                icon      : widget.deleteIcon ?? Icons.delete_outline,
+                                hasImage  : true,
+                                error     : false,
+                              ),
+                              _IconContainer(
+                                onTap: () => widget.controller?.showImageViewer(
+                                  context,
+                                  tag         : widget.tag,
+                                  blur        : widget.viewerBlur,
+                                  sigma       : widget.viewerBlurSigma,
+                                  closeColor  : widget.closeColor
+                                ),
+                                renderBox : _renderBox!,
+                                icon      : widget.expandIcon ?? Icons.zoom_out_map_rounded,
+                                hasImage  : true,
+                                error     : false,
+                                // ),
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -1,3 +1,6 @@
+## 3.3.2
+* [Fix] empty widget don`t displaying
+
 ## 3.3.1
 * [New] list -> List<int> variable
 
