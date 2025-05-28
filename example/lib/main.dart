@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                         ),
 
                         ImagePicker.circle(
-                          urlImage          : urlImage,
+                          // urlImage          : urlImage,
                           // onAdd             : () => print("Add 2"),
                           // onDelete          : () => print("Delete 2"),
                           tag               : "TAGFORTESTING01",
@@ -90,6 +90,15 @@ class _MyAppState extends State<MyApp> {
                           viewerBlurSigma   : 10,
                           closeColor        : Colors.grey,
                           maxSize           : 500,
+                          emptyWidget       :
+                          Padding(
+                            padding : const EdgeInsets.all(4),
+                            child   :
+                            CircularProgressIndicator(
+                              strokeWidth : 2,
+                              color       : Colors.grey,
+                            ),
+                          ),
                         ),
 
                         ImagePicker.square(
