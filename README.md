@@ -1,5 +1,10 @@
 # Neil's Image Picker
 
+<p align="center">
+    <span style="color: red; font-size: 14px;">
+    ❗ This package will soon be deprecated
+    </span>
+</p>
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/1.png" alt="" style="width:300px;">

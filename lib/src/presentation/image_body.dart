@@ -340,6 +340,7 @@ class __ImageState extends State<ImageBody> {
             ? (widget.controller?.error??false) || error
               ? Center(
                 child:
+                widget.onErrorWidget??
                 _IconContainer(
                   renderBox : _renderBox!,
                   onTap     : null,
