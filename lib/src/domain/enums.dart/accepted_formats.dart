@@ -1,0 +1,15 @@
+enum AcceptedFormats{
+  jpg,
+  jpeg,
+  png,
+  gif,
+  bmp,
+  tiff,
+  tga,
+  pvr,
+  ico,
+  webp,
+  psd,
+  exr,
+  pnm,
+}

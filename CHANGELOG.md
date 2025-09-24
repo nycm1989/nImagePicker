@@ -1,5 +1,14 @@
+## 4.0.0
+* All the code was refactored
+* ImagePicker and ImageViewer were merged into ImageArea
+* Now every ImageArea requires a controller with a listener
+* ImagePicker.circle was removed to give more control to the optional boxDecoration value
+* There are no default buttons anymore, leaving emptyWidget in charge
+* On the web, the Drag-and-Drop zone only appears when an image is dragged onto the screen, and all ImageAreas display the onDragWidget
+* Indicators were added for drag-in-progress and error states to make it easier to program widgets for those conditions
+
 ## 3.3.3
-* [Fix] on errpr widget don`t displaying
+* [Fix] on error widget don`t displaying
 
 ## 3.3.2
 * [Fix] empty widget don`t displaying

@@ -15,25 +15,39 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final List<ImageController> imageControllers = List.generate(4, (_) => ImageController());
 
+  _listener() { try{ setState(() {}); } catch(e) { null; } }
+
   @override
   void initState() {
     super.initState();
     for (var controller in imageControllers) {
-      controller.addListener(() => setState(() {}));
+      controller.addListener(_listener);
     }
   }
 
   @override
   void dispose() {
-    for (var controller in imageControllers) {
-      controller.removeListener(() => setState(() {}));
-      controller.dispose();
-    }
     super.dispose();
+    for (var controller in imageControllers) {
+      controller ..removeListener(_listener) ..dispose();
+    }
   }
 
-  static const String urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
-  static const String assetImage = 'assets/flutter_logo.png';
+  static const String _urlImage = 'https://i.imgur.com/f1fRugF.jpeg';
+  static const String _assetImage = 'assets/flutter_logo.png';
+
+  BoxDecoration get _decoration =>
+  BoxDecoration(
+    color         : Colors.white,
+    borderRadius  : BorderRadius.circular(20),
+    border        :
+    Border.all(
+      width: 2,
+      color: Colors.grey.shade600,
+      style: BorderStyle.solid,
+      strokeAlign: BorderSide.strokeAlignOutside
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +56,7 @@ class _MyAppState extends State<MyApp> {
       title : 'Pin Board Example',
       home  :
       Scaffold(
+        backgroundColor: Color(0xFFf5f5f5),
         body:
         SafeArea(
           child:
@@ -50,143 +65,118 @@ class _MyAppState extends State<MyApp> {
             SingleChildScrollView(
               padding : const EdgeInsets.all(16),
               child   :
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children          : [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
+              Wrap(
+                alignment     : WrapAlignment.center,
+                runAlignment  : WrapAlignment.center,
+                spacing       : 40,
+                runSpacing    : 40,
+                children      : [
 
-                        ImagePicker(
-                          assetImage        : assetImage,
-                          // onAdd             : () => print("Add 1"),
-                          // onDelete          : () => print("Delete 1"),
-                          controller        : imageControllers[0],
-                          margin            : const EdgeInsets.only(bottom: 16),
-                          width             : 200,
-                          height            : 150,
-                          backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
-                          borderRadius      : BorderRadius.circular(20),
-                          fit               : BoxFit.cover,
-                          border            : Border.all(color: Colors.grey, width: 1),
-                          shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                          viewerBlur        : true,
-                          viewerBlurSigma   : 10,
+                    Column(
+                      mainAxisSize  : MainAxisSize.min,
+                      spacing       : 10,
+                      children      : [
+                        ImageArea(
+                          controller      : imageControllers[0],
+                          onLoadingImage  : _urlImage,
+                          width           : 200,
+                          height          : 150,
+                          decoration      : _decoration,
+                          onLoadingChild  : Center(child: Text("loading...", style: TextStyle(color: Colors.green)))
                         ),
+                        _Controlls(
+                          controller: imageControllers[0]
+                        )
+                      ],
+                    ),
 
-                        ImagePicker.circle(
-                          // urlImage          : urlImage,
-                          // onAdd             : () => print("Add 2"),
-                          // onDelete          : () => print("Delete 2"),
-                          tag               : "TAGFORTESTING01",
-                          controller        : imageControllers[1],
-                          margin            : const EdgeInsets.only(bottom: 16),
-                          backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
-                          dimension         : 200,
-                          fit               : BoxFit.cover,
-                          border            : Border.all(color: Colors.grey, width: 1),
-                          shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                          viewerBlur        : true,
-                          viewerBlurSigma   : 10,
-                          closeColor        : Colors.grey,
-                          maxSize           : 500,
-                          emptyWidget       :
-                          Padding(
-                            padding : const EdgeInsets.all(4),
-                            child   :
-                            CircularProgressIndicator(
-                              strokeWidth : 2,
-                              color       : Colors.grey,
+                    Column(
+                      mainAxisSize  : MainAxisSize.min,
+                      spacing       : 10,
+                      children      : [
+                        ImageArea.square(
+                          controller  : imageControllers[1],
+                          dimension   : 200,
+                          decoration  : _decoration,
+                          emptyChild  : Center(
+                            child:
+                            InkWell(
+                              onTap: () => imageControllers[1].pickImage(),
+                              child:
+                              Text(
+                                "Click here to open the picker",
+                                textAlign : TextAlign.center,
+                                style     :
+                                TextStyle(
+                                  color     : Colors.blue.shade600,
+                                  fontWeight: FontWeight.w500
+                                )
+                              ),
                             ),
                           ),
                         ),
+                        _Controlls(
+                          controller: imageControllers[1]
+                        )
+                      ],
+                    ),
 
-                        ImagePicker.square(
-                          assetImage        : assetImage,
-                          // onAdd             : () => print("Add 3"),
-                          // onDelete          : () => print("Delete 3"),
-                          controller        : imageControllers[2],
-                          margin            : const EdgeInsets.only(bottom: 16),
-                          backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
-                          dimension         : 200,
-                          borderRadius      : BorderRadius.circular(20),
-                          fit               : BoxFit.cover,
-                          border            : Border.all(color: Colors.grey, width: 1),
-                          shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                          viewerBlur        : true,
-                          viewerBlurSigma   : 10,
-                        ),
-
+                    Column(
+                      mainAxisSize  : MainAxisSize.min,
+                      spacing       : 10,
+                      children      : [
                         SizedBox(
                           width   : 100,
                           height  : 200,
                           child   :
-                          ImagePicker.expand(
-                            urlImage          : urlImage,
-                            // onAdd             : () => print("Add 4"),
-                            // onDelete          : () => print("Delete 4"),
-                            tag               : "TAGFORTESTING02",
-                            controller        : imageControllers[3],
-                            margin            : const EdgeInsets.only(bottom: 16),
-                            backgroundColor   : const Color(0xFFededed).withValues(alpha: 0.8),
-                            borderRadius      : BorderRadius.circular(20),
-                            fit               : BoxFit.cover,
-                            border            : Border.all(color: Colors.grey, width: 1),
-                            shadow            : const BoxShadow(color: Colors.black, blurRadius: 5, blurStyle: BlurStyle.outer),
-                            viewerBlur        : true,
-                            viewerBlurSigma   : 10,
+                          ImageArea.expand(
+                            controller      : imageControllers[2],
+                            decoration      : _decoration,
+                            onLoadingImage  : _assetImage,
                           ),
                         ),
+                        _Controlls(
+                          controller: imageControllers[2]
+                        )
+                      ],
+                    ),
 
-                    ],
-                  ),
-
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-
-                      ImageViewer(
-                        assetImage  : assetImage,
-                        fit         : BoxFit.fitHeight,
-                        width       : 200,
-                        height      : 100,
-                        margin      : const EdgeInsets.only(bottom: 16),
-                        shape       : BoxShape.circle,
-                      ),
-
-                      ImageViewer.square(
-                        urlImage  : urlImage,
-                        dimension : 200,
-                        margin    : const EdgeInsets.only(bottom: 16),
-                      ),
-
-                      ImageViewer.circle(
-                        assetImage  : assetImage,
-                        // urlImage   : urlImage,
-                        fit         : BoxFit.fill,
-                        dimension   : 200,
-                        margin      : const EdgeInsets.only(bottom: 16),
-                      ),
-
-                      SizedBox(
-                        width   : 100,
-                        height  : 200,
-                        child   :
-                        ImageViewer.expand(
-                          urlImage : urlImage,
-                          margin    : const EdgeInsets.only(bottom: 16),
-                        ),
-                      ),
-
-                    ],
-                  ),
                 ],
-              ),
+              )
             ),
           ),
         ),
       ),
     );
   }
+}
+
+
+class _Controlls extends StatelessWidget {
+  final ImageController controller;
+
+  const _Controlls({
+    required this.controller
+  });
+
+  @override
+  Widget build(BuildContext context) =>
+  Row(
+    mainAxisSize  : MainAxisSize.min,
+    spacing       : 10,
+    children      : [
+      IconButton(
+        onPressed : controller.hasNoImage ? null : () => controller.removeImage(),
+        icon      : Icon(Icons.delete_outline, color: controller.hasImage ? Colors.red : Colors.grey)
+      ),
+      IconButton(
+        onPressed : () => controller.pickImage(),
+        icon      : Icon(Icons.folder_outlined, color: Colors.blue)
+      ),
+      IconButton(
+        onPressed : () => controller.preview(context),
+        icon      : Icon(Icons.image_outlined, color: Colors.green)
+      ),
+    ],
+  );
 }
