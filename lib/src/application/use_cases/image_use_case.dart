@@ -1,5 +1,3 @@
-/// This file defines the [ImageUseCase] class which handles image processing use cases such as validating URLs, creating data transfer objects (DTOs) from various sources, resizing images, and attaching drop zones for image controllers.
-
 import 'dart:typed_data' show Uint8List;
 import 'package:http/http.dart' show MultipartFile, get;
 import 'package:image/image.dart' as img;
@@ -106,7 +104,7 @@ class ImageUseCase{
     required final String     key,
   }) async {
     try{
-      return await DataDTO(
+      return DataDTO(
         name          : file.name,
         extension     : file.extension??"",
         bytes         : _platformPort.requirePath()

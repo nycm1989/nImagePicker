@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<ImageController> imageControllers = List.generate(4, (_) => ImageController());
+  final List<ImageController> imageControllers = List.generate(2, (_) => ImageController());
 
   _listener() { try{ setState(() {}); } catch(e) { null; } }
 
@@ -98,7 +98,8 @@ class _MyAppState extends State<MyApp> {
                           controller  : imageControllers[1],
                           dimension   : 200,
                           decoration  : _decoration,
-                          emptyChild  : Center(
+                          emptyChild  :
+                          Center(
                             child:
                             InkWell(
                               onTap: () => imageControllers[1].pickImage(),
@@ -121,24 +122,14 @@ class _MyAppState extends State<MyApp> {
                       ],
                     ),
 
-                    Column(
-                      mainAxisSize  : MainAxisSize.min,
-                      spacing       : 10,
-                      children      : [
-                        SizedBox(
-                          width   : 100,
-                          height  : 200,
-                          child   :
-                          ImageArea.expand(
-                            controller      : imageControllers[2],
-                            decoration      : _decoration,
-                            onLoadingImage  : _assetImage,
-                          ),
-                        ),
-                        _Controlls(
-                          controller: imageControllers[2]
-                        )
-                      ],
+                    SizedBox(
+                      width   : 100,
+                      height  : 200,
+                      child   :
+                      ImageArea.expand(
+                        decoration      : _decoration,
+                        onLoadingImage  : _assetImage,
+                      ),
                     ),
 
                 ],
@@ -174,7 +165,7 @@ class _Controlls extends StatelessWidget {
         icon      : Icon(Icons.folder_outlined, color: Colors.blue)
       ),
       IconButton(
-        onPressed : () => controller.preview(context),
+        onPressed : controller.hasNoImage ? null : () => controller.preview(context),
         icon      : Icon(Icons.image_outlined, color: Colors.green)
       ),
     ],

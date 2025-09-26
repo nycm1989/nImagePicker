@@ -1,11 +1,8 @@
 # Neil's Image Picker
 
-This project is a **Flutter plugin** that provides a customizable image picker and viewer.
-It supports web, Android, iOS, and macOS with specific integrations for each platform.
-
 <p align="center">
     <span style="color: green; font-size: 14px;">
-    📦 This is a Flutter plugin project for picking and handling images, supporting web, Android, iOS, and macOS platforms.
+    📦 This is a Flutter plugin project for picking and handling images, supporting web, Android, iOS, Windows, and macOS platforms.
     </span>
 </p>
 
@@ -86,6 +83,7 @@ For Android, add this into AndroidManifest.xml
 
 ## Controller properties
 ```dart
+
 controller.bytes         // Returns the bytes of the current image, if any.
 controller.multipartFile // Returns the multipart file representation of the image, if any.
 controller.name          // Returns the name of the image file, if any.
@@ -95,6 +93,7 @@ controller.hasImage      // Returns true if there is an image loaded.
 controller.hasNoImage    // Returns true if there is no image loaded.
 controller.onDrag        // [WEB] Indicates if a drag operation is currently active.
 controller.onError       // Indicates if there was an error loading or processing the image.
+
 ```
 
 ## Controller metodhs
@@ -207,9 +206,6 @@ ImageArea(
 
     /// How to fit the image within the container.
     fit: BoxFit | null
-
-    /// If true, disables drag-and-drop and image picking.
-    readOnly: bool = false by default
 );
 
 /// Creates a square [ImageArea] with equal width and height [dimension].
