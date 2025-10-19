@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart' show FilePicker, FileType;
 import 'package:n_image_picker/src/domain/dtos/data_dto.dart' show DataDTO;
 import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
 import 'package:n_image_picker/src/presentation/image_preview.dart' show showImagePreview;
-import 'package:n_image_picker/src/domain/enums.dart/accepted_formats.dart' show AcceptedFormats;
+import 'package:n_image_picker/src/domain/enums/accepted_formats.dart' show AcceptedFormats;
 import 'package:n_image_picker/src/application/use_cases/image_use_case.dart' show ImageUseCase;
 
 /// Controller class responsible for managing image data and state.
@@ -381,6 +381,12 @@ class ImageArea extends StatefulWidget {
   /// How the image should fit within the container.
   final BoxFit? fit;
 
+  /// Insert headers in the controller
+  final Map<String, String>? headers;
+
+  /// Insert max size in the controller
+  final int? maxSize;
+
   /// Constructs an [ImageArea] with specified width and height.
   const ImageArea({
     this.controller,
@@ -395,6 +401,8 @@ class ImageArea extends StatefulWidget {
     this.onDragChild,
     this.onLoadingChild,
     this.fit,
+    this.headers,
+    this.maxSize,
     super.key
   });
 
@@ -411,6 +419,8 @@ class ImageArea extends StatefulWidget {
     this.onDragChild,
     this.onLoadingChild,
     this.fit,
+    this.headers,
+    this.maxSize,
     super.key
   }) :
   width   = dimension,
@@ -428,6 +438,8 @@ class ImageArea extends StatefulWidget {
     this.onDragChild,
     this.onLoadingChild,
     this.fit,
+    this.headers,
+    this.maxSize,
     super.key
   }) :
   width   = double.infinity,
@@ -488,8 +500,12 @@ class _ImageZoneState extends State<ImageArea> {
     if(widget.controller == null) {
       controller = ImageController();
       // Add listener to update UI on state changes.
+      if(widget.headers != null) controller.updateHeaders(widget.headers!);
+      if(widget.maxSize != null) controller.updateMaxSize(widget.maxSize!);
       controller.addListener(_listener);
     } else {
+      if(widget.headers != null) widget.controller?.updateHeaders(widget.headers!);
+      if(widget.maxSize != null) widget.controller?.updateMaxSize(widget.maxSize!);
       // If controller is provided, attach drag-drop listeners and zones for web/wasm.
       attachAndListenDropZone();
     }
@@ -559,6 +575,7 @@ class _ImageZoneState extends State<ImageArea> {
               controller.bytes!,
               fit           : widget.fit ?? BoxFit.cover,
               isAntiAlias   : true,
+              filterQuality : FilterQuality.high,
             );
           }
         }

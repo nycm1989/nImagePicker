@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<ImageController> imageControllers = List.generate(2, (_) => ImageController());
+  final List<ImageController> imageControllers = List.generate(3, (_) => ImageController());
 
   _listener() { try{ setState(() {}); } catch(e) { null; } }
 
@@ -33,26 +33,31 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  static const String _urlImage = 'https://i.imgur.com/f1fRugF.jpeg';
+  static const String _urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
+  // static const String _urlImage = 'https://i.imgur.com/f1fRugF.jpeg';
   static const String _assetImage = 'assets/flutter_logo.png';
 
   BoxDecoration get _decoration =>
   BoxDecoration(
-    color         : Colors.white,
-    borderRadius  : BorderRadius.circular(20),
+    color         : Color(0xFFf1f1f1),
+    borderRadius  : BorderRadius.circular(30),
     border        :
     Border.all(
-      width: 2,
-      color: Colors.grey.shade600,
-      style: BorderStyle.solid,
-      strokeAlign: BorderSide.strokeAlignOutside
+      width: 1,
+      color: Colors.grey.shade400,
+      style: BorderStyle.solid
     ),
+    boxShadow: [BoxShadow(
+      color: Colors.black45,
+      blurRadius: 10
+    )]
   );
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      color : Color(0xFFe3e3e3),
       title : 'Pin Board Example',
       home  :
       Scaffold(
@@ -65,11 +70,8 @@ class _MyAppState extends State<MyApp> {
             SingleChildScrollView(
               padding : const EdgeInsets.all(16),
               child   :
-              Wrap(
-                alignment     : WrapAlignment.center,
-                runAlignment  : WrapAlignment.center,
+              Column(
                 spacing       : 40,
-                runSpacing    : 40,
                 children      : [
 
                     Column(
@@ -79,8 +81,8 @@ class _MyAppState extends State<MyApp> {
                         ImageArea(
                           controller      : imageControllers[0],
                           onLoadingImage  : _urlImage,
-                          width           : 200,
-                          height          : 150,
+                          width           : 800,
+                          height          : 200,
                           decoration      : _decoration,
                           onLoadingChild  : Center(child: Text("loading...", style: TextStyle(color: Colors.green)))
                         ),
@@ -90,13 +92,13 @@ class _MyAppState extends State<MyApp> {
                       ],
                     ),
 
-                    Column(
-                      mainAxisSize  : MainAxisSize.min,
-                      spacing       : 10,
-                      children      : [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 40,
+                      children: [
                         ImageArea.square(
                           controller  : imageControllers[1],
-                          dimension   : 200,
+                          dimension   : 150,
                           decoration  : _decoration,
                           emptyChild  :
                           Center(
@@ -104,33 +106,24 @@ class _MyAppState extends State<MyApp> {
                             InkWell(
                               onTap: () => imageControllers[1].pickImage(),
                               child:
-                              Text(
-                                "Click here to open the picker",
-                                textAlign : TextAlign.center,
-                                style     :
-                                TextStyle(
-                                  color     : Colors.blue.shade600,
-                                  fontWeight: FontWeight.w500
-                                )
-                              ),
+                              Icon(
+                                Icons.file_upload_outlined,
+                                size  : 50,
+                                color : Colors.grey,
+                              )
                             ),
                           ),
                         ),
-                        _Controlls(
-                          controller: imageControllers[1]
-                        )
+                        ImageArea.square(
+                          dimension     : 150,
+                          padding       : const EdgeInsets.all(20),
+                          decoration    : _decoration,
+                          onLoadingImage: _assetImage,
+                        ),
                       ],
                     ),
 
-                    SizedBox(
-                      width   : 100,
-                      height  : 200,
-                      child   :
-                      ImageArea.expand(
-                        decoration      : _decoration,
-                        onLoadingImage  : _assetImage,
-                      ),
-                    ),
+
 
                 ],
               )
@@ -152,22 +145,29 @@ class _Controlls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-  Row(
-    mainAxisSize  : MainAxisSize.min,
-    spacing       : 10,
-    children      : [
-      IconButton(
-        onPressed : controller.hasNoImage ? null : () => controller.removeImage(),
-        icon      : Icon(Icons.delete_outline, color: controller.hasImage ? Colors.red : Colors.grey)
-      ),
-      IconButton(
-        onPressed : () => controller.pickImage(),
-        icon      : Icon(Icons.folder_outlined, color: Colors.blue)
-      ),
-      IconButton(
-        onPressed : controller.hasNoImage ? null : () => controller.preview(context),
-        icon      : Icon(Icons.image_outlined, color: Colors.green)
-      ),
-    ],
+  Container(
+    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(25)
+    ),
+    child: Row(
+      mainAxisSize  : MainAxisSize.min,
+      spacing       : 10,
+      children      : [
+        IconButton(
+          onPressed : controller.hasNoImage ? null : () => controller.removeImage(),
+          icon      : Icon(Icons.delete_outline, color: controller.hasImage ? Colors.red : Colors.grey)
+        ),
+        IconButton(
+          onPressed : () => controller.pickImage(),
+          icon      : Icon(Icons.folder_outlined, color: controller.hasImage ? Colors.blue : Colors.grey)
+        ),
+        IconButton(
+          onPressed : controller.hasNoImage ? null : () => controller.preview(context),
+          icon      : Icon(Icons.zoom_out_map, color: controller.hasImage ? Colors.green : Colors.grey)
+        ),
+      ],
+    ),
   );
 }

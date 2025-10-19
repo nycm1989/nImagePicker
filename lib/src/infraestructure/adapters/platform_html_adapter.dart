@@ -1,12 +1,13 @@
 import 'dart:async' show Completer;
 import 'dart:typed_data' show ByteBuffer, Uint8List;
 import 'package:web/web.dart' as web show DragEvent, ElementEventGetters, File, FileReader, FileReaderEventGEtters, HTMLElement, document;
+
 import 'package:flutter/material.dart' show Size, Offset;
 import 'package:flutter/src/rendering/box.dart' show RenderBox;
-import 'package:n_image_picker/n_image_picker.dart' show ImageController;
 
+import 'package:n_image_picker/n_image_picker.dart' show ImageController;
 import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
-import 'package:n_image_picker/src/domain/enums.dart/accepted_formats.dart' show AcceptedFormats;
+import 'package:n_image_picker/src/domain/enums/accepted_formats.dart' show AcceptedFormats;
 
 /// Adapter implementation of [PlatformPort] for HTML platform using web APIs.
 /// This class handles drag-and-drop image loading functionality in a web environment.

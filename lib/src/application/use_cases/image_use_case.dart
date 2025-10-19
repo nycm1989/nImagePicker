@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart' show PlatformFile;
 import 'package:n_image_picker/n_image_picker.dart' show ImageController;
 import 'package:n_image_picker/src/domain/dtos/data_dto.dart' show DataDTO;
 import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
-import 'package:n_image_picker/src/domain/enums.dart/resize_formats.dart' show ResizeFormats;
+import 'package:n_image_picker/src/domain/enums/resize_formats.dart' show ResizeFormats;
 
 class ImageUseCase{
 

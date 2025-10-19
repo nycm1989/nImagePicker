@@ -1,3 +1,7 @@
+## 4.1.1
+* [Fix] hasImage has been fixed
+* [New] headers and maxsize can be setted inside ImageArea
+
 ## 4.1.0
 * [Fix] hasImage has been fixed
 * [Fix] controller is nulleable now

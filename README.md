@@ -7,26 +7,22 @@
 </p>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/1.png" alt="" style="width:300px;">
-    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/2.png" alt="" style="width:300px;">
+    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/1.png" alt="">
 </p>
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/3.png" alt="" style="width:300px;">
-    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/4.png" alt="" style="width:300px;">
-</p>
+## Formats
+### Supported formats
 
+```
+jpg, jpeg, png, gif, bmp, tiff, tga, pvr, ico, webp, psd, exr, pnm
+```
 
-<p align="center">
-    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/5.png" alt="" style="height:300px;">
-</p>
+### Resize formats
+```
+bmp, cur, jpg, png, pvr, tga, tiff
+```
 
-<p align="center">ImageArea becomes a Drag-and-Drop area on the web if readOnly = false.</p>
-<p align="center">
-    <img src="https://raw.githubusercontent.com/nycm1989/nImagePicker/main/screens/6.png" alt="" style="width:300px;">
-</p>
-
--## With this widget, you can:
+## With this widget, you can:
 This plugin provides a cross‑platform way to handle image selection and display in Flutter.
 - Provide URL images
 - Provide assets images
@@ -147,6 +143,8 @@ controller.updateMaxSize(int);
 
 
 
+## How to use it
+
 ### 1. Create a controller and add a listener
 
 ```dart
@@ -172,7 +170,7 @@ void dispose() {
 ```dart
 ImageArea(
     /// The controller managing image state and data.
-    required controller: ImageController
+    controller: ImageController | null
 
     /// Decoration for the container.
     required decoration: BoxDecoration?
@@ -213,14 +211,17 @@ ImageArea.square(
     /// The controller managing image state and data.
     required controller: ImageController
 
+    /// Optional URL or path to an image to load on initialization.
+    onLoadingImage: String | null
+
     /// Width of the container.
     required dimension: double
 );
 
 /// Creates an [ImageArea] that expands to fill available space.
 ImageArea.expand(
-    /// The controller managing image state and data.
-    required controller: ImageController
+    /// Optional URL or path to an image to load on initialization.
+    onLoadingImage: String | null
 );
 ```
 
