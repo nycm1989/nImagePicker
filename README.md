@@ -191,7 +191,7 @@ ImageArea(
     onLoadingImage: String | null
 
     /// Widget to display when no image is loaded.
-    emptyChild: Widget | null
+    onEmptyChild: Widget | null
 
     /// Widget to display when an error occurs.
     onErrorChild: Widget | null
@@ -204,6 +204,12 @@ ImageArea(
 
     /// How to fit the image within the container.
     fit: BoxFit | null
+
+    /// Updates the HTTP headers used for image requests.
+    headers: Map<String, String> | null
+
+    /// Updates the maximum allowed size for the image.
+    maxSize: int | null;
 );
 
 /// Creates a square [ImageArea] with equal width and height [dimension].

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:n_image_picker/n_image_picker.dart';
 
@@ -34,6 +36,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   static const String _urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
+  // static const String _urlImage = 'https://mir-s3-cdn-cf.behance.net/project_modules/hd/5eeea355389655.59822ff824b72.gif';
   // static const String _urlImage = 'https://i.imgur.com/f1fRugF.jpeg';
   static const String _assetImage = 'assets/flutter_logo.png';
 
@@ -48,7 +51,7 @@ class _MyAppState extends State<MyApp> {
       style: BorderStyle.solid
     ),
     boxShadow: [BoxShadow(
-      color: Colors.black45,
+      color: Colors.black26,
       blurRadius: 10
     )]
   );
@@ -57,11 +60,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      color : Color(0xFFe3e3e3),
       title : 'Pin Board Example',
       home  :
       Scaffold(
-        backgroundColor: Color(0xFFf5f5f5),
+        backgroundColor: Colors.white,
         body:
         SafeArea(
           child:
@@ -74,22 +76,14 @@ class _MyAppState extends State<MyApp> {
                 spacing       : 40,
                 children      : [
 
-                    Column(
-                      mainAxisSize  : MainAxisSize.min,
-                      spacing       : 10,
-                      children      : [
-                        ImageArea(
-                          controller      : imageControllers[0],
-                          onLoadingImage  : _urlImage,
-                          width           : 800,
-                          height          : 200,
-                          decoration      : _decoration,
-                          onLoadingChild  : Center(child: Text("loading...", style: TextStyle(color: Colors.green)))
-                        ),
-                        _Controlls(
-                          controller: imageControllers[0]
-                        )
-                      ],
+                    ImageArea(
+                      controller      : imageControllers[0],
+                      onLoadingImage  : _urlImage,
+                      width           : 800,
+                      height          : 200,
+                      decoration      : _decoration,
+                      onFullChild     : _Controlls(controller: imageControllers[0]),
+                      onLoadingChild  : Center(child: Text("loading...", style: TextStyle(color: Colors.green)))
                     ),
 
                     Row(
@@ -100,16 +94,23 @@ class _MyAppState extends State<MyApp> {
                           controller  : imageControllers[1],
                           dimension   : 150,
                           decoration  : _decoration,
-                          emptyChild  :
+                          onEmptyChild  :
                           Center(
                             child:
                             InkWell(
                               onTap: () => imageControllers[1].pickImage(),
                               child:
-                              Icon(
-                                Icons.file_upload_outlined,
-                                size  : 50,
-                                color : Colors.grey,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.file_upload_outlined,
+                                    size  : 50,
+                                    color : Colors.grey,
+                                  ),
+                                  Text("Pick Image",  style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                ],
                               )
                             ),
                           ),
@@ -120,10 +121,28 @@ class _MyAppState extends State<MyApp> {
                           decoration    : _decoration,
                           onLoadingImage: _assetImage,
                         ),
+                        ImageArea.square(
+                          dimension     : 150,
+                          padding       : const EdgeInsets.all(20),
+                          decoration    : _decoration,
+                          onDragChild   :
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children    : [
+                              Text("DROP AREA", style: TextStyle(color: Colors.grey.shade500, fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text("Web Only",  style: TextStyle(color: Colors.red.shade200,  fontSize: 12)),
+                            ],
+                          ),
+                          onEmptyChild  :
+                          Icon(
+                            Icons.drag_handle,
+                            size  : 50,
+                            color : Colors.grey,
+                          ),
+                        ),
                       ],
                     ),
-
-
 
                 ],
               )
@@ -146,28 +165,41 @@ class _Controlls extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
   Container(
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+    padding: const EdgeInsets.all(5),
     decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(25)
+      // color: Colors.white,
+      color: Color.fromRGBO(250, 250, 250, 0.4),
+      borderRadius: BorderRadius.circular(25),
+      // border        :
+      // Border.all(
+      //   width: 1,
+      //   color: Colors.grey.shade400,
+      //   style: BorderStyle.solid
+      // ),
     ),
-    child: Row(
-      mainAxisSize  : MainAxisSize.min,
-      spacing       : 10,
-      children      : [
-        IconButton(
-          onPressed : controller.hasNoImage ? null : () => controller.removeImage(),
-          icon      : Icon(Icons.delete_outline, color: controller.hasImage ? Colors.red : Colors.grey)
-        ),
-        IconButton(
-          onPressed : () => controller.pickImage(),
-          icon      : Icon(Icons.folder_outlined, color: controller.hasImage ? Colors.blue : Colors.grey)
-        ),
-        IconButton(
-          onPressed : controller.hasNoImage ? null : () => controller.preview(context),
-          icon      : Icon(Icons.zoom_out_map, color: controller.hasImage ? Colors.green : Colors.grey)
-        ),
-      ],
+    clipBehavior: Clip.hardEdge,
+    child:
+    BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Adjust sigmaX and sigmaY for blur intensity
+      child :
+      Row(
+        mainAxisSize  : MainAxisSize.min,
+        spacing       : 10,
+        children      : [
+          IconButton(
+            onPressed : controller.hasNoImage ? null : () => controller.removeImage(),
+            icon      : Icon(Icons.delete_outline, size: 20, color: controller.hasImage ? Colors.red : Colors.grey)
+          ),
+          IconButton(
+            onPressed : () => controller.pickImage(),
+            icon      : Icon(Icons.folder_outlined, size: 20,  color: controller.hasImage ? Colors.blue : Colors.grey)
+          ),
+          IconButton(
+            onPressed : controller.hasNoImage ? null : () => controller.preview(context),
+            icon      : Icon(Icons.zoom_out_map, size: 20,  color: controller.hasImage ? Colors.green : Colors.grey)
+          ),
+        ],
+      ),
     ),
   );
 }

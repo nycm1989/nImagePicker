@@ -1,3 +1,7 @@
+## 4.1.2
+* [new] onFullImage widget
+* [change] emptyChild to onEmptyChild
+
 ## 4.1.1
 * [Fix] hasImage has been fixed
 * [New] headers and maxsize can be setted inside ImageArea

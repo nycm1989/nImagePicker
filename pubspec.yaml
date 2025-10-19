@@ -1,6 +1,6 @@
 name: n_image_picker
 description: Configurable and easy-to-use cross-platform image selector.
-version: 4.1.1
+version: 4.1.2
 
 homepage: https://github.com/nycm1989/nImagePicker
 repository: https://github.com/nycm1989/nImagePicker
@@ -9,7 +9,7 @@ topics:
   - picker
   - image
   - preview
-  - cross-platform
+  - darg-and-drop
 
 environment:
   sdk: ^3.9.0

@@ -358,6 +358,12 @@ class ImageArea extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
 
   /// Optional URL or path to an image to load on initialization.
+  ///
+  /// If the image server has CORS security on the web and your code doesn't include
+  /// the headers accepted by the server, it will return an error. It's important to
+  /// note that CORS security includes a registry of accepted IPs in the backend,
+  /// if your project is not on the list, even if it has the correct headers, the
+  /// image will not be displayed.
   final String? onLoadingImage;
 
   /// Width of the container.
@@ -366,8 +372,11 @@ class ImageArea extends StatefulWidget {
   /// Height of the container.
   final double  height;
 
+  /// Widget displayed when image is loaded.
+  final Widget? onFullChild;
+
   /// Widget displayed when no image is loaded.
-  final Widget? emptyChild;
+  final Widget? onEmptyChild;
 
   /// Widget displayed when an error occurs.
   final Widget? onErrorChild;
@@ -396,7 +405,8 @@ class ImageArea extends StatefulWidget {
     this.decoration,
     this.margin,
     this.padding,
-    this.emptyChild,
+    this.onFullChild,
+    this.onEmptyChild,
     this.onErrorChild,
     this.onDragChild,
     this.onLoadingChild,
@@ -414,7 +424,8 @@ class ImageArea extends StatefulWidget {
     this.decoration,
     this.margin,
     this.padding,
-    this.emptyChild,
+    this.onFullChild,
+    this.onEmptyChild,
     this.onErrorChild,
     this.onDragChild,
     this.onLoadingChild,
@@ -433,7 +444,8 @@ class ImageArea extends StatefulWidget {
     this.decoration,
     this.margin,
     this.padding,
-    this.emptyChild,
+    this.onFullChild,
+    this.onEmptyChild,
     this.onErrorChild,
     this.onDragChild,
     this.onLoadingChild,
@@ -547,13 +559,21 @@ class _ImageZoneState extends State<ImageArea> {
             // Show error widget if error.
             if(widget.controller!.onError)        return widget.onErrorChild  ?? _Default(error: true);
             // Show empty widget if no image bytes.
-            if(widget.controller!.bytes == null)  return widget.emptyChild    ?? SizedBox.shrink();
+            if(widget.controller!.bytes == null)  return widget.onEmptyChild    ?? SizedBox.shrink();
 
             // Otherwise, display the image.
-            return Image.memory(
-              widget.controller!.bytes!,
-              fit           : widget.fit ?? BoxFit.cover,
-              isAntiAlias   : true,
+            return Stack(
+              children: [
+                SizedBox.expand(
+                  child:
+                  Image.memory(
+                    widget.controller!.bytes!,
+                    fit           : widget.fit ?? BoxFit.cover,
+                    isAntiAlias   : true,
+                  ),
+                ),
+                if(widget.onFullChild != null) SizedBox.expand(child: Center(child: widget.onFullChild))
+              ],
             );
           }
         }
@@ -568,14 +588,22 @@ class _ImageZoneState extends State<ImageArea> {
             // Show error widget if error.
             if(controller.onError)        return widget.onErrorChild  ?? _Default(error: true);
             // Show empty widget if no image bytes.
-            if(controller.bytes == null)  return widget.emptyChild    ?? SizedBox.shrink();
+            if(controller.bytes == null)  return widget.onEmptyChild    ?? SizedBox.shrink();
 
             // Otherwise, display the image.
-            return Image.memory(
-              controller.bytes!,
-              fit           : widget.fit ?? BoxFit.cover,
-              isAntiAlias   : true,
-              filterQuality : FilterQuality.high,
+            return Stack(
+              children: [
+                SizedBox.expand(
+                  child:
+                  Image.memory(
+                    controller.bytes!,
+                    fit           : widget.fit ?? BoxFit.cover,
+                    isAntiAlias   : true,
+                    filterQuality : FilterQuality.high,
+                  ),
+                ),
+                if(widget.onFullChild != null) SizedBox.expand(child: Center(child: widget.onFullChild))
+              ],
             );
           }
         }
