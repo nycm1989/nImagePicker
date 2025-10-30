@@ -35,8 +35,8 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  static const String _urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
-  // static const String _urlImage = 'https://mir-s3-cdn-cf.behance.net/project_modules/hd/5eeea355389655.59822ff824b72.gif';
+  // static const String _urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
+  static const String _urlImage = 'https://mir-s3-cdn-cf.behance.net/project_modules/hd/5eeea355389655.59822ff824b72.gif';
   // static const String _urlImage = 'https://i.imgur.com/f1fRugF.jpeg';
   static const String _assetImage = 'assets/flutter_logo.png';
 
