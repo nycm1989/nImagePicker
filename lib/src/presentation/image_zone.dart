@@ -467,7 +467,7 @@ class _ImageZoneState extends State<ImageArea> {
   final GlobalKey _globalKey = GlobalKey();
 
   /// Attaches drag-drop listeners and zones if running on Web or WASM platforms.
-  void attachAndListenDropZone() {
+  void _attachAndListenDropZone() {
     // Only attach if running on Web or WASM
     if(kIsWeb || kIsWasm) {
 
@@ -486,7 +486,7 @@ class _ImageZoneState extends State<ImageArea> {
 
 
   /// Loads an image from [widget.onLoadingImage] if provided.
-  void getOnloadingImage() {
+  void _getOnloadingImage() {
     // Only proceed if onLoadingImage is specified
     if(widget.onLoadingImage != null) {
       // Schedule image loading after frame rendering
@@ -519,11 +519,11 @@ class _ImageZoneState extends State<ImageArea> {
       if(widget.headers != null) widget.controller?.updateHeaders(widget.headers!);
       if(widget.maxSize != null) widget.controller?.updateMaxSize(widget.maxSize!);
       // If controller is provided, attach drag-drop listeners and zones for web/wasm.
-      attachAndListenDropZone();
+      _attachAndListenDropZone();
     }
 
     // Load image if onLoadingImage is specified.
-    getOnloadingImage();
+    _getOnloadingImage();
   }
 
   @override
@@ -531,6 +531,13 @@ class _ImageZoneState extends State<ImageArea> {
     // Remove drop zone before calling super.dispose() to ensure proper cleanup order.
     (widget.controller ?? controller)._removeDropZone(_globalKey);
     super.dispose();
+  }
+
+
+  @override
+  void didUpdateWidget(covariant ImageArea oldWidget) {
+    if (oldWidget.onLoadingImage != widget.onLoadingImage) _getOnloadingImage();
+    super.didUpdateWidget(oldWidget);
   }
 
   /// Builds the image area widget based on the controller's state.

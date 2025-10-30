@@ -1,3 +1,7 @@
+## 4.1.3
+* [Upgrade] SDK has been upgraded
+* [Fix] launch image getter when onloading image has been changed
+
 ## 4.1.2
 * [new] onFullImage widget
 * [change] emptyChild to onEmptyChild
