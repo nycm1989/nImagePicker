@@ -1,6 +1,9 @@
 import 'dart:io' show File, Platform;
+import 'dart:convert' show utf8;
 import 'dart:typed_data' show Uint8List;
+import 'package:crypto/crypto.dart' show md5;
 import 'package:flutter/src/rendering/box.dart' show RenderBox;
+import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 import 'package:n_image_picker/n_image_picker.dart' show ImageController;
 import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
 
@@ -98,4 +101,33 @@ class PlatformIOAdapter implements PlatformPort{
   void removeDropZone({required final int hashCode}) {
     throw UnimplementedError();
   }
+
+
+  @override
+  Future<Uint8List?> getCacheData({
+    required String url
+  }) async =>
+  await getTemporaryDirectory().then((dir) async {
+
+    final File file = File("${dir.path}/${md5.convert(utf8.encode(url)).toString()}");
+
+    return await file.exists().then((value) async {
+      if(value) return await file.readAsBytes();
+      return null;
+    });
+  });
+
+  @override
+  Future<bool> putCacheData({
+    required String url,
+    required Uint8List bytes
+  }) async =>
+  await getTemporaryDirectory().then((dir) async {
+
+    final File file = File("${dir.path}/${md5.convert(utf8.encode(url)).toString()}");
+
+    return await file
+    .writeAsBytes(bytes).then((_) => true)
+    .onError((error, stackTrace) => false);
+  });
 }

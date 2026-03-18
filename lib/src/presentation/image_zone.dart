@@ -58,7 +58,6 @@ class ImageController with ChangeNotifier {
   _key = key,
   _maxSize = maxSize;
 
-
   /// Updates the key identifier used for image data.
   void updateKey(String key) {
     // Assign new key value
@@ -117,9 +116,9 @@ class ImageController with ChangeNotifier {
       maxSize : _maxSize,
       key     : _key,
     )
-    .then(_setData)              // Set image data on success
-    .onError(_setError)          // Handle errors
-    .whenComplete(() => stopLoading() ); // Stop loading indicator
+    .then(_setData)             // Set image data on success
+    .onError(_setError)         // Handle errors
+    .whenComplete(stopLoading); // Stop loading indicator
   }
 
   /// Opens file picker to select an image, then processes and stores it.
@@ -393,9 +392,6 @@ class ImageArea extends StatefulWidget {
   /// Insert headers in the controller
   final Map<String, String>? headers;
 
-  /// Insert max size in the controller
-  final int? maxSize;
-
   /// Constructs an [ImageArea] with specified width and height.
   const ImageArea({
     this.controller,
@@ -412,7 +408,6 @@ class ImageArea extends StatefulWidget {
     this.onLoadingChild,
     this.fit,
     this.headers,
-    this.maxSize,
     super.key
   });
 
@@ -431,7 +426,6 @@ class ImageArea extends StatefulWidget {
     this.onLoadingChild,
     this.fit,
     this.headers,
-    this.maxSize,
     super.key
   }) :
   width   = dimension,
@@ -451,7 +445,6 @@ class ImageArea extends StatefulWidget {
     this.onLoadingChild,
     this.fit,
     this.headers,
-    this.maxSize,
     super.key
   }) :
   width   = double.infinity,
@@ -464,6 +457,7 @@ class ImageArea extends StatefulWidget {
 /// State class for [ImageArea] managing drag-drop attachment and image loading.
 class _ImageZoneState extends State<ImageArea> {
   late final ImageController controller;
+
   final GlobalKey _globalKey = GlobalKey();
 
   /// Attaches drag-drop listeners and zones if running on Web or WASM platforms.
@@ -513,12 +507,9 @@ class _ImageZoneState extends State<ImageArea> {
       controller = ImageController();
       // Add listener to update UI on state changes.
       if(widget.headers != null) controller.updateHeaders(widget.headers!);
-      if(widget.maxSize != null) controller.updateMaxSize(widget.maxSize!);
       controller.addListener(_listener);
     } else {
       if(widget.headers != null) widget.controller?.updateHeaders(widget.headers!);
-      if(widget.maxSize != null) widget.controller?.updateMaxSize(widget.maxSize!);
-      // If controller is provided, attach drag-drop listeners and zones for web/wasm.
       _attachAndListenDropZone();
     }
 
@@ -551,7 +542,7 @@ class _ImageZoneState extends State<ImageArea> {
       margin        : widget.margin,
       padding       : widget.padding,
       decoration    : widget.decoration,
-      clipBehavior  : widget.decoration == null ? Clip.none : Clip.hardEdge,
+      clipBehavior  : widget.decoration == null ? .none : .hardEdge,
       child         :
       widget.controller != null
       ? StreamBuilder(
@@ -566,7 +557,7 @@ class _ImageZoneState extends State<ImageArea> {
             // Show error widget if error.
             if(widget.controller!.onError)        return widget.onErrorChild  ?? _Default(error: true);
             // Show empty widget if no image bytes.
-            if(widget.controller!.bytes == null)  return widget.onEmptyChild    ?? SizedBox.shrink();
+            if(widget.controller!.bytes == null)  return widget.onEmptyChild  ?? SizedBox.shrink();
 
             // Otherwise, display the image.
             return Stack(
@@ -589,13 +580,13 @@ class _ImageZoneState extends State<ImageArea> {
         stream  : controller.stream?.stream,
         builder : (context, snapshot) {
           // If loading, show loading widget.
-          if(snapshot.connectionState == ConnectionState.active){
+          if(snapshot.connectionState == .active){
             return (widget.onLoadingChild ?? _Default(loading: true));
           } else {
             // Show error widget if error.
             if(controller.onError)        return widget.onErrorChild  ?? _Default(error: true);
             // Show empty widget if no image bytes.
-            if(controller.bytes == null)  return widget.onEmptyChild    ?? SizedBox.shrink();
+            if(controller.bytes == null)  return widget.onEmptyChild  ?? SizedBox.shrink();
 
             // Otherwise, display the image.
             return Stack(

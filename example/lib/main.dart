@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:n_image_picker/n_image_picker.dart';
 
@@ -15,7 +16,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<ImageController> imageControllers = List.generate(3, (_) => ImageController());
+
+  final List<ImageController> imageControllers = List.generate(3, (_) => ImageController(maxSize: 250));
 
   _listener() { try{ setState(() {}); } catch(e) { null; } }
 
@@ -35,8 +37,8 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  // static const String _urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
-  static const String _urlImage = 'https://mir-s3-cdn-cf.behance.net/project_modules/hd/5eeea355389655.59822ff824b72.gif';
+  static const String _urlImage = 'https://w.wallhaven.cc/full/49/wallhaven-49d5y8.jpg';
+  // static const String _urlImage = 'https://mir-s3-cdn-cf.behance.net/project_modules/hd/5eeea355389655.59822ff824b72.gif';
   // static const String _urlImage = 'https://i.imgur.com/f1fRugF.jpeg';
   static const String _assetImage = 'assets/flutter_logo.png';
 
@@ -86,6 +88,19 @@ class _MyAppState extends State<MyApp> {
                       onLoadingChild  : Center(child: Text("loading...", style: TextStyle(color: Colors.green)))
                     ),
 
+                    SizedBox(
+                      width: 800,
+                      child:
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 10,
+                        children: [
+                          Text("width: ${imageControllers[0].size?.width.toString() ?? ""}"),
+                          Text("height: ${imageControllers[0].size?.height.toString() ?? ""}"),
+                        ],
+                      )
+                    ),
+
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       spacing: 40,
@@ -121,7 +136,9 @@ class _MyAppState extends State<MyApp> {
                           decoration    : _decoration,
                           onLoadingImage: _assetImage,
                         ),
+                        if(kIsWeb || kIsWasm)
                         ImageArea.square(
+                          controller    : imageControllers[2],
                           dimension     : 150,
                           padding       : const EdgeInsets.all(20),
                           decoration    : _decoration,

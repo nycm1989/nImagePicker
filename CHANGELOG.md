@@ -1,3 +1,8 @@
+## 4.2.0
+* [Fix] Image resize for supported formats
+* [New] Image cache for ios anf web
+* [Upgrade] dependencies
+
 ## 4.1.3
 * [Upgrade] SDK has been upgraded
 * [Fix] launch image getter when onloading image has been changed

@@ -18,7 +18,7 @@ class ImageUseCase{
   /// Validates whether the given [url] is a valid image URL.
   ///
   /// Returns `true` if the [url] matches the expected pattern for image URLs, otherwise `false`.
-  bool isValidUrl(String url) =>
+  bool _isValidUrl(String url) =>
   RegExp(
     r'^(https?:\/\/(?:localhost|\d{1,3}(?:\.\d{1,3}){3}|[^\s/$.?#]+\.[^\s/$.?#]+)(:[0-9]+)?[^\s]*\.(jpg|jpeg|png|gif|bmp|tiff|tga|pvr|ico|webp|psd|exr|pnm))$',
     caseSensitive: false
@@ -36,11 +36,10 @@ class ImageUseCase{
     required final String     path,
     required final int      ? maxSize,
     required final String     key,
+    final MultipartFile? file,
   }) async {
     return await Future<DataDTO?>(() async {
       try{
-        final img.Image? image = getImageData(data);
-        if(image == null) return null;
 
         final List<String> nameData = path.split("/").last.split(".");
         final String name = nameData.join(".");
@@ -53,13 +52,16 @@ class ImageUseCase{
           maxSize   : maxSize
         ) ?? data;
 
+        final img.Image? image = getImageData(bytes);
+        if(image == null) return null;
+
         return DataDTO(
           key       : key,
           name      : nameData.first,
           extension : nameData.last,
           size      : Size(image.width.toDouble(), image.height.toDouble()),
           bytes     : bytes,
-          multipartFile :
+          multipartFile : file ??
           MultipartFile.fromBytes(
             key,
             bytes,
@@ -87,9 +89,9 @@ class ImageUseCase{
     required final int    ? maxSize,
     required final Map<String, String>? headers,
   }) async =>
-  isValidUrl(path)
-  ? await createDataFromURL(headers: headers, url: path, key: key)
-  : await createDataFromAsset(path: path, key: key);
+  _isValidUrl(path)
+  ? await createDataFromURL(headers: headers, url: path, key: key, maxSize: maxSize)
+  : await createDataFromAsset(path: path, key: key, maxSize: maxSize);
 
 
   /// Creates a [DataDTO] from a [PlatformFile] object.
@@ -98,18 +100,34 @@ class ImageUseCase{
   /// The [key] identifies the multipart file.
   ///
   /// Returns a [DataDTO] if successful, or `null` on failure.
+  /// //TODO get size
   Future<DataDTO?> createDataFromPlatformFile({
     required final PlatformFile file,
     required final int      ? maxSize,
     required final String     key,
   }) async {
     try{
+      final Uint8List platformBytes = _platformPort.requirePath()
+        ? _platformPort.getBytesFromPath(file.path ?? "")
+        : file.bytes!;
+
+
+      final Uint8List bytes = maxSize == null
+      ? platformBytes
+      : resizeImage(
+        data      : platformBytes,
+        extension : file.extension ?? "",
+        maxSize   : maxSize
+      ) ?? platformBytes;
+
+      final img.Image? image = getImageData(bytes);
+      if(image == null) return null;
+
       return DataDTO(
         name          : file.name,
         extension     : file.extension??"",
-        bytes         : _platformPort.requirePath()
-        ? _platformPort.getBytesFromPath(file.path ?? "")
-        : file.bytes!,
+        bytes         : bytes,
+        size          : Size(image.width.toDouble(), image.height.toDouble()),
         multipartFile : _platformPort.requirePath()
         ? await MultipartFile.fromPath(
           key,
@@ -135,25 +153,50 @@ class ImageUseCase{
   /// Optionally resizes the image to [maxSize].
   ///
   /// Returns a [DataDTO] if the URL is valid and data is fetched successfully, otherwise `null`.
-  Future<DataDTO?> createDataFromURL({
+    Future<DataDTO?> createDataFromURL({
     required final Map<String, String>? headers,
     required final String url,
     required final String key,
     final int? maxSize
   }) async {
-    if (!isValidUrl(url)) return null;
-    print(headers);
+    if (!_isValidUrl(url)) return null;
+
     try {
-      return await get(Uri.parse(url)).then((response) async =>
-        response.statusCode == 200
-        ? await createDTO(
-          data    : response.bodyBytes,
-          path    : url,
-          maxSize : maxSize,
-          key     : key,
-        )
-        : null
-      );
+      // 1. Try cache first
+      return await _platformPort.getCacheData(url: url).then((cachedBytes) async {
+
+        if (cachedBytes != null) {
+          return await createDTO(
+            data    : cachedBytes,
+            path    : url,
+            maxSize : maxSize,
+            key     : key,
+          );
+        }
+
+        // 2. Fetch from network if not cached
+        return await get(Uri.parse(url), headers: headers).then((response) async {
+
+          if (response.statusCode != 200) return null;
+
+          final Uint8List bytes = response.bodyBytes;
+
+          // 3. Save to cache (no await blocking)
+          _platformPort.putCacheData(
+            url   : url,
+            bytes : bytes,
+          );
+
+          // 4. Return DTO
+          return await createDTO(
+            data    : bytes,
+            path    : url,
+            maxSize : maxSize,
+            key     : key,
+          );
+        });
+
+      });
     } catch (e, stackTrace) {
       print("$e\n$stackTrace");
       return null;
@@ -198,32 +241,41 @@ class ImageUseCase{
     required final String     extension,
     required final int        maxSize,
   }) {
+    String _format = extension.toLowerCase();
+
     try{
       int? width;
       int? height;
 
-      if(data.isEmpty || !ResizeFormats.values.map((e) => e.name).toList().contains(extension.toLowerCase())) return data;
+      if(data.isEmpty || !ResizeFormats.values.map((e) => e.name).toList().contains(_format)) return null;
 
-      final String    _format = extension.toLowerCase();
-      final img.Image _image  = getImageData(data)!;
+      final img.Image? _image  = getImageData(data);
 
-      (_image.data?.width??0) > (_image.data?.height??0)
-      ? width   = maxSize
-      : height  = maxSize;
+      if(_image != null){
+        if (_image.width <= maxSize && _image.height <= maxSize) return null;
 
-      final img.Image _resize = img.copyResize( _image, width: width, height: height);
+        _image.width > _image.height
+        ? width   = maxSize
+        : height  = maxSize;
 
-      final Uint8List _bytes = Uint8List.fromList(
-        _format == ResizeFormats.bmp.name ? img.encodeBmp(_resize) :
-        _format == ResizeFormats.cur.name ? img.encodeCur(_resize) :
-        _format == ResizeFormats.jpg.name ? img.encodeJpg(_resize) :
-        _format == ResizeFormats.png.name ? img.encodePng(_resize) :
-        _format == ResizeFormats.pvr.name ? img.encodePvr(_resize) :
-        _format == ResizeFormats.tga.name ? img.encodeTga(_resize) :
-        /* ----------------------------- */ img.encodeTiff(_resize)
-      );
+        final img.Image _resize = img.copyResize( _image, width: width, height: height);
 
-      return _bytes.isNotEmpty ? _bytes : null;
+        Uint8List? _bytes;
+
+        if(_format == ResizeFormats.bmp.name  ) _bytes = Uint8List.fromList(img.encodeBmp(_resize));
+        if(_format == ResizeFormats.cur.name  ) _bytes = Uint8List.fromList(img.encodeCur(_resize));
+        if(_format == ResizeFormats.jpg.name  ) _bytes = Uint8List.fromList(img.encodeJpg(_resize, quality: 90));
+        if(_format == ResizeFormats.png.name  ) _bytes = Uint8List.fromList(img.encodePng(_resize));
+        if(_format == ResizeFormats.pvr.name  ) _bytes = Uint8List.fromList(img.encodePvr(_resize));
+        if(_format == ResizeFormats.tga.name  ) _bytes = Uint8List.fromList(img.encodeTga(_resize));
+        if(_format == ResizeFormats.tiff.name ) _bytes = Uint8List.fromList(img.encodeTiff(_resize));
+
+        if(_bytes == null) return null;
+
+        return _bytes.isNotEmpty ? _bytes : null;
+      }
+
+      return null;
     } catch (e) {
       return null;
     }

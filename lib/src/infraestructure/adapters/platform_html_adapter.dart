@@ -1,6 +1,9 @@
 import 'dart:async' show Completer;
+import 'dart:js_interop';
+import 'dart:convert' show utf8, base64Encode;
+import 'package:crypto/crypto.dart' show md5;
 import 'dart:typed_data' show ByteBuffer, Uint8List;
-import 'package:web/web.dart' as web show DragEvent, ElementEventGetters, File, FileReader, FileReaderEventGEtters, HTMLElement, document;
+import 'package:web/web.dart' as web show DragEvent, ElementEventGetters, File, FileReader, FileReaderEventGEtters, HTMLElement, document, Response;
 
 import 'package:flutter/material.dart' show Size, Offset;
 import 'package:flutter/src/rendering/box.dart' show RenderBox;
@@ -8,6 +11,7 @@ import 'package:flutter/src/rendering/box.dart' show RenderBox;
 import 'package:n_image_picker/n_image_picker.dart' show ImageController;
 import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
 import 'package:n_image_picker/src/domain/enums/accepted_formats.dart' show AcceptedFormats;
+import 'package:web/web.dart' show window;
 
 /// Adapter implementation of [PlatformPort] for HTML platform using web APIs.
 /// This class handles drag-and-drop image loading functionality in a web environment.
@@ -171,4 +175,44 @@ class PlatformHTMLAdapter implements PlatformPort{
     if(div != null) div.setAttribute("style", _style(renderBox.localToGlobal(Offset.zero), renderBox.size));
   }
 
+  @override
+  Future<Uint8List?> getCacheData({
+    required String url
+  }) async =>
+  await window.caches.open('image-cache').toDart.then((response) async =>
+    await window.caches.match(url.toJS).toDart.then((response) async {
+      if(response != null) {
+        return await response.bytes().toDart.then((bytes) async =>
+          bytes.toDart
+        );
+      }
+
+      return null;
+    })
+  );
+
+  @override
+  Future<bool> putCacheData({
+    required String url,
+    required Uint8List bytes,
+  }) {
+    return window.caches.open('image-cache').toDart
+    .then((cache) {
+      final response = web.Response(bytes.toJS);
+      return cache.put(url.toJS, response).toDart;
+    })
+    .then((_) => true)
+    .onError((error, stackTrace) {
+      // fallback a localStorage
+      try {
+        final key = md5.convert(utf8.encode(url)).toString();
+        final base64Data = base64Encode(bytes);
+
+        window.localStorage.setItem(key, base64Data);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    });
+  }
 }
