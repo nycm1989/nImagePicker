@@ -1,6 +1,7 @@
 ## 4.3.0
 * [Upgrade] dependencies
 * [Upgrade] Example
+* [Fix] Image cache
 
 ## 4.2.0
 * [Fix] Image resize for supported formats

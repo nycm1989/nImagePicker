@@ -470,6 +470,7 @@ class _ImageZoneState extends State<ImageArea> {
   final GlobalKey _globalKey = GlobalKey();
 
   Uint8List? _preloadedBytes;
+  ImageProvider? _imageProvider;
 
   /// Attaches drag-drop listeners and zones if running on Web or WASM platforms.
   void _attachAndListenDropZone() {
@@ -509,12 +510,18 @@ class _ImageZoneState extends State<ImageArea> {
     try {
       final bytes = controller.bytes;
 
-      if (bytes != null && bytes.isNotEmpty && !identical(bytes, _preloadedBytes)) {
+      if (bytes == null || bytes.isEmpty) {
+        _preloadedBytes = null;
+        _imageProvider = null;
+      } else if (!identical(bytes, _preloadedBytes)) {
         _preloadedBytes = bytes;
+
+        // Crear MemoryImage SOLO cuando realmente cambian los bytes
+        _imageProvider = MemoryImage(bytes);
 
         unawaited(
           precacheImage(
-            MemoryImage(bytes),
+            _imageProvider!,
             context,
           ),
         );
@@ -528,18 +535,15 @@ class _ImageZoneState extends State<ImageArea> {
   void initState() {
     super.initState();
 
-    // If no controller is provided, create a local controller and listen for state changes.
-    if(widget.controller == null) {
-      controller = ImageController();
-      // Add listener to update UI on state changes.
-      if(widget.headers != null) controller.updateHeaders(widget.headers!);
-      controller.addListener(_listener);
-    } else {
-      if(widget.headers != null) widget.controller?.updateHeaders(widget.headers!);
-      _attachAndListenDropZone();
+    controller = widget.controller ?? ImageController();
+
+    if (widget.headers != null) {
+      controller.updateHeaders(widget.headers!);
     }
 
-    // Load image if onLoadingImage is specified.
+    controller.addListener(_listener);
+
+    _attachAndListenDropZone();
     _getOnloadingImage();
   }
 
@@ -590,10 +594,11 @@ class _ImageZoneState extends State<ImageArea> {
               children: [
                 SizedBox.expand(
                   child:
-                  Image.memory(
-                    widget.controller!.bytes!,
+                  Image(
+                    image         : _imageProvider!,
                     fit           : widget.fit ?? BoxFit.cover,
                     isAntiAlias   : true,
+                    filterQuality : FilterQuality.high,
                   ),
                 ),
                 if(widget.onFullChild != null) SizedBox.expand(child: Center(child: widget.onFullChild))
@@ -619,8 +624,8 @@ class _ImageZoneState extends State<ImageArea> {
               children: [
                 SizedBox.expand(
                   child:
-                  Image.memory(
-                    controller.bytes!,
+                  Image(
+                    image         : _imageProvider!,
                     fit           : widget.fit ?? BoxFit.cover,
                     isAntiAlias   : true,
                     filterQuality : FilterQuality.high,
