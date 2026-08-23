@@ -375,10 +375,10 @@ class ImageArea extends StatefulWidget {
   final String? onLoadingImage;
 
   /// Width of the container.
-  final double  width;
+  final double?  width;
 
   /// Height of the container.
-  final double  height;
+  final double?  height;
 
   /// Widget displayed when image is loaded.
   final Widget? onFullChild;
@@ -398,14 +398,17 @@ class ImageArea extends StatefulWidget {
   /// How the image should fit within the container.
   final BoxFit? fit;
 
+  /// Set image quality .medium by default
+  final FilterQuality? quality;
+
   /// Insert headers in the controller
   final Map<String, String>? headers;
 
   /// Constructs an [ImageArea] with specified width and height.
   const ImageArea({
     this.controller,
-    required this.width,
-    required this.height,
+    this.width,
+    this.height,
     this.onLoadingImage,
     this.decoration,
     this.margin,
@@ -416,6 +419,7 @@ class ImageArea extends StatefulWidget {
     this.onDragChild,
     this.onLoadingChild,
     this.fit,
+    this.quality,
     this.headers,
     super.key
   });
@@ -434,6 +438,7 @@ class ImageArea extends StatefulWidget {
     this.onDragChild,
     this.onLoadingChild,
     this.fit,
+    this.quality,
     this.headers,
     super.key
   }) :
@@ -453,6 +458,7 @@ class ImageArea extends StatefulWidget {
     this.onDragChild,
     this.onLoadingChild,
     this.fit,
+    this.quality,
     this.headers,
     super.key
   }) :
@@ -574,64 +580,42 @@ class _ImageZoneState extends State<ImageArea> {
       decoration    : widget.decoration,
       clipBehavior  : widget.decoration == null ? .none : .hardEdge,
       child         :
-      widget.controller != null
-      ? StreamBuilder(
-        stream  : widget.controller?.stream?.stream,
-        builder : (context, snapshot) {
-          // If loading, show loading widget.
-          if(snapshot.connectionState == ConnectionState.active){
-            return (widget.onLoadingChild ?? _Default(loading: true));
-          } else {
-            // Show drag widget if dragging.
-            if(widget.controller!.onDrag)         return widget.onDragChild   ?? _Default(drag: true);
-            // Show error widget if error.
-            if(widget.controller!.onError)        return widget.onErrorChild  ?? _Default(error: true);
-            // Show empty widget if no image bytes.
-            if(widget.controller!.bytes == null)  return widget.onEmptyChild  ?? SizedBox.shrink();
-
-            // Otherwise, display the image.
-            return Stack(
-              children: [
-                SizedBox.expand(
-                  child:
-                  Image(
-                    image         : _imageProvider!,
-                    fit           : widget.fit ?? BoxFit.cover,
-                    isAntiAlias   : true,
-                    filterQuality : FilterQuality.high,
-                  ),
-                ),
-                if(widget.onFullChild != null) SizedBox.expand(child: Center(child: widget.onFullChild))
-              ],
-            );
-          }
-        }
-      )
-      : StreamBuilder(
-        stream  : controller.stream?.stream,
+      StreamBuilder(
+        stream  : widget.controller?.stream?.stream ?? controller.stream?.stream,
         builder : (context, snapshot) {
           // If loading, show loading widget.
           if(snapshot.connectionState == .active){
             return (widget.onLoadingChild ?? _Default(loading: true));
           } else {
+
+            // Show drag widget if dragging.
+            if(widget.controller != null){
+              if(widget.controller!.onDrag) return widget.onDragChild   ?? _Default(drag: true);
+            }
+
             // Show error widget if error.
-            if(controller.onError)        return widget.onErrorChild  ?? _Default(error: true);
+            if(widget.controller?.onError ?? controller.onError) return widget.onErrorChild  ?? _Default(error: true);
+
             // Show empty widget if no image bytes.
-            if(controller.bytes == null)  return widget.onEmptyChild  ?? SizedBox.shrink();
+            if((widget.controller?.bytes ?? controller.bytes) == null)  return widget.onEmptyChild  ?? SizedBox.shrink();
 
             // Otherwise, display the image.
             return Stack(
+              alignment: .center,
               children: [
-                SizedBox.expand(
-                  child:
+                if(_imageProvider != null)
+                SizedBox(
+                  width   : widget.width,
+                  height  : widget.height,
+                  child   :
                   Image(
                     image         : _imageProvider!,
-                    fit           : widget.fit ?? BoxFit.cover,
+                    fit           : widget.fit ?? .cover,
                     isAntiAlias   : true,
-                    filterQuality : FilterQuality.high,
+                    filterQuality : widget.quality ?? .medium,
                   ),
                 ),
-                if(widget.onFullChild != null) SizedBox.expand(child: Center(child: widget.onFullChild))
+                if(widget.onFullChild != null)  widget.onFullChild!
               ],
             );
           }

@@ -1,3 +1,6 @@
+## 4.3.1
+* [Fix] width and height is not required anymore
+
 ## 4.3.0
 * [Upgrade] dependencies
 * [Upgrade] Example

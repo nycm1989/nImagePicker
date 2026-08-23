@@ -243,17 +243,33 @@ class LabSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing           : 14,
       children          : [
-        ImageArea(
-          controller     : controller,
-          onLoadingImage : kDefaultUrl,
-          width          : double.infinity,
-          height         : 300,
-          fit            : BoxFit.cover,
-          decoration     : kAreaDecoration,
-          onLoadingChild : const LoadingPlaceholder(),
-          onErrorChild   : ErrorPlaceholder(onRetry: onReload),
-          onEmptyChild   : const EmptyPlaceholder(message: 'No image'),
-          onFullChild    : GlassControls(controller: controller),
+        Center(
+          child:
+          ImageArea(
+            controller     : controller,
+            onLoadingImage : kDefaultUrl,
+            width          : double.infinity,
+            height         : 300,
+            fit            : BoxFit.cover,
+            decoration     : kAreaDecoration,
+            onLoadingChild : const LoadingPlaceholder(),
+            onErrorChild   : ErrorPlaceholder(onRetry: onReload),
+            onEmptyChild   : const EmptyPlaceholder(message: 'No image'),
+            onFullChild    : GlassControls(controller: controller),
+          ),
+        ),
+
+        Center(
+          child:
+          ImageArea(
+            onLoadingImage : kDefaultUrl,
+            height         : 300,
+            fit            : BoxFit.cover,
+            decoration     : kAreaDecoration,
+            onLoadingChild : const LoadingPlaceholder(),
+            onErrorChild   : ErrorPlaceholder(onRetry: onReload),
+            onEmptyChild   : const EmptyPlaceholder(message: 'No image'),
+          ),
         ),
 
         MetaDataChips(controller: controller, maxSize: maxSize, resizeOn: resizeOn),
@@ -573,42 +589,45 @@ class GlassControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-  Container(
-    padding     : const EdgeInsets.all(4),
-    decoration  :
-    BoxDecoration(
-      color       : const Color.fromRGBO(15, 15, 25, 0.45),
-      borderRadius: BorderRadius.circular(20),
-      border      : Border.all(color: Colors.white24),
-    ),
-    clipBehavior: Clip.hardEdge,
-    child       :
-    BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-      child :
-      Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing     : 2,
-        children    : [
-          IconButton(
-            tooltip  : 'Replace',
-            onPressed: () => controller.pickImage(),
-            icon     : const Icon(Icons.folder_open_outlined, size: 20),
-            color    : Colors.lightBlueAccent,
-          ),
-          IconButton(
-            tooltip  : 'Preview',
-            onPressed: controller.hasNoImage ? null : () => controller.preview(context),
-            icon     : const Icon(Icons.zoom_out_map, size: 20),
-            color    : controller.hasImage ? Colors.greenAccent : Colors.grey,
-          ),
-          IconButton(
-            tooltip  : 'Remove',
-            onPressed: controller.hasNoImage ? null : () => controller.removeImage(),
-            icon     : const Icon(Icons.delete_outline, size: 20),
-            color    : controller.hasImage ? Colors.redAccent : Colors.grey,
-          ),
-        ],
+  Center(
+    child:
+    Container(
+      padding     : const EdgeInsets.all(4),
+      decoration  :
+      BoxDecoration(
+        color       : const Color.fromRGBO(15, 15, 25, 0.45),
+        borderRadius: BorderRadius.circular(20),
+        border      : Border.all(color: Colors.white24),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child       :
+      BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        child :
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing     : 2,
+          children    : [
+            IconButton(
+              tooltip  : 'Replace',
+              onPressed: () => controller.pickImage(),
+              icon     : const Icon(Icons.folder_open_outlined, size: 20),
+              color    : Colors.lightBlueAccent,
+            ),
+            IconButton(
+              tooltip  : 'Preview',
+              onPressed: controller.hasNoImage ? null : () => controller.preview(context),
+              icon     : const Icon(Icons.zoom_out_map, size: 20),
+              color    : controller.hasImage ? Colors.greenAccent : Colors.grey,
+            ),
+            IconButton(
+              tooltip  : 'Remove',
+              onPressed: controller.hasNoImage ? null : () => controller.removeImage(),
+              icon     : const Icon(Icons.delete_outline, size: 20),
+              color    : controller.hasImage ? Colors.redAccent : Colors.grey,
+            ),
+          ],
+        ),
       ),
     ),
   );
