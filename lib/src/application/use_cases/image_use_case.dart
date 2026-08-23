@@ -153,7 +153,7 @@ class ImageUseCase{
   }) async {
     try{
       final List<String> imageData = file.name.split('.');
-      final String extension = imageData.isNotEmpty ? imageData.first : "";
+      final String extension = imageData.isNotEmpty ? imageData.last : "";
 
       final Uint8List platformBytes = _platformPort.requirePath()
         ? _platformPort.getBytesFromPath(file.path ?? "")
