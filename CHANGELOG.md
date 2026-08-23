@@ -1,5 +1,6 @@
 ## 4.3.1
 * [Fix] width and height is not required anymore
+* [Upgraded] Performance has been improved
 
 ## 4.3.0
 * [Upgrade] dependencies

@@ -10,6 +10,53 @@ import 'package:n_image_picker/src/domain/dtos/data_dto.dart' show DataDTO;
 import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
 import 'package:n_image_picker/src/domain/enums/resize_formats.dart' show ResizeFormats;
 
+// Top-level functions for isolate-based image processing
+// These can be called by Isolate.compute to avoid blocking the main thread
+
+Uint8List _decodeAndResizeImage(
+  Uint8List data,
+  String extension,
+  int maxSize,
+) {
+  String _format = extension.toLowerCase();
+
+  try {
+    final img.Image? _image = img.decodeImage(data);
+    if (_image == null) return data;
+
+    if (_image.width <= maxSize && _image.height <= maxSize) return data;
+
+    int? width;
+    int? height;
+
+    _image.width > _image.height
+      ? width = maxSize
+      : height = maxSize;
+
+    final img.Image _resize = img.copyResize(_image, width: width, height: height);
+
+    Uint8List? _bytes;
+
+    if (_format == ResizeFormats.bmp.name || _format == 'bmp') _bytes = Uint8List.fromList(img.encodeBmp(_resize));
+    if (_format == ResizeFormats.cur.name || _format == 'cur') _bytes = Uint8List.fromList(img.encodeCur(_resize));
+    if (_format == ResizeFormats.jpg.name || _format == 'jpg') _bytes = Uint8List.fromList(img.encodeJpg(_resize, quality: 90));
+    if (_format == ResizeFormats.png.name || _format == 'png') _bytes = Uint8List.fromList(img.encodePng(_resize));
+    if (_format == ResizeFormats.pvr.name || _format == 'pvr') _bytes = Uint8List.fromList(img.encodePvr(_resize));
+    if (_format == ResizeFormats.tga.name || _format == 'tga') _bytes = Uint8List.fromList(img.encodeTga(_resize));
+    if (_format == ResizeFormats.tiff.name || _format == 'tiff') _bytes = Uint8List.fromList(img.encodeTiff(_resize));
+
+    if (_bytes == null) return data;
+
+    return _bytes.isNotEmpty ? _bytes : data;
+  } catch (_) {
+    return data;
+  }
+}
+
+img.Image? _decodeImageOnly(Uint8List data) {
+  return img.decodeImage(data);
+}
+
 class ImageUseCase{
 
   /// Instance of [PlatformPort] to interact with platform-specific functionality.
@@ -38,40 +85,38 @@ class ImageUseCase{
     required final String     key,
     final MultipartFile? file,
   }) async {
-    return await Future<DataDTO?>(() async {
-      try{
+    try{
 
-        final List<String> nameData = path.split("/").last.split(".");
-        final String name = nameData.join(".");
+      final List<String> nameData = path.split("/").last.split(".");
+      final String name = nameData.join(".");
 
-        final Uint8List bytes = maxSize == null
-        ? data
-        : resizeImage(
-          data      : data,
-          extension : nameData.last,
-          maxSize   : maxSize
-        ) ?? data;
+      final Uint8List bytes = maxSize == null
+      ? data
+      : _decodeAndResizeImage(
+        data,
+        nameData.last,
+        maxSize
+      );
 
-        final img.Image? image = getImageData(bytes);
-        if(image == null) return null;
+      final img.Image? image = _decodeImageOnly(bytes);
+      if(image == null) return null;
 
-        return DataDTO(
-          key       : key,
-          name      : nameData.first,
-          extension : nameData.last,
-          size      : Size(image.width.toDouble(), image.height.toDouble()),
-          bytes     : bytes,
-          multipartFile : file ??
-          MultipartFile.fromBytes(
-            key,
-            bytes,
-            filename    : name,
-          )
-        );
-      } catch (e) {
-        return null;
-      }
-    });
+      return DataDTO(
+        key       : key,
+        name      : nameData.first,
+        extension : nameData.last,
+        size      : Size(image.width.toDouble(), image.height.toDouble()),
+        bytes     : bytes,
+        multipartFile : file ??
+        MultipartFile.fromBytes(
+          key,
+          bytes,
+          filename    : name,
+        )
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
 
@@ -107,48 +152,45 @@ class ImageUseCase{
     required final String     key,
   }) async {
     try{
-      return await file.readAsBytes().then((_bytes) async {
-        final List<String> imageData = file.name.split('.');
-        final String extension = imageData.isNotEmpty ? imageData.first : "";
+      final List<String> imageData = file.name.split('.');
+      final String extension = imageData.isNotEmpty ? imageData.first : "";
 
-        final Uint8List platformBytes = _platformPort.requirePath()
-          ? _platformPort.getBytesFromPath(file.path ?? "")
-          : _bytes;
+      final Uint8List platformBytes = _platformPort.requirePath()
+        ? _platformPort.getBytesFromPath(file.path ?? "")
+        : (await file.readAsBytes());
 
-        final Uint8List bytes = maxSize == null
-        ? platformBytes
-        : resizeImage(
-          data      : platformBytes,
-          extension : extension,
-          maxSize   : maxSize
-        ) ?? platformBytes;
+      final Uint8List bytes = maxSize == null
+      ? platformBytes
+      : _decodeAndResizeImage(
+        platformBytes,
+        extension,
+        maxSize
+      );
 
-        final img.Image? image = getImageData(bytes);
-        if(image == null) return null;
+      final img.Image? image = _decodeImageOnly(bytes);
+      if(image == null) return null;
 
-        return DataDTO(
-          name          : file.name,
-          extension     : extension,
-          bytes         : bytes,
-          size          : Size(image.width.toDouble(), image.height.toDouble()),
-          multipartFile : _platformPort.requirePath()
-          ? await MultipartFile.fromPath(
-            key,
-            file.path ?? "",
-            filename    : file.name,
-          )
-          : MultipartFile.fromBytes(
-            key,
-            bytes,
-            filename    : file.name,
-          )
-        );
-      });
+      return DataDTO(
+        name          : file.name,
+        extension     : extension,
+        bytes         : bytes,
+        size          : Size(image.width.toDouble(), image.height.toDouble()),
+        multipartFile : _platformPort.requirePath()
+        ? await MultipartFile.fromPath(
+          key,
+          file.path ?? "",
+          filename    : file.name,
+        )
+        : MultipartFile.fromBytes(
+          key,
+          bytes,
+          filename    : file.name,
+        )
+      );
     } catch(e) {
       return null;
     }
   }
-
 
   /// Creates a [DataDTO] by fetching image data from a network [url].
   ///
@@ -167,40 +209,38 @@ class ImageUseCase{
 
     try {
       // 1. Try cache first
-      return await _platformPort.getCacheData(url: url).then((cachedBytes) async {
+      final cachedBytes = await _platformPort.getCacheData(url: url);
 
-        if (cachedBytes != null) {
-          return await createDTO(
-            data    : cachedBytes,
-            path    : url,
-            maxSize : maxSize,
-            key     : key,
-          );
-        }
+      if (cachedBytes != null) {
+        return createDTO(
+          data    : cachedBytes,
+          path    : url,
+          maxSize : maxSize,
+          key     : key,
+        );
+      }
 
-        // 2. Fetch from network if not cached
-        return await get(Uri.parse(url), headers: headers).then((response) async {
+      // 2. Fetch from network if not cached
+      final response = await get(Uri.parse(url), headers: headers);
 
-          if (response.statusCode != 200) return null;
+      if (response.statusCode != 200) return null;
 
-          final Uint8List bytes = response.bodyBytes;
+      final Uint8List bytes = response.bodyBytes;
 
-          // 3. Save to cache (no await blocking)
-          _platformPort.putCacheData(
-            url   : url,
-            bytes : bytes,
-          );
+      // 3. Save to cache (non-blocking)
+      _platformPort.putCacheData(
+        url   : url,
+        bytes : bytes,
+      );
 
-          // 4. Return DTO
-          return await createDTO(
-            data    : bytes,
-            path    : url,
-            maxSize : maxSize,
-            key     : key,
-          );
-        });
+      // 4. Return DTO (with optional resize via isolate)
+      return createDTO(
+        data    : bytes,
+        path    : url,
+        maxSize : maxSize,
+        key     : key,
+      );
 
-      });
     } catch (e, stackTrace) {
       print("$e\n$stackTrace");
       return null;
@@ -221,13 +261,12 @@ class ImageUseCase{
   }) async {
     if(path.isEmpty) return null;
 
-    return await rootBundle.load(path).then((data) async =>
-      await createDTO(
-        data    : data.buffer.asUint8List(),
-        path    : path,
-        maxSize : maxSize,
-        key     : key
-      )
+    final data = await rootBundle.load(path);
+    return createDTO(
+      data    : data.buffer.asUint8List(),
+      path    : path,
+      maxSize : maxSize,
+      key     : key
     );
   }
 
@@ -284,7 +323,6 @@ class ImageUseCase{
       return null;
     }
   }
-
 
   /// Attaches a drop body to the UI element referenced by [globalKey] for the given [controller].
   ///

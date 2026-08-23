@@ -519,7 +519,7 @@ class _ImageZoneState extends State<ImageArea> {
       if (bytes == null || bytes.isEmpty) {
         _preloadedBytes = null;
         _imageProvider = null;
-      } else if (!identical(bytes, _preloadedBytes)) {
+      } else if (_preloadedBytes == null || _preloadedBytes != bytes) {
         _preloadedBytes = bytes;
 
         // Crear MemoryImage SOLO cuando realmente cambian los bytes
