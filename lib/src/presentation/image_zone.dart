@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'dart:async' show Future, FutureExtensions, StreamController;
+import 'dart:async' show Future, FutureExtensions, StreamController, unawaited;
 import 'package:http/http.dart' show MultipartFile;
 import 'package:flutter/foundation.dart' show ChangeNotifier, Uint8List, kIsWasm, kIsWeb;
 import 'package:file_picker/file_picker.dart' show FilePicker, FileType;
 
 import 'package:n_image_picker/src/domain/dtos/data_dto.dart' show DataDTO;
-import 'package:n_image_picker/src/domain/ports/platform_port.dart' show PlatformPort;
 import 'package:n_image_picker/src/presentation/image_preview.dart' show showImagePreview;
 import 'package:n_image_picker/src/domain/enums/accepted_formats.dart' show AcceptedFormats;
 import 'package:n_image_picker/src/application/use_cases/image_use_case.dart' show ImageUseCase;
@@ -98,6 +97,20 @@ class ImageController with ChangeNotifier {
     notifyListeners();
   }
 
+
+  void precache(BuildContext context) {
+    final bytes = _imageData?.bytes;
+
+    if (bytes == null || bytes.isEmpty) return;
+
+    unawaited(
+      precacheImage(
+        MemoryImage(bytes),
+        context,
+      ),
+    );
+  }
+
   /// Asynchronously loads an image from the specified [path].
   /// Updates internal state and handles errors.
   Future<void> getOnloadingImage({
@@ -126,30 +139,26 @@ class ImageController with ChangeNotifier {
     // Update key if provided
     if(key != null) updateKey(key);
     // Invoke file picker with custom allowed extensions
-    await FilePicker.platform.pickFiles(
+    await FilePicker.pickFile(
       type              : FileType.custom,
       allowedExtensions : AcceptedFormats.values.map((e) => e.name).toList(),
-      allowMultiple     : false,
-      withData          : !PlatformPort().requirePath(),
     )
-    .then((pick) async {
+    .then((file) async {
       // Proceed if user selected a file
-      if(pick != null){
-        if(pick.files.isNotEmpty) {
+      if(file != null){
           // Start loading indicator
           startLoading();
           // Create image data from selected platform file
           await _useCase
           .createDataFromPlatformFile(
             key     : _key,
-            file    : pick.files.first,
+            file    : file,
             maxSize : _maxSize,
           )
           .then(_setData)          // Update image data on success
           .onError(_setError)      // Handle errors
           .whenComplete(() => stopLoading() ); // Stop loading indicator
         }
-      }
     });
   }
 
@@ -460,6 +469,8 @@ class _ImageZoneState extends State<ImageArea> {
 
   final GlobalKey _globalKey = GlobalKey();
 
+  Uint8List? _preloadedBytes;
+
   /// Attaches drag-drop listeners and zones if running on Web or WASM platforms.
   void _attachAndListenDropZone() {
     // Only attach if running on Web or WASM
@@ -495,7 +506,22 @@ class _ImageZoneState extends State<ImageArea> {
   /// Listener callback that safely updates the UI state when the controller notifies.
   /// Catches exceptions to avoid errors if the widget is disposed.
   void _listener() {
-    try{ setState(() {}); } catch(e) { null; }
+    try {
+      final bytes = controller.bytes;
+
+      if (bytes != null && bytes.isNotEmpty && !identical(bytes, _preloadedBytes)) {
+        _preloadedBytes = bytes;
+
+        unawaited(
+          precacheImage(
+            MemoryImage(bytes),
+            context,
+          ),
+        );
+      }
+
+      setState(() {});
+    } catch (_) {}
   }
 
   @override

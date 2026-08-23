@@ -1,6 +1,6 @@
 name: n_image_picker
 description: Configurable and easy-to-use cross-platform image selector.
-version: 4.2.0
+version: 4.3.0
 
 homepage: https://github.com/nycm1989/nImagePicker
 repository: https://github.com/nycm1989/nImagePicker
@@ -18,12 +18,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^10.3.3
-  image: ^4.8.0
-  web: ^1.1.0
+  file_picker: ^12.0.0
+  image: ^4.9.2
+  web: ^1.1.1
   http: ^1.6.0
   crypto: ^3.0.7
-  path_provider: ^2.1.5
+  path_provider: 2.1.6
 
 dev_dependencies:
   flutter_test:

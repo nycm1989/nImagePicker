@@ -107,39 +107,43 @@ class ImageUseCase{
     required final String     key,
   }) async {
     try{
-      final Uint8List platformBytes = _platformPort.requirePath()
-        ? _platformPort.getBytesFromPath(file.path ?? "")
-        : file.bytes!;
+      return await file.readAsBytes().then((_bytes) async {
+        final List<String> imageData = file.name.split('.');
+        final String extension = imageData.isNotEmpty ? imageData.first : "";
 
+        final Uint8List platformBytes = _platformPort.requirePath()
+          ? _platformPort.getBytesFromPath(file.path ?? "")
+          : _bytes;
 
-      final Uint8List bytes = maxSize == null
-      ? platformBytes
-      : resizeImage(
-        data      : platformBytes,
-        extension : file.extension ?? "",
-        maxSize   : maxSize
-      ) ?? platformBytes;
+        final Uint8List bytes = maxSize == null
+        ? platformBytes
+        : resizeImage(
+          data      : platformBytes,
+          extension : extension,
+          maxSize   : maxSize
+        ) ?? platformBytes;
 
-      final img.Image? image = getImageData(bytes);
-      if(image == null) return null;
+        final img.Image? image = getImageData(bytes);
+        if(image == null) return null;
 
-      return DataDTO(
-        name          : file.name,
-        extension     : file.extension??"",
-        bytes         : bytes,
-        size          : Size(image.width.toDouble(), image.height.toDouble()),
-        multipartFile : _platformPort.requirePath()
-        ? await MultipartFile.fromPath(
-          key,
-          file.path ?? "",
-          filename    : file.name,
-        )
-        : MultipartFile.fromBytes(
-          key,
-          file.bytes!,
-          filename    : file.name,
-        )
-      );
+        return DataDTO(
+          name          : file.name,
+          extension     : extension,
+          bytes         : bytes,
+          size          : Size(image.width.toDouble(), image.height.toDouble()),
+          multipartFile : _platformPort.requirePath()
+          ? await MultipartFile.fromPath(
+            key,
+            file.path ?? "",
+            filename    : file.name,
+          )
+          : MultipartFile.fromBytes(
+            key,
+            bytes,
+            filename    : file.name,
+          )
+        );
+      });
     } catch(e) {
       return null;
     }

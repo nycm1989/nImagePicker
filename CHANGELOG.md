@@ -1,3 +1,7 @@
+## 4.3.0
+* [Upgrade] dependencies
+* [Upgrade] Example
+
 ## 4.2.0
 * [Fix] Image resize for supported formats
 * [New] Image cache for ios anf web
