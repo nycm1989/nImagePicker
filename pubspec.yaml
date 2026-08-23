@@ -23,7 +23,7 @@ dependencies:
   web: ^1.1.1
   http: ^1.6.0
   crypto: ^3.0.7
-  path_provider: 2.1.6
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
